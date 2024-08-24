@@ -147,7 +147,7 @@ async def help(ctx):
         "`&muterole_create` - *Create mute role if not existed. This will override mute permissions and role to all categories and channels.*\n"
         "`&clear [all/number]` - *Delete messages.*\n"
     ), inline=False)
-    embed.add_field(name="Music Commands (unavailable due to Youtube requirements. Do not attempt to spam these commands.)", value=(
+    embed.add_field(name="Music Commands", value=(
         "`&play [Youtube Video URL or Search Query]` - *Join user connected voice channel and play music from given URL.*\n"
         "`&pause` - *This will pause the song.*\n"
         "`&resume` - *Continue playing the song.*\n"
