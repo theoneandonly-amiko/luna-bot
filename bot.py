@@ -1,3 +1,6 @@
+# REMOVE THIS FILE ONCE MIGRATION IS COMPLETE
+#                   - stealthninja
+
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import BucketType
@@ -77,6 +80,8 @@ load_blacklist()
 async def on_ready():
     print(f"{bot.user} is connected and ready to use.")
     update_presence.start()
+
+
 # =================== Youtube Presence ====================
 @tasks.loop(minutes=5)
 async def update_presence():
