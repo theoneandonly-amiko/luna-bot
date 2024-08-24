@@ -1,0 +1,6 @@
+discord
+python-dotenv
+yt-dlp
+pynacl
+google-api-python-client
+ffmpeg

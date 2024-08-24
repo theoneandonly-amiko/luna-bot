@@ -1,0 +1,827 @@
+2024-08-23 03:29:18,540 - file_cache is only supported with oauth2client<4.0.0
+2024-08-23 03:29:18,591 - logging in using static token
+2024-08-23 03:29:20,275 - Shard ID None has connected to Gateway (Session ID: b5c9ab949fe1af46af634189fa2a3fe8).
+2024-08-23 03:29:50,693 - Connecting to voice...
+2024-08-23 03:29:50,694 - Starting voice handshake... (connection attempt 1)
+2024-08-23 03:29:51,075 - Voice handshake complete. Endpoint found: hongkong11010.discord.media
+2024-08-23 03:29:52,789 - Voice connection complete.
+2024-08-23 03:32:43,552 - The voice handshake is being terminated for Channel ID 1056897219401371793 (Guild ID 1056897216754757642)
+2024-08-23 06:07:24,731 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-23 08:55:01,059 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-23 11:28:45,849 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-23 11:49:22,813 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 11:49:22,815 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 11:49:22,815 - No videos found or failed to fetch videos.
+2024-08-23 11:54:22,637 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 11:54:22,637 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 11:54:22,638 - No videos found or failed to fetch videos.
+2024-08-23 11:59:22,647 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 11:59:22,648 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 11:59:22,648 - No videos found or failed to fetch videos.
+2024-08-23 12:04:22,680 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:04:22,681 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:04:22,682 - No videos found or failed to fetch videos.
+2024-08-23 12:09:22,625 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:09:22,626 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:09:22,627 - No videos found or failed to fetch videos.
+2024-08-23 12:14:22,781 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:14:22,783 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:14:22,783 - No videos found or failed to fetch videos.
+2024-08-23 12:19:22,626 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:19:22,627 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:19:22,627 - No videos found or failed to fetch videos.
+2024-08-23 12:24:22,631 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:24:22,632 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:24:22,632 - No videos found or failed to fetch videos.
+2024-08-23 12:29:22,664 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:29:22,666 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:29:22,666 - No videos found or failed to fetch videos.
+2024-08-23 12:34:22,643 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:34:22,645 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:34:22,645 - No videos found or failed to fetch videos.
+2024-08-23 12:39:22,666 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:39:22,667 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:39:22,667 - No videos found or failed to fetch videos.
+2024-08-23 12:44:22,649 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:44:22,650 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:44:22,650 - No videos found or failed to fetch videos.
+2024-08-23 12:49:22,671 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:49:22,672 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:49:22,673 - No videos found or failed to fetch videos.
+2024-08-23 12:54:22,642 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:54:22,643 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:54:22,643 - No videos found or failed to fetch videos.
+2024-08-23 12:59:22,657 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 12:59:22,659 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 12:59:22,659 - No videos found or failed to fetch videos.
+2024-08-23 13:04:22,749 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:04:22,750 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:04:22,750 - No videos found or failed to fetch videos.
+2024-08-23 13:09:22,655 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:09:22,657 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:09:22,657 - No videos found or failed to fetch videos.
+2024-08-23 13:14:22,679 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:14:22,680 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:14:22,680 - No videos found or failed to fetch videos.
+2024-08-23 13:19:22,652 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:19:22,659 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:19:22,659 - No videos found or failed to fetch videos.
+2024-08-23 13:24:22,641 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:24:22,643 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:24:22,643 - No videos found or failed to fetch videos.
+2024-08-23 13:29:22,657 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:29:22,658 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:29:22,659 - No videos found or failed to fetch videos.
+2024-08-23 13:34:22,635 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:34:22,636 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:34:22,637 - No videos found or failed to fetch videos.
+2024-08-23 13:39:22,638 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:39:22,639 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:39:22,639 - No videos found or failed to fetch videos.
+2024-08-23 13:44:22,644 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:44:22,646 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:44:22,646 - No videos found or failed to fetch videos.
+2024-08-23 13:49:22,654 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:49:22,655 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:49:22,655 - No videos found or failed to fetch videos.
+2024-08-23 13:54:22,659 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:54:22,660 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:54:22,660 - No videos found or failed to fetch videos.
+2024-08-23 13:54:36,355 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-23 13:59:22,692 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 13:59:22,694 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 13:59:22,694 - No videos found or failed to fetch videos.
+2024-08-23 14:04:22,631 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:04:22,632 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:04:22,632 - No videos found or failed to fetch videos.
+2024-08-23 14:09:22,659 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:09:22,660 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:09:22,660 - No videos found or failed to fetch videos.
+2024-08-23 14:14:22,650 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:14:22,652 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:14:22,652 - No videos found or failed to fetch videos.
+2024-08-23 14:19:22,632 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:19:22,633 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:19:22,633 - No videos found or failed to fetch videos.
+2024-08-23 14:24:22,666 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:24:22,668 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:24:22,668 - No videos found or failed to fetch videos.
+2024-08-23 14:29:22,644 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:29:22,646 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:29:22,646 - No videos found or failed to fetch videos.
+2024-08-23 14:34:22,966 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:34:22,967 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:34:22,967 - No videos found or failed to fetch videos.
+2024-08-23 14:39:22,639 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:39:22,640 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:39:22,640 - No videos found or failed to fetch videos.
+2024-08-23 14:44:22,655 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:44:22,657 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:44:22,657 - No videos found or failed to fetch videos.
+2024-08-23 14:49:22,651 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:49:22,651 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:49:22,652 - No videos found or failed to fetch videos.
+2024-08-23 14:54:22,693 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:54:22,695 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:54:22,696 - No videos found or failed to fetch videos.
+2024-08-23 14:59:22,639 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 14:59:22,640 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 14:59:22,640 - No videos found or failed to fetch videos.
+2024-08-23 15:04:22,657 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:04:22,659 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:04:22,660 - No videos found or failed to fetch videos.
+2024-08-23 15:09:22,692 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:09:22,694 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:09:22,694 - No videos found or failed to fetch videos.
+2024-08-23 15:14:22,625 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:14:22,626 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:14:22,626 - No videos found or failed to fetch videos.
+2024-08-23 15:16:45,516 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-23 15:19:22,686 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:19:22,688 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:19:22,689 - No videos found or failed to fetch videos.
+2024-08-23 15:24:22,646 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:24:22,647 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:24:22,649 - No videos found or failed to fetch videos.
+2024-08-23 15:29:22,640 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:29:22,640 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:29:22,641 - No videos found or failed to fetch videos.
+2024-08-23 15:34:19,632 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-23 15:34:22,643 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:34:22,644 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:34:22,644 - No videos found or failed to fetch videos.
+2024-08-23 15:39:22,636 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:39:22,637 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:39:22,637 - No videos found or failed to fetch videos.
+2024-08-23 15:44:22,673 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:44:22,675 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:44:22,675 - No videos found or failed to fetch videos.
+2024-08-23 15:49:22,665 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:49:22,666 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:49:22,666 - No videos found or failed to fetch videos.
+2024-08-23 15:54:12,591 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-23 15:54:22,624 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:54:22,625 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:54:22,625 - No videos found or failed to fetch videos.
+2024-08-23 15:59:22,862 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 15:59:22,864 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 15:59:22,864 - No videos found or failed to fetch videos.
+2024-08-23 16:04:22,670 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:04:22,671 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:04:22,671 - No videos found or failed to fetch videos.
+2024-08-23 16:09:22,649 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:09:22,650 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:09:22,651 - No videos found or failed to fetch videos.
+2024-08-23 16:14:22,656 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:14:22,657 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:14:22,657 - No videos found or failed to fetch videos.
+2024-08-23 16:19:22,751 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:19:22,752 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:19:22,752 - No videos found or failed to fetch videos.
+2024-08-23 16:24:22,682 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:24:22,683 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:24:22,684 - No videos found or failed to fetch videos.
+2024-08-23 16:29:22,647 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:29:22,648 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:29:22,648 - No videos found or failed to fetch videos.
+2024-08-23 16:34:22,663 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:34:22,665 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:34:22,665 - No videos found or failed to fetch videos.
+2024-08-23 16:39:22,677 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:39:22,678 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:39:22,679 - No videos found or failed to fetch videos.
+2024-08-23 16:44:22,663 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:44:22,664 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:44:22,664 - No videos found or failed to fetch videos.
+2024-08-23 16:49:22,653 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:49:22,655 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:49:22,655 - No videos found or failed to fetch videos.
+2024-08-23 16:54:22,642 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:54:22,643 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:54:22,643 - No videos found or failed to fetch videos.
+2024-08-23 16:59:22,659 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 16:59:22,661 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 16:59:22,661 - No videos found or failed to fetch videos.
+2024-08-23 17:04:22,637 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:04:22,639 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:04:22,639 - No videos found or failed to fetch videos.
+2024-08-23 17:09:22,636 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:09:22,637 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:09:22,637 - No videos found or failed to fetch videos.
+2024-08-23 17:14:22,648 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:14:22,650 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:14:22,650 - No videos found or failed to fetch videos.
+2024-08-23 17:17:09,799 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-23 17:19:22,777 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:19:22,779 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:19:22,779 - No videos found or failed to fetch videos.
+2024-08-23 17:24:22,648 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:24:22,649 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:24:22,649 - No videos found or failed to fetch videos.
+2024-08-23 17:29:22,658 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:29:22,659 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:29:22,659 - No videos found or failed to fetch videos.
+2024-08-23 17:34:22,654 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:34:22,656 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:34:22,656 - No videos found or failed to fetch videos.
+2024-08-23 17:39:22,667 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:39:22,669 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:39:22,669 - No videos found or failed to fetch videos.
+2024-08-23 17:44:22,645 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:44:22,646 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:44:22,647 - No videos found or failed to fetch videos.
+2024-08-23 17:49:22,663 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:49:22,664 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:49:22,664 - No videos found or failed to fetch videos.
+2024-08-23 17:54:22,643 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:54:22,644 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:54:22,645 - No videos found or failed to fetch videos.
+2024-08-23 17:59:22,629 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 17:59:22,629 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 17:59:22,630 - No videos found or failed to fetch videos.
+2024-08-23 18:04:22,678 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:04:22,680 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:04:22,680 - No videos found or failed to fetch videos.
+2024-08-23 18:09:22,652 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:09:22,653 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:09:22,653 - No videos found or failed to fetch videos.
+2024-08-23 18:14:22,647 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:14:22,648 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:14:22,649 - No videos found or failed to fetch videos.
+2024-08-23 18:19:22,660 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:19:22,661 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:19:22,661 - No videos found or failed to fetch videos.
+2024-08-23 18:24:22,648 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:24:22,649 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:24:22,649 - No videos found or failed to fetch videos.
+2024-08-23 18:29:22,652 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:29:22,653 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:29:22,654 - No videos found or failed to fetch videos.
+2024-08-23 18:34:22,638 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:34:22,639 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:34:22,640 - No videos found or failed to fetch videos.
+2024-08-23 18:39:22,646 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:39:22,647 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:39:22,647 - No videos found or failed to fetch videos.
+2024-08-23 18:44:22,688 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:44:22,691 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:44:22,691 - No videos found or failed to fetch videos.
+2024-08-23 18:49:22,628 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:49:22,629 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:49:22,630 - No videos found or failed to fetch videos.
+2024-08-23 18:54:22,669 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:54:22,670 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:54:22,671 - No videos found or failed to fetch videos.
+2024-08-23 18:55:13,014 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-23 18:59:22,638 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 18:59:22,639 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 18:59:22,640 - No videos found or failed to fetch videos.
+2024-08-23 19:04:22,631 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:04:22,632 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:04:22,633 - No videos found or failed to fetch videos.
+2024-08-23 19:09:22,678 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:09:22,680 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:09:22,680 - No videos found or failed to fetch videos.
+2024-08-23 19:14:22,680 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:14:22,681 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:14:22,681 - No videos found or failed to fetch videos.
+2024-08-23 19:19:22,645 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:19:22,647 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:19:22,647 - No videos found or failed to fetch videos.
+2024-08-23 19:24:22,651 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:24:22,652 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:24:22,652 - No videos found or failed to fetch videos.
+2024-08-23 19:29:22,650 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:29:22,650 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:29:22,651 - No videos found or failed to fetch videos.
+2024-08-23 19:34:22,696 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:34:22,698 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:34:22,698 - No videos found or failed to fetch videos.
+2024-08-23 19:39:22,634 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:39:22,634 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:39:22,635 - No videos found or failed to fetch videos.
+2024-08-23 19:44:22,980 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:44:22,982 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:44:22,982 - No videos found or failed to fetch videos.
+2024-08-23 19:49:22,669 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:49:22,670 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:49:22,671 - No videos found or failed to fetch videos.
+2024-08-23 19:54:22,635 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:54:22,636 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:54:22,636 - No videos found or failed to fetch videos.
+2024-08-23 19:59:22,651 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 19:59:22,653 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 19:59:22,653 - No videos found or failed to fetch videos.
+2024-08-23 20:04:22,645 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:04:22,646 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:04:22,647 - No videos found or failed to fetch videos.
+2024-08-23 20:09:22,831 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:09:22,833 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:09:22,833 - No videos found or failed to fetch videos.
+2024-08-23 20:14:22,655 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:14:22,657 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:14:22,657 - No videos found or failed to fetch videos.
+2024-08-23 20:19:22,654 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:19:22,654 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:19:22,655 - No videos found or failed to fetch videos.
+2024-08-23 20:24:22,675 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:24:22,677 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:24:22,677 - No videos found or failed to fetch videos.
+2024-08-23 20:29:22,677 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:29:22,678 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:29:22,679 - No videos found or failed to fetch videos.
+2024-08-23 20:34:22,640 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:34:22,641 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:34:22,641 - No videos found or failed to fetch videos.
+2024-08-23 20:37:15,095 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-23 20:39:22,636 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:39:22,637 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:39:22,638 - No videos found or failed to fetch videos.
+2024-08-23 20:44:22,659 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:44:22,660 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:44:22,662 - No videos found or failed to fetch videos.
+2024-08-23 20:49:22,653 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:49:22,654 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:49:22,655 - No videos found or failed to fetch videos.
+2024-08-23 20:54:22,679 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:54:22,680 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:54:22,680 - No videos found or failed to fetch videos.
+2024-08-23 20:59:22,739 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 20:59:22,740 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 20:59:22,740 - No videos found or failed to fetch videos.
+2024-08-23 21:04:22,628 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:04:22,629 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:04:22,630 - No videos found or failed to fetch videos.
+2024-08-23 21:09:22,668 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:09:22,669 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:09:22,670 - No videos found or failed to fetch videos.
+2024-08-23 21:14:22,667 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:14:22,668 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:14:22,668 - No videos found or failed to fetch videos.
+2024-08-23 21:19:22,656 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:19:22,658 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:19:22,658 - No videos found or failed to fetch videos.
+2024-08-23 21:24:22,654 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:24:22,656 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:24:22,656 - No videos found or failed to fetch videos.
+2024-08-23 21:29:22,661 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:29:22,664 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:29:22,665 - No videos found or failed to fetch videos.
+2024-08-23 21:34:22,629 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:34:22,630 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:34:22,630 - No videos found or failed to fetch videos.
+2024-08-23 21:39:22,648 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:39:22,649 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:39:22,649 - No videos found or failed to fetch videos.
+2024-08-23 21:44:22,654 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:44:22,655 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:44:22,656 - No videos found or failed to fetch videos.
+2024-08-23 21:49:22,662 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:49:22,663 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:49:22,663 - No videos found or failed to fetch videos.
+2024-08-23 21:54:22,674 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:54:22,676 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:54:22,676 - No videos found or failed to fetch videos.
+2024-08-23 21:59:22,650 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 21:59:22,651 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 21:59:22,651 - No videos found or failed to fetch videos.
+2024-08-23 22:04:22,769 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:04:22,771 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:04:22,771 - No videos found or failed to fetch videos.
+2024-08-23 22:09:22,664 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:09:22,665 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:09:22,665 - No videos found or failed to fetch videos.
+2024-08-23 22:14:22,762 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:14:22,764 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:14:22,765 - No videos found or failed to fetch videos.
+2024-08-23 22:19:22,644 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:19:22,645 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:19:22,645 - No videos found or failed to fetch videos.
+2024-08-23 22:24:22,662 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:24:22,663 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:24:22,663 - No videos found or failed to fetch videos.
+2024-08-23 22:29:22,745 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:29:22,746 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:29:22,746 - No videos found or failed to fetch videos.
+2024-08-23 22:34:22,630 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:34:22,631 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:34:22,631 - No videos found or failed to fetch videos.
+2024-08-23 22:39:22,779 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:39:22,781 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:39:22,781 - No videos found or failed to fetch videos.
+2024-08-23 22:44:22,661 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:44:22,662 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:44:22,662 - No videos found or failed to fetch videos.
+2024-08-23 22:49:22,645 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:49:22,646 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:49:22,647 - No videos found or failed to fetch videos.
+2024-08-23 22:54:22,676 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:54:22,677 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:54:22,677 - No videos found or failed to fetch videos.
+2024-08-23 22:59:22,675 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 22:59:22,676 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 22:59:22,676 - No videos found or failed to fetch videos.
+2024-08-23 23:04:22,681 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:04:22,683 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:04:22,683 - No videos found or failed to fetch videos.
+2024-08-23 23:09:22,618 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:09:22,620 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:09:22,620 - No videos found or failed to fetch videos.
+2024-08-23 23:14:22,662 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:14:22,664 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:14:22,664 - No videos found or failed to fetch videos.
+2024-08-23 23:19:22,663 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:19:22,664 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:19:22,665 - No videos found or failed to fetch videos.
+2024-08-23 23:24:22,624 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:24:22,625 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:24:22,625 - No videos found or failed to fetch videos.
+2024-08-23 23:29:22,661 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:29:22,663 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:29:22,663 - No videos found or failed to fetch videos.
+2024-08-23 23:34:22,646 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:34:22,647 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:34:22,648 - No videos found or failed to fetch videos.
+2024-08-23 23:39:22,686 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:39:22,687 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:39:22,688 - No videos found or failed to fetch videos.
+2024-08-23 23:44:22,639 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:44:22,641 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:44:22,641 - No videos found or failed to fetch videos.
+2024-08-23 23:49:22,638 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:49:22,639 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:49:22,639 - No videos found or failed to fetch videos.
+2024-08-23 23:54:22,752 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:54:22,755 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:54:22,755 - No videos found or failed to fetch videos.
+2024-08-23 23:59:22,641 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-23 23:59:22,642 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-23 23:59:22,642 - No videos found or failed to fetch videos.
+2024-08-24 00:04:22,648 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:04:22,649 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:04:22,649 - No videos found or failed to fetch videos.
+2024-08-24 00:09:22,659 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:09:22,661 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:09:22,661 - No videos found or failed to fetch videos.
+2024-08-24 00:14:22,655 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:14:22,656 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:14:22,657 - No videos found or failed to fetch videos.
+2024-08-24 00:19:22,647 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:19:22,648 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:19:22,649 - No videos found or failed to fetch videos.
+2024-08-24 00:24:22,657 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:24:22,659 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:24:22,660 - No videos found or failed to fetch videos.
+2024-08-24 00:26:46,618 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-24 00:29:22,642 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:29:22,643 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:29:22,643 - No videos found or failed to fetch videos.
+2024-08-24 00:34:22,658 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:34:22,660 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:34:22,661 - No videos found or failed to fetch videos.
+2024-08-24 00:39:22,621 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:39:22,622 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:39:22,622 - No videos found or failed to fetch videos.
+2024-08-24 00:44:22,656 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:44:22,657 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:44:22,658 - No videos found or failed to fetch videos.
+2024-08-24 00:49:22,669 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:49:22,670 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:49:22,670 - No videos found or failed to fetch videos.
+2024-08-24 00:54:22,623 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:54:22,624 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:54:22,624 - No videos found or failed to fetch videos.
+2024-08-24 00:59:22,652 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 00:59:22,654 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 00:59:22,655 - No videos found or failed to fetch videos.
+2024-08-24 01:04:22,636 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:04:22,637 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:04:22,637 - No videos found or failed to fetch videos.
+2024-08-24 01:09:22,622 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:09:22,623 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:09:22,623 - No videos found or failed to fetch videos.
+2024-08-24 01:14:22,635 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:14:22,637 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:14:22,637 - No videos found or failed to fetch videos.
+2024-08-24 01:19:22,622 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:19:22,622 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:19:22,623 - No videos found or failed to fetch videos.
+2024-08-24 01:24:22,651 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:24:22,653 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:24:22,653 - No videos found or failed to fetch videos.
+2024-08-24 01:29:22,628 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:29:22,629 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:29:22,629 - No videos found or failed to fetch videos.
+2024-08-24 01:34:22,633 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:34:22,634 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:34:22,634 - No videos found or failed to fetch videos.
+2024-08-24 01:39:22,634 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:39:22,636 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:39:22,636 - No videos found or failed to fetch videos.
+2024-08-24 01:39:22,794 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-24 01:44:22,629 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:44:22,630 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:44:22,630 - No videos found or failed to fetch videos.
+2024-08-24 01:49:22,652 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:49:22,653 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:49:22,654 - No videos found or failed to fetch videos.
+2024-08-24 01:54:22,652 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:54:22,653 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:54:22,653 - No videos found or failed to fetch videos.
+2024-08-24 01:59:22,623 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 01:59:22,624 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 01:59:22,624 - No videos found or failed to fetch videos.
+2024-08-24 02:04:22,656 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:04:22,658 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:04:22,659 - No videos found or failed to fetch videos.
+2024-08-24 02:09:22,623 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:09:22,624 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:09:22,624 - No videos found or failed to fetch videos.
+2024-08-24 02:14:22,622 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:14:22,623 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:14:22,624 - No videos found or failed to fetch videos.
+2024-08-24 02:19:22,639 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:19:22,643 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:19:22,643 - No videos found or failed to fetch videos.
+2024-08-24 02:24:22,652 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:24:22,654 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:24:22,654 - No videos found or failed to fetch videos.
+2024-08-24 02:29:22,620 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:29:22,621 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:29:22,621 - No videos found or failed to fetch videos.
+2024-08-24 02:34:22,710 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:34:22,712 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:34:22,712 - No videos found or failed to fetch videos.
+2024-08-24 02:39:22,630 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:39:22,631 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:39:22,632 - No videos found or failed to fetch videos.
+2024-08-24 02:44:22,970 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:44:22,971 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:44:22,971 - No videos found or failed to fetch videos.
+2024-08-24 02:49:22,681 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:49:22,682 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:49:22,683 - No videos found or failed to fetch videos.
+2024-08-24 02:54:22,844 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:54:22,844 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:54:22,845 - No videos found or failed to fetch videos.
+2024-08-24 02:59:22,649 - Encountered 403 Forbidden with reason "quotaExceeded"
+2024-08-24 02:59:22,650 - Error fetching videos: <HttpError 403 when requesting https://youtube.googleapis.com/youtube/v3/search?part=snippet&channelId=UCVa9yLE2Gf5uUAkXs_ELrQQ&order=date&maxResults=50&key=AIzaSyBPgOpwK_jUiVmFsdS_68N6tG2b1eETBlU&alt=json returned "The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.". Details: "[{'message': 'The request cannot be completed because you have exceeded your <a href="/youtube/v3/getting-started#quota">quota</a>.', 'domain': 'youtube.quota', 'reason': 'quotaExceeded'}]">
+2024-08-24 02:59:22,651 - No videos found or failed to fetch videos.
+2024-08-24 03:27:27,585 - Shard ID None has successfully RESUMED session b5c9ab949fe1af46af634189fa2a3fe8.
+2024-08-24 05:12:31,625 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,640 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,641 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,642 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,648 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,649 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,653 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,658 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,660 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,661 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,662 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,663 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,664 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,665 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,666 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,667 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,668 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,669 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,670 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,671 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,672 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,673 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,674 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,675 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,676 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,677 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,678 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,680 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,681 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,682 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,683 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,684 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,685 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,685 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,686 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,687 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,688 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,689 - Exception in callback None()
+handle: <Handle>
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+TypeError: 'NoneType' object is not callable
+2024-08-24 05:12:31,788 - Ignoring exception in on_command_error
+Traceback (most recent call last):
+  File "/home/container/.local/lib/python3.12/site-packages/discord/client.py", line 449, in _run_event
+    await coro(*args, **kwargs)
+  File "/home/container/bot.py", line 920, in on_command_error
+    await ctx.send(f'An error occurred: {str(error)}')
+  File "/home/container/.local/lib/python3.12/site-packages/discord/ext/commands/context.py", line 1039, in send
+    return await super().send(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.12/site-packages/discord/abc.py", line 1618, in send
+    data = await state.http.send_message(channel.id, params=params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/container/.local/lib/python3.12/site-packages/discord/http.py", line 694, in request
+    raise HTTPException(response, data)
+discord.errors.HTTPException: 429 Too Many Requests (error code: 0): You are being blocked from accessing our API temporarily due to exceeding our rate limits frequently. Please read our docs at https://discord.com/developers/docs/topics/rate-limits to prevent this moving forward.
+2024-08-24 05:23:43,283 - file_cache is only supported with oauth2client<4.0.0
+2024-08-24 05:23:43,316 - logging in using static token
+2024-08-24 05:23:45,478 - Shard ID None has connected to Gateway (Session ID: e7c58c5c0578954400a2ca553deca223).
+2024-08-24 05:26:55,969 - file_cache is only supported with oauth2client<4.0.0
+2024-08-24 05:26:56,001 - logging in using static token
+2024-08-24 05:26:58,162 - Shard ID None has connected to Gateway (Session ID: c98331ddfe5a0634b47501a1cd1d3bf2).
+2024-08-24 05:41:37,551 - Connecting to voice...
+2024-08-24 05:41:37,553 - Starting voice handshake... (connection attempt 1)
+2024-08-24 05:41:37,978 - Voice handshake complete. Endpoint found: hongkong11100.discord.media
+2024-08-24 05:41:39,994 - Voice connection complete.
+2024-08-24 05:42:01,171 - The voice handshake is being terminated for Channel ID 1056897219401371793 (Guild ID 1056897216754757642)
+2024-08-24 06:36:54,831 - file_cache is only supported with oauth2client<4.0.0
+2024-08-24 06:36:54,878 - logging in using static token
+2024-08-24 06:36:56,947 - Shard ID None has connected to Gateway (Session ID: f2d29a0e937631c7bf862176515aad35).
