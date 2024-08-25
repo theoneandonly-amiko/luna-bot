@@ -131,7 +131,7 @@ class Music(commands.Cog):
 
         async with ctx.typing():
             player = await YTDLSource.from_query(query, loop=self.bot.loop)
-            player.volume = volume_level  # Set the volume
+            player.volume = self.volume_level  # Set the volume
             self.queue.append(player)
 
             if not ctx.voice_client.is_playing():
@@ -224,12 +224,11 @@ class Music(commands.Cog):
     @commands.command(name='volume_up', help='Increases the volume by 10%')
     
     async def volume_up(self, ctx):
-        global volume_level
-        if volume_level < 1.0:
-            volume_level = min(volume_level + 0.1, 1.0)
+        if self.volume_level < 1.0:
+            self.volume_level = min(self.volume_level + 0.1, 1.0)
             if current_player:
-                current_player.volume = volume_level
-            embed = discord.Embed(title="Volume Up", description=f'Volume increased to {int(volume_level * 100)}%', color=discord.Color.green())
+                current_player.volume = self.volume_level
+            embed = discord.Embed(title="Volume Up", description=f'Volume increased to {int(self.volume_level * 100)}%', color=discord.Color.green())
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(title="Volume", description='Volume is already at maximum.', color=discord.Color.orange())
@@ -238,12 +237,11 @@ class Music(commands.Cog):
     @commands.command(name='volume_down', help='Decreases the volume by 10%')
     
     async def volume_down(self, ctx):
-        global volume_level
-        if volume_level > 0.0:
-            volume_level = max(volume_level - 0.1, 0.0)
+        if self.volume_level > 0.0:
+            self.volume_level = max(self.volume_level - 0.1, 0.0)
             if current_player:
-                current_player.volume = volume_level
-            embed = discord.Embed(title="Volume Down", description=f'Volume decreased to {int(volume_level * 100)}%', color=discord.Color.red())
+                current_player.volume = self.volume_level
+            embed = discord.Embed(title="Volume Down", description=f'Volume decreased to {int(self.volume_level * 100)}%', color=discord.Color.red())
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(title="Volume", description='Volume is already at minimum.', color=discord.Color.orange())
