@@ -7,7 +7,7 @@ class Help(commands.Cog):
     # ================= Help Categories =======================
 
 
-    async def help(self, ctx, command=None):
+    async def list(self, ctx, command=None):
         if command:
             return
         embed = discord.Embed(title="Help - Commands List", color=discord.Color.dark_purple())
