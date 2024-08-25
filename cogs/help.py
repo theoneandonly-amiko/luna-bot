@@ -4,11 +4,12 @@ from discord.ext import commands
 class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.bot.help_command = None
     # ================= Help Categories =======================
 
-    @commands.command(name='help')
-    async def help(self, ctx):
+
+    async def help(self, ctx, command=None):
+        if command:
+            return
         embed = discord.Embed(title="Help - Commands List", color=discord.Color.dark_purple())
 
         embed.add_field(name="Command Prefix: &", value=("Needed help, are ya?"))
@@ -51,12 +52,12 @@ class Help(commands.Cog):
         embed.add_field(name="Miscellaneous", value=(
             "`&usercount` - *Let you know how many members are in the current server.*\n"
         	"`&ticket` - Create a ticket to send a request for channel creation."), inline=False)
-        await ctx.send(embed=embed)
+        await ctx.reply(embed=embed)
 
     # Command to show developer features
     @commands.command(name='dev')
     async def dev(self, ctx):
-        if ctx.author.id != DEV_USER_ID:
+        if ctx.author.id != self.bot.DEV_USER_ID:
             await ctx.send("You do not have permission to use this command.")
             return
 

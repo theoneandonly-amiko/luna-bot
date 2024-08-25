@@ -1,4 +1,3 @@
-import asyncio
 import os
 from dotenv import load_dotenv
 from core import LunaBot
@@ -13,7 +12,7 @@ lunaBot = LunaBot(YOUTUBE_API_KEY, YOUTUBE_CHANNEL_ID, DEV_USER_ID)
  # ================= CHECK BLACKLIST =======================
 @lunaBot.check
 async def check_blacklist(ctx):
-    if ctx.author.id in blacklisted_users:
+    if ctx.author.id in lunaBot.blacklisted_users:
         await ctx.send("You are currently blacklisted and cannot use this command.")
         return False
     return True

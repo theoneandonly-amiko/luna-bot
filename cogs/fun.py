@@ -1,4 +1,5 @@
 import discord
+import random
 from discord.ext import commands
 
 class Fun(commands.Cog):
@@ -9,7 +10,7 @@ class Fun(commands.Cog):
     # Pet command
     @commands.command(name='pet')
     
-    async def pet(self, ctx, *users: discord.User):
+    async def pet(self, ctx: commands.Context, *users: discord.User):
         if not users:
             await ctx.send("Please mention at least one user to pet.")
             return
@@ -232,7 +233,7 @@ class Fun(commands.Cog):
     # Urban Dictionary
     @commands.command(name='urban', help='Searches Urban Dictionary for a definition.')
     
-    async def urban(self, ctx, *, term: str = None):
+    async def urban(self, ctx, *, term: str | None = None):
         if term is None:
             await ctx.send("What are you looking for? I cannot see thin air.")
             return

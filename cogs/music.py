@@ -118,7 +118,7 @@ class Music(commands.Cog):
     @commands.command(name='play', help='Joins the voice channel and plays a song')
     async def play(self, ctx, *, query):
         self.last_channel = ctx.channel  
-        await self.ensure_voice(self, ctx)
+        await self.ensure_voice(ctx)
 
         if streaming_mode:
             embed = discord.Embed(title="Streaming Mode", description="Cannot add songs while in 24/7 streaming mode.", color=discord.Color.red())

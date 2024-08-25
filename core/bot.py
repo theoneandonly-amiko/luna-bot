@@ -1,18 +1,11 @@
 import os
-import time
 import random
-import requests
-import asyncio
 import logging
-import json
-import yt_dlp
-import re
 import discord
 import logging
 
 from discord.ext import commands, tasks
 from googleapiclient.discovery import build
-from dotenv import load_dotenv
 
 from .constants import keyword_responses
 from .utils import get_all_videos
@@ -34,6 +27,7 @@ class LunaBot(commands.Bot):
             command_prefix = "&",
             intents=discord.Intents.all(),
             case_insensitive=True,
+            help_command=None
         )
 
         
@@ -95,4 +89,4 @@ class LunaBot(commands.Bot):
                 await message.channel.send(f'{response}')
                 break  # Exit loop after sending a response
     
-        await bot.process_commands(message)  # "Again, please don't stop working", Amiko said.
+        await self.process_commands(message)  # "Again, please don't stop working", Amiko said.

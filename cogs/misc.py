@@ -9,7 +9,6 @@ class Misc(commands.Cog):
         self.bot = bot
 
     @commands.command(name='usercount', help='Let you know how many members are in the current server.')
-    
     @commands.cooldown(1, 60, BucketType.user)  # 1 use per 60 seconds per user
     async def usercount(self, ctx):
         guild = ctx.guild  # Get the server (guild) the command was issued in
