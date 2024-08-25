@@ -6,7 +6,12 @@ from discord.ext import commands
 import yt_dlp
 
 # ================ Music Function ======================
-
+queue = []
+IDLE_TIMEOUT = 30
+current_player = None
+volume_level = 0.8  # Default volume level
+last_channel = None # Store the last active channel
+streaming_mode = False
 
 class YTDLSource(discord.PCMVolumeTransformer):
     def __init__(self, source, *, data, volume=0.5):
