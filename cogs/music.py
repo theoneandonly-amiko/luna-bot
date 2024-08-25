@@ -280,8 +280,7 @@ class Music(commands.Cog):
     @commands.command(name='stream247', help='Starts streaming the chosen genre 24/7')
     
     async def start_stream(self, ctx, genre: str):
-        global streaming_mode
-        streaming_mode = True
+        self.streaming_mode = True
         await self.ensure_voice(ctx)
 
         genre = genre.lower()
@@ -309,15 +308,14 @@ class Music(commands.Cog):
 
         await play_next_video()  # Start playing the first video in the playlist
 
-        while streaming_mode:
+        while self.streaming_mode:
             if not ctx.voice_client or not ctx.voice_client.is_playing():
                 await play_next_video()
             await asyncio.sleep(5)  # Check every 5 seconds if the stream has stopped
 
     @commands.command(name='stop247', help='Stops the 24/7 streaming.')
     async def stop_streaming(self, ctx):
-        global streaming_mode
-        streaming_mode = False
+        self.streaming_mode = False
 
         if ctx.voice_client and ctx.voice_client.is_playing():
             ctx.voice_client.stop()  # Stop the current streaming video
