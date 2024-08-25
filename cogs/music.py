@@ -124,7 +124,7 @@ class Music(commands.Cog):
         self.last_channel = ctx.channel  
         await self.ensure_voice(ctx)
 
-        if streaming_mode:
+        if self.streaming_mode:
             embed = discord.Embed(title="Streaming Mode", description="Cannot add songs while in 24/7 streaming mode.", color=discord.Color.red())
             await ctx.send(embed=embed)
             return
