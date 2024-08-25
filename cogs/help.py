@@ -6,7 +6,7 @@ class Help(commands.Cog):
         self.bot = bot
     # ================= Help Categories =======================
 
-
+    @commands.command(name='list')
     async def list(self, ctx, command=None):
 
         embed = discord.Embed(title="Help - Commands List", color=discord.Color.dark_purple())
