@@ -9,7 +9,7 @@ YOUTUBE_API_KEY = os.getenv('YOUTUBE_API_KEY')
 YOUTUBE_CHANNEL_ID = os.getenv('YOUTUBE_CHANNEL_ID')
 DEV_USER_ID = int(os.getenv('DEV_USER_ID'))
 
-lunaBot = poLunaBot(YOUTUBE_API_KEY, YOUTUBE_CHANNEL_ID, DEV_USER_ID)
+lunaBot = LunaBot(YOUTUBE_API_KEY, YOUTUBE_CHANNEL_ID, DEV_USER_ID)
  # ================= CHECK BLACKLIST =======================
 @lunaBot.check
 async def check_blacklist(ctx):
