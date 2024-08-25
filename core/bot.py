@@ -27,16 +27,18 @@ class LunaBot(commands.Bot):
             command_prefix = "&",
             intents=discord.Intents.all(),
             case_insensitive=True,
-            help_command=None
+            help_command=None,
+            owner_ids=[self.DEV_USER_ID, 521226389559443461] # owner ids
         )
-
-        
         
 
 
     async def on_ready(self):
         print(f"{self.user} is connected and ready to use.")
         self.update_presence.start()
+
+        # load jiskau
+        await self.load_extension("jishaku")
 
         # load cogs
         for filename in os.listdir("./cogs/"):
