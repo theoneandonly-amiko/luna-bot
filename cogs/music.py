@@ -93,7 +93,7 @@ class Music(commands.Cog):
         self.last_channel = None # Store the last active channel
         self.streaming_mode = False
         self.genre_urls = {
-            'lofi': ['https://www..com/watch?v=jfKfPfyJRdk'],
+            'lofi': ['https://youtu.be/MadEqVeRFuM?si=bujQinAYu950qYuv', 'https://youtu.be/Nyx6SBixRE8?si=6w8lhmLQltm1ANXR', 'https://youtu.be/i43tkaTXtwI?si=j4Fxq08tqtrladuM', 'https://youtu.be/1fueZCTYkpA?si=OdkyV5j1pA38avX1'],
 
             'deep_house': ['https://youtu.be/cnVPm1dGQJc?si=5g08aZZPQl5c2mtn', 'https://youtu.be/DsAd2Brhr-M?si=mFBVQn77MpqvsrIj', 'https://youtu.be/ZiyYqg75v7Y?si=hGyWqzuRYNnbU6if', 'https://youtu.be/B-rrm46WGhE?si=hi23i1aLSs7GUmHG'],
 
