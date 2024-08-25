@@ -1,3 +1,5 @@
+import logging
+
 # Function to get the latest video details from a channel
 def get_all_videos(channel_id, youtube):
     try:
