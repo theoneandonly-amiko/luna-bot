@@ -6,53 +6,90 @@ class Help(commands.Cog):
         self.bot = bot
     # ================= Help Categories =======================
 
-    @commands.command(name='list')
-    async def list(self, ctx, command=None):
+class HelpDropdown(Select):
+    def __init__(self):
+        options = [
+            discord.SelectOption(label="Fun Commands", description="List of fun commands"),
+            discord.SelectOption(label="Moderation Commands", description="List of moderation commands"),
+            discord.SelectOption(label="Music Commands", description="List of music commands"),
+            discord.SelectOption(label="Miscellaneous", description="List of miscellaneous commands")
+        ]
+        super().__init__(placeholder="Select a category...", min_values=1, max_values=1, options=options)
 
-        embed = discord.Embed(title="Help - Commands List", color=discord.Color.dark_purple())
+    async def callback(self, interaction: discord.Interaction):
+        category = self.values[0]
+        embed = discord.Embed(title=f"Help - {category}", color=discord.Color.dark_purple())
 
-        embed.add_field(name="Command Prefix: &", value=("Needed help, are ya?"))
-        # Fun Commands
-        embed.add_field(name="**Fun Commands**", value=(
-            "`&pet @user [@optionaluser]` - *Pet a user and send a cute gif.*\n"
-            "`&grab @user [@optionaluser]` - *Grab a user and send a funny gif.*\n"
-            "`&compliment @user` - *Send a compliment to a user. You can do this to yourself too, because why not?*\n"
-            "`&battle @user1 @user2` - *Start a virtual battle between 2 \"hot tempered\" users.*\n"
-            "`&roll` - *Roll a dice, of course.*\n"
-            "`&choose [option1] [option2]` - *Choose an option for you.*\n"
-            "`&8ball [question]` - *Consult the magic 8-ball to answer your question.*\n"
-            "`&flip` - *Flip a coin. Useful when you making a bet against someone, hehe.*\n"
-            "`&urban [term]` - *Be your 24/7 dictionary. Feel free to look for any terms you don\'t know.*\n"
-            "`&cat` - *Measures how much you look like a cat. 🐱*\n"
-            "`&kurin` - *Measures how much \"hyperkuru\" you currently are.*\n"
-        ), inline=False)
-        embed.add_field(name="**Moderation Commands**", value=(
-            "`&mute [userID] [reason]` - *Mute a user.*\n"
-            "`&unmute [userID]` - *Unmute a user.*\n"
-            "`&kick [userID]` - *Kick a user out.*\n"
-            "`&ban [userID]` - *Ban a user.*\n"
-            "`&muterole_create` - *Create mute role if not existed. This will override mute permissions and role to all categories and channels.*\n"
-            "`&clear [all/number]` - *Delete messages.*\n"
-        ), inline=False)
-        embed.add_field(name="Music Commands", value=(
-            "`&play [Youtube Video URL or Search Query]` - *Join user connected voice channel and play music from given URL.*\n"
-            "`&pause` - *This will pause the song.*\n"
-            "`&resume` - *Continue playing the song.*\n"
-            '`&stop` - *Clear the queue and disconnect from current voice channel.*\n'
-            "`&queue` - *Display the current song queue.*\n"
-            "`&skip` - *Skip the current song.*\n"
-            "`&volume_up` - *Increase volume by 10%.*\n"
-            "`&volume_down` - *Decrease volume by 10%.*\n"
-            "`&clear_queue` - Clear the entire music queue.\n"
-            "`&disconnect` - *Disconnect the bot from the voice channel.*\n"
-            "`&stream247 [deephouse/lofi/hardstyle]` - *Enters 24/7 mode and start streaming/playing defined genres.*\n"
-            "`&stop247` - *Similar to how `stop` command works.*\n"
-        ), inline=False)
-        embed.add_field(name="Miscellaneous", value=(
-            "`&usercount` - *Let you know how many members are in the current server.*\n"
-        	"`&ticket` - Create a ticket to send a request for channel creation."), inline=False)
-        await ctx.send(embed=embed)
+        if category == "Fun Commands":
+            embed.add_field(name="**Fun Commands**", value=(
+                "`!pet @user [@optionaluser]` - *Pet a user and send a cute gif.*\n"
+                "`!grab @user [@optionaluser]` - *Grab a user and send a funny gif.*\n"
+                "`!compliment @user` - *Send a compliment to a user. You can do this to yourself too, because why not?*\n"
+                "`!battle @user1 @user2` - *Start a virtual battle between 2 \"hot tempered\" users.*\n"
+                "`!roll` - *Roll a dice, of course.*\n"
+                "`!choose [option1] [option2]` - *Choose an option for you.*\n"
+                "`!8ball [question]` - *Consult the magic 8-ball to answer your question.*\n"
+                "`!flip` - *Flip a coin. Useful when you making a bet against someone, hehe.*\n"
+                "`!urban [term]` - *Be your 24/7 dictionary. Feel free to look for any terms you don\'t know.*\n"
+                "`!cat` - *Measures how much you look like a cat. 🐱*\n"
+                "`!kurin` - *Measures how much \"hyperkuru\" you currently are.*\n"
+            ), inline=False)
+        elif category == "Moderation Commands":
+            embed.add_field(name="**Moderation Commands**", value=(
+                "`!mute [userID] [reason]` - *Mute a user.*\n"
+                "`!unmute [userID]` - *Unmute a user.*\n"
+                "`!kick [userID]` - *Kick a user out.*\n"
+                "`!ban [userID]` - *Ban a user.*\n"
+                "`!muterole_create` - *Create mute role if not existed. This will override mute permissions and role to all categories and channels.*\n"
+                "`!clear [all/number]` - *Delete messages.*\n"
+            ), inline=False)
+        elif category == "Music Commands":
+            embed.add_field(name="Music Commands - Beta (yes)", value=(
+                "`!play [Youtube Video URL or Search Query]` - *Join user connected voice channel and play music from given URL.*\n"
+                "`!pause` - *This will pause the song.*\n"
+                "`!resume` - *Continue playing the song.*\n"
+                '`!stop` - *Clear the queue and disconnect from current voice channel.*\n'
+                "`!queue` - *Display the current song queue.*\n"
+                "`!skip` - *Skip the current song.*\n"
+                "`!volume_up` - *Increase volume by 10%.*\n"
+                "`!volume_down` - *Decrease volume by 10%.*\n"
+                "`!clear_queue` - Clear the entire music queue.\n"
+                "`!disconnect` - *Disconnect the bot from the voice channel.*\n"
+                "`!24/7 [deephouse/lofi/hardstyle]` - *Enters 24/7 mode and start streaming/playing defined genres.*\n"
+                "`!stop_24/7` - *Similar to how `stop` command works.*\n"
+            ), inline=False)
+        elif category == "Miscellaneous":
+            embed.add_field(name="Miscellaneous", value=(
+                "`!usercount` - *Let you know how many members are in the current server.*\n"
+                "`!ticket` - *Create a ticket to send a request for channel creation.*\n"
+                "`!help` - *Show this help message*"
+            ), inline=False)
 
+        await interaction.response.edit_message(embed=embed)
+
+class HelpView(View):
+    def __init__(self):
+        super().__init__(timeout=60)
+        self.add_item(HelpDropdown())
+
+    async def on_timeout(self):
+        # Find the message and delete it after the timeout
+        channel = self.ctx.channel
+        async for message in channel.history(limit=100):
+            if message.author == self.ctx.me and message.embeds:
+                await message.delete()
+                break
+
+class HelpCommand(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command(name='help', help='Shows this help message')
+    async def help(self, ctx):
+        embed = discord.Embed(title="Help - Select a Category", color=discord.Color.dark_purple())
+        embed.description = "Use the dropdown menu to select a category for help."
+        view = HelpView()
+        await ctx.send(embed=embed, view=view)
     # Command to show developer features
     @commands.command(name='dev')
     async def dev(self, ctx):
