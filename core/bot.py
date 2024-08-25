@@ -76,7 +76,7 @@ class LunaBot(commands.Bot):
         logging.info(f"Command '{command_name}' invoked by {user} in guild '{guild}' in channel '{channel}'.")
 
     # Log errors
-    async def on_command_error(sefl, ctx, error):
+    async def on_command_error(self, ctx, error):
         logging.error(f"Error in command '{ctx.command}' by {ctx.author}: {error}")
     
 
