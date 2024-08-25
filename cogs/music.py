@@ -226,8 +226,8 @@ class Music(commands.Cog):
     async def volume_up(self, ctx):
         if self.volume_level < 1.0:
             self.volume_level = min(self.volume_level + 0.1, 1.0)
-            if current_player:
-                current_player.volume = self.volume_level
+            if self.current_player:
+                self.current_player.volume = self.volume_level
             embed = discord.Embed(title="Volume Up", description=f'Volume increased to {int(self.volume_level * 100)}%', color=discord.Color.green())
             await ctx.send(embed=embed)
         else:
@@ -239,8 +239,8 @@ class Music(commands.Cog):
     async def volume_down(self, ctx):
         if self.volume_level > 0.0:
             self.volume_level = max(self.volume_level - 0.1, 0.0)
-            if current_player:
-                current_player.volume = self.volume_level
+            if self.current_player:
+                self.current_player.volume = self.volume_level
             embed = discord.Embed(title="Volume Down", description=f'Volume decreased to {int(self.volume_level * 100)}%', color=discord.Color.red())
             await ctx.send(embed=embed)
         else:
@@ -268,9 +268,8 @@ class Music(commands.Cog):
 
             # Clear the queue and reset variables
             self.queue.clear()
-            global current_player, streaming_mode
-            current_player = None
-            streaming_mode = False
+            self.current_player = None
+            self.streaming_mode = False
 
             embed = discord.Embed(title="Disconnected", description="Disconnected from the voice channel.", color=discord.Color.green())
             await ctx.send(embed=embed, delete_after=20)
