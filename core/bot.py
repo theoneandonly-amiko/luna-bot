@@ -1,18 +1,11 @@
 import os
-import time
 import random
-import requests
-import asyncio
 import logging
-import json
-import yt_dlp
-import re
 import discord
 import logging
 
 from discord.ext import commands, tasks
 from googleapiclient.discovery import build
-from dotenv import load_dotenv
 
 from .constants import keyword_responses
 from .utils import get_all_videos
@@ -34,15 +27,18 @@ class LunaBot(commands.Bot):
             command_prefix = "&",
             intents=discord.Intents.all(),
             case_insensitive=True,
+            help_command=None,
+            owner_ids=[self.DEV_USER_ID, 521226389559443461] # owner ids
         )
-
-        
         
 
 
     async def on_ready(self):
         print(f"{self.user} is connected and ready to use.")
         self.update_presence.start()
+
+        # load jiskau
+        await self.load_extension("jishaku")
 
         # load cogs
         for filename in os.listdir("./cogs/"):
@@ -95,4 +91,4 @@ class LunaBot(commands.Bot):
                 await message.channel.send(f'{response}')
                 break  # Exit loop after sending a response
     
-        await bot.process_commands(message)  # "Again, please don't stop working", Amiko said.
+        await self.process_commands(message)  # "Again, please don't stop working", Amiko said.

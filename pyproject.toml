@@ -3,6 +3,7 @@ name = "luna-bot"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
+package-mode = false
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -15,6 +16,8 @@ google-api-python-client = "^2.142.0"
 ffmpeg = "^1.4"
 jishaku = "^2.5.2"
 
+[virtualenvs]
+in-project = true
 
 [build-system]
 requires = ["poetry-core"]
