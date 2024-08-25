@@ -1,10 +1,29 @@
+import asyncio
 import discord
+import os
 import random
 from discord.ext import commands
+import requests
 
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    def fetch_random_gif(self):
+        asset_folder = 'assets/pet'
+        gif_files = [f for f in os.listdir(asset_folder) if f.endswith('.gif')]
+        if not gif_files:
+            return None
+        return random.choice(gif_files)
+    
+
+    # Function to fetch a random grab GIF from the local assets folder
+    def fetch_random_grab_gif(self):
+        asset_folder = 'assets/grab'
+        gif_files = [f for f in os.listdir(asset_folder) if f.endswith('.gif')]
+        if not gif_files:
+            return None
+        return os.path.join(asset_folder, random.choice(gif_files))
 
     # ========================== Fun Commands ==============================
     # Pet command
@@ -34,11 +53,11 @@ class Fun(commands.Cog):
             await ctx.send("Please mention at least one user other than yourself to pet.")
             return
 
-        pet_gif = fetch_random_gif()
+        pet_gif = self.fetch_random_gif()
 
         if len(valid_users) == 1:
             user = valid_users[0]
-            if user == bot.user:
+            if user == self.bot.user:
                 bot_responses = [
                     "I cannot pet myself, the same with you. 😶",
                     "Maybe you try it.",
@@ -105,15 +124,15 @@ class Fun(commands.Cog):
             return
 
         user = random.choice(users)
-        if bot.user in users and ctx.author in users and len(users) == 2:
+        if self.bot.user in users and ctx.author in users and len(users) == 2:
             grabs = [
                 "{0} grabs {1} by the arm and.",
                 "Look, {0} and {1} are grabbing each other.",
                 "{0} just stole {1} from the road.",
                 "{0} just come and picked {1} up."
             ]
-            grab_gif = fetch_random_grab_gif()
-            response = random.choice(grabs).format(ctx.author.mention, bot.user.mention, user.mention)
+            grab_gif = self.fetch_random_grab_gif()
+            response = random.choice(grabs).format(ctx.author.mention, self.bot.user.mention, user.mention)
 
             if grab_gif:
                 file = discord.File(grab_gif, filename=os.path.basename(grab_gif))
@@ -127,7 +146,7 @@ class Fun(commands.Cog):
                 await ctx.send(file=file, embed=embed)
             else:
                 await ctx.send(response)
-        elif user == bot.user:
+        elif user == self.bot.user:
             responses = [
                 "I cannot grab myself, try doing it with yourself. 🥱",
                 "Maybe you try it.",
@@ -153,7 +172,7 @@ class Fun(commands.Cog):
                 "{0} just stole {1} from the road. Whew!",
                 "{0} just come and picked {1} up"
             ]
-            grab_gif = fetch_random_grab_gif()
+            grab_gif = self.fetch_random_grab_gif()
             response = random.choice(grabs).format(ctx.author.mention, user.mention)
 
             if grab_gif:
@@ -171,8 +190,7 @@ class Fun(commands.Cog):
 
     # Compliment command
     @commands.command(name='compliment', aliases=['nice', 'sweet'])
-    
-    async def compliment(self, ctx, user: commands.MemberConverter):
+    async def compliment(self, ctx, user: discord.Member):
             compliments = [
                 f"{user.mention}, you are as bright as a shooting star! 🌟",
                 f"{user.mention}, you have a heart of gold. 💛",
@@ -201,7 +219,7 @@ class Fun(commands.Cog):
     # 8-Ball Command
     @commands.command(name='8ball', help='Answers a yes/no question.')
     
-    async def eight_ball(self, ctx, *, question: str = None):
+    async def eight_ball(self, ctx, *, question: str | None = None):
         if question is None:
             await ctx.send("Magic 8-ball cannot answer your empty question. Ask again.")
             return

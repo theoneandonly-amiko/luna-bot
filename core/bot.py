@@ -16,9 +16,12 @@ class LunaBot(commands.Bot):
         self.YOUTUBE_API_KEY = youtube_api_key
         self.YOUTUBE_CHANNEL_ID = youtube_channel_id
         self.DEV_USER_ID = dev_user_id
-
         self.BLACKLIST_FILE = 'blacklist.json'
         self.blacklisted_users = set()
+    
+        discord.utils.setup_logging(root=True)
+
+        self.logger = logging.getLogger()
 
 
         # Initialize the YouTube API client
@@ -30,11 +33,10 @@ class LunaBot(commands.Bot):
             help_command=None,
             owner_ids=[self.DEV_USER_ID, 521226389559443461] # owner ids
         )
-        
 
 
     async def on_ready(self):
-        print(f"{self.user} is connected and ready to use.")
+        self.logger.info(f"{self.user} is connected and ready to use.")
         self.update_presence.start()
 
         # load jiskau
@@ -60,7 +62,7 @@ class LunaBot(commands.Bot):
                 name=f'{title} by {channel}'
         ))
         else:
-            logging.warning("No videos found or failed to fetch videos.")
+            self.logger.warning("No videos found or failed to fetch videos.")
 
     @update_presence.before_loop
     async def before_update_presence(self):
@@ -76,7 +78,7 @@ class LunaBot(commands.Bot):
         logging.info(f"Command '{command_name}' invoked by {user} in guild '{guild}' in channel '{channel}'.")
 
     # Log errors
-    async def on_command_error(sefl, ctx, error):
+    async def on_command_error(self, ctx, error):
         logging.error(f"Error in command '{ctx.command}' by {ctx.author}: {error}")
     
 

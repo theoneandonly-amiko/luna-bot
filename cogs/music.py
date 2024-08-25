@@ -1,5 +1,9 @@
+import asyncio
+import random
+import re
 import discord
 from discord.ext import commands
+import yt_dlp
 
 # ================ Music Function ======================
 queue = []
@@ -52,7 +56,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
             webpage_url = info.get('webpage_url')
             data = {'title': title, 'url': webpage_url, 'thumbnail': thumbnail}
     
-            return cls(discord.FFmpegPCMAudio(url), data=data)
+            return cls(discord.FFmpegPCMAudio(url), data=data) # type: ignore
 
         except yt_dlp.utils.DownloadError as e:
             raise commands.CommandError(f"Download error: {e}")
@@ -125,18 +129,18 @@ class Music(commands.Cog):
         self.last_channel = ctx.channel  
         await self.ensure_voice(ctx)
 
-        if streaming_mode:
+        if self.streaming_mode:
             embed = discord.Embed(title="Streaming Mode", description="Cannot add songs while in 24/7 streaming mode.", color=discord.Color.red())
             await ctx.send(embed=embed)
             return
 
         async with ctx.typing():
-            player = await YTDLSource.from_query(query, loop=bot.loop)
-            player.volume = volume_level  # Set the volume
-            queue.append(player)
+            player = await YTDLSource.from_query(query, loop=self.bot.loop)
+            player.volume = self.volume_level  # Set the volume
+            self.queue.append(player)
 
             if not ctx.voice_client.is_playing():
-                await play_next_song(self, ctx)
+                await self.play_next_song(ctx)
             else:
                 embed = discord.Embed(title="Added to Queue", description=f'[{player.title}]({player.url})', color=discord.Color.blue())
                 if player.thumbnail:
@@ -145,12 +149,12 @@ class Music(commands.Cog):
 
     async def play_next_song(self, ctx):
 
-        if len(queue) > 0:
-            player = queue.pop(0)
+        if len(self.queue) > 0:
+            player = self.queue.pop(0)
             self.current_player = player
 
             if ctx.voice_client.is_connected():  # Ensure bot is still connected
-                ctx.voice_client.play(player, after=lambda e: asyncio.run_coroutine_threadsafe(play_next_song(ctx), bot.loop))
+                ctx.voice_client.play(player, after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next_song(ctx), self.bot.loop))
 
             embed = discord.Embed(title="Now Playing", description=f'[{player.title}]({player.url})', color=discord.Color.green())
             embed.set_thumbnail(url=player.data['thumbnail'])  # Display the thumbnail
@@ -158,11 +162,11 @@ class Music(commands.Cog):
         else:
             embed = discord.Embed(title="Queue", description="Queue is empty.", color=discord.Color.orange())
             await ctx.send(embed=embed)
-            await check_idle_disconnect(ctx)
+            await self.check_idle_disconnect(ctx)
 
     async def check_idle_disconnect(self, ctx):
-        await asyncio.sleep(IDLE_TIMEOUT)  # Wait for the idle timeout
-        if ctx.voice_client and not ctx.voice_client.is_playing() and not queue:
+        await asyncio.sleep(self.IDLE_TIMEOUT)  # Wait for the idle timeout
+        if ctx.voice_client and not ctx.voice_client.is_playing() and not self.queue:
             await ctx.voice_client.disconnect()
             embed = discord.Embed(title="Disconnected", description="Disconnected due to inactivity.", color=discord.Color.red())
             await ctx.send(embed=embed)
@@ -198,13 +202,13 @@ class Music(commands.Cog):
         else:
             embed = discord.Embed(title="Error", description="The bot is not playing anything at the moment.", color=discord.Color.red())
             await ctx.send(embed=embed)
-        await check_idle_disconnect(self, ctx)
+        await self.check_idle_disconnect(ctx)
 
     @commands.command(name='queue', help='Displays the current song queue')
     
     async def display_queue(self, ctx):
-        if len(queue) > 0:
-            queue_list = "\n".join([f"{i + 1}. [{song.title}]({song.url})" for i, song in enumerate(queue)])
+        if len(self.queue) > 0:
+            queue_list = "\n".join([f"{i + 1}. [{song.title}]({song.url})" for i, song in enumerate(self.queue)])
             embed = discord.Embed(title="Current Queue", description=f"{queue_list}", color=discord.Color.blue())
             await ctx.send(embed=embed)
         else:
@@ -225,12 +229,11 @@ class Music(commands.Cog):
     @commands.command(name='volume_up', help='Increases the volume by 10%')
     
     async def volume_up(self, ctx):
-        global volume_level
-        if volume_level < 1.0:
-            volume_level = min(volume_level + 0.1, 1.0)
-            if current_player:
-                current_player.volume = volume_level
-            embed = discord.Embed(title="Volume Up", description=f'Volume increased to {int(volume_level * 100)}%', color=discord.Color.green())
+        if self.volume_level < 1.0:
+            self.volume_level = min(self.volume_level + 0.1, 1.0)
+            if self.current_player:
+                self.current_player.volume = self.volume_level
+            embed = discord.Embed(title="Volume Up", description=f'Volume increased to {int(self.volume_level * 100)}%', color=discord.Color.green())
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(title="Volume", description='Volume is already at maximum.', color=discord.Color.orange())
@@ -239,24 +242,21 @@ class Music(commands.Cog):
     @commands.command(name='volume_down', help='Decreases the volume by 10%')
     
     async def volume_down(self, ctx):
-        global volume_level
-        if volume_level > 0.0:
-            volume_level = max(volume_level - 0.1, 0.0)
-            if current_player:
-                current_player.volume = volume_level
-            embed = discord.Embed(title="Volume Down", description=f'Volume decreased to {int(volume_level * 100)}%', color=discord.Color.red())
+        if self.volume_level > 0.0:
+            self.volume_level = max(self.volume_level - 0.1, 0.0)
+            if self.current_player:
+                self.current_player.volume = self.volume_level
+            embed = discord.Embed(title="Volume Down", description=f'Volume decreased to {int(self.volume_level * 100)}%', color=discord.Color.red())
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(title="Volume", description='Volume is already at minimum.', color=discord.Color.orange())
             await ctx.send(embed=embed)
 
     @commands.command(name='clear_queue', help='Clears the entire music queue')
-    
     async def clear_queue(self, ctx):
-        global queue
 
-        if len(queue) > 0:
-            queue.clear()
+        if len(self.queue) > 0:
+            self.queue.clear()
 
 
             embed = discord.Embed(title="Queue Cleared", description="The music queue has been cleared.", color=discord.Color.red())
@@ -272,10 +272,9 @@ class Music(commands.Cog):
             await ctx.voice_client.disconnect()
 
             # Clear the queue and reset variables
-            queue.clear()
-            global current_player, streaming_mode
-            current_player = None
-            streaming_mode = False
+            self.queue.clear()
+            self.current_player = None
+            self.streaming_mode = False
 
             embed = discord.Embed(title="Disconnected", description="Disconnected from the voice channel.", color=discord.Color.green())
             await ctx.send(embed=embed, delete_after=20)
@@ -286,16 +285,15 @@ class Music(commands.Cog):
     @commands.command(name='stream247', help='Starts streaming the chosen genre 24/7')
     
     async def start_stream(self, ctx, genre: str):
-        global streaming_mode
-        streaming_mode = True
-        await self.ensure_voice(self, ctx)
+        self.streaming_mode = True
+        await self.ensure_voice(ctx)
 
         genre = genre.lower()
-        if genre not in genre_urls:
-            await ctx.send(f"Invalid genre. Available genres are: {', '.join(genre_urls.keys())}")
+        if genre not in self.genre_urls:
+            await ctx.send(f"Invalid genre. Available genres are: {', '.join(self.genre_urls.keys())}")
             return
 
-        playlist = genre_urls[genre]
+        playlist = self.genre_urls[genre]
         embed = discord.Embed(title="Now Playing", description=f"Streaming {genre.capitalize()} music 24/7", color=discord.Color.green())
         await ctx.send(embed=embed)
         async def play_next_video():
@@ -315,21 +313,20 @@ class Music(commands.Cog):
 
         await play_next_video()  # Start playing the first video in the playlist
 
-        while streaming_mode:
+        while self.streaming_mode:
             if not ctx.voice_client or not ctx.voice_client.is_playing():
                 await play_next_video()
             await asyncio.sleep(5)  # Check every 5 seconds if the stream has stopped
 
     @commands.command(name='stop247', help='Stops the 24/7 streaming.')
     async def stop_streaming(self, ctx):
-        global streaming_mode
-        streaming_mode = False
+        self.streaming_mode = False
 
         if ctx.voice_client and ctx.voice_client.is_playing():
             ctx.voice_client.stop()  # Stop the current streaming video
 
             # Clear any remaining videos in the queue
-            queue.clear()
+            self.queue.clear()
         else:
             await ctx.send(embed=discord.Embed(title="Error", description="The bot is not streaming anything at the moment.", color=discord.Color.red()))
 

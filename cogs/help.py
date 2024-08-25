@@ -75,7 +75,7 @@ class Help(commands.Cog):
 
     # ================= Info Category ======================
     @commands.command(name='info')
-    async def help(self, ctx):
+    async def _help(self, ctx):
         embed = discord.Embed(title="**About me**", color=discord.Color.brand_green())
         embed.add_field(name="Short description", value=(
             "I\'m Luna, the bot serve with most basic purposes. Currently I\'m under development, but I\'ll be sure to not make you feel disappointed, hehe. ;)\n"
