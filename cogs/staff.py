@@ -1,3 +1,5 @@
+import discord
+import asyncio
 from discord.ext import commands
 
 class Staff(commands.Cog):
@@ -11,7 +13,7 @@ class Staff(commands.Cog):
     async def pull(self, ctx: commands.Context):
         """Pulls the current code from the repo"""
 
-        embed = disnake.Embed(title="Git pull.", description="")
+        embed = discord.Embed(title="Git pull.", description="")
         git_commands = [["git", "stash"], ["git", "pull", "--ff-only"]]
         for git_command in git_commands:
             process = await asyncio.create_subprocess_exec(
@@ -30,8 +32,8 @@ class Staff(commands.Cog):
     
     @commands.command(hidden=True)
     async def load(self, ctx: commands.Context, extension):
-        embed = disnake.Embed()
-        self.bot.load_extension(f"cogs.{extension}")
+        embed = discord.Embed()
+        await self.bot.load_extension(f"cogs.{extension}")
         embed.add_field(
             name="Load Extension", value=f"Loaded cog: ``{extension}`` successfully"
         )
@@ -39,8 +41,8 @@ class Staff(commands.Cog):
 
     @commands.command(hidden=True)
     async def unload(self, ctx: commands.Context, extension):
-        self.bot.unload_extension(f"cogs.{extension}")
-        embed = disnake.Embed()
+        await self.bot.unload_extension(f"cogs.{extension}")
+        embed = discord.Embed()
         embed.add_field(
             name="Unload Extension", value=f"Unloaded cog: ``{extension}`` successfully"
         )
@@ -50,13 +52,13 @@ class Staff(commands.Cog):
     async def reload(self, ctx: commands.Context, extension=""):
         if not extension:
             for cog in tuple(self.bot.extensions):
-                self.bot.reload_extension(cog)
-            embed = disnake.Embed()
+                await self.bot.reload_extension(cog)
+            embed = discord.Embed()
             embed.add_field(name="Reload Extension", value="Reloaded cogs successfully")
             await ctx.send(embed=embed)
         else:
-            self.bot.reload_extension(f"cogs.{extension}")
-            embed = disnake.Embed()
+            await self.bot.reload_extension(f"cogs.{extension}")
+            embed = discord.Embed()
             embed.add_field(
                 name="Reload Extension",
                 value=f"Reloaded cog: ``{extension}`` successfully",
