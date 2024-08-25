@@ -22,47 +22,47 @@ class HelpDropdown(Select):
 
         if category == "Fun Commands":
             embed.add_field(name="**Fun Commands**", value=(
-                "`!pet @user [@optionaluser]` - *Pet a user and send a cute gif.*\n"
-                "`!grab @user [@optionaluser]` - *Grab a user and send a funny gif.*\n"
-                "`!compliment @user` - *Send a compliment to a user. You can do this to yourself too, because why not?*\n"
-                "`!battle @user1 @user2` - *Start a virtual battle between 2 \"hot tempered\" users.*\n"
-                "`!roll` - *Roll a dice, of course.*\n"
-                "`!choose [option1] [option2]` - *Choose an option for you.*\n"
-                "`!8ball [question]` - *Consult the magic 8-ball to answer your question.*\n"
-                "`!flip` - *Flip a coin. Useful when you making a bet against someone, hehe.*\n"
-                "`!urban [term]` - *Be your 24/7 dictionary. Feel free to look for any terms you don\'t know.*\n"
-                "`!cat` - *Measures how much you look like a cat. 🐱*\n"
-                "`!kurin` - *Measures how much \"hyperkuru\" you currently are.*\n"
+                "`&pet @user [@optionaluser]` - *Pet a user and send a cute gif.*\n"
+                "`&grab @user [@optionaluser]` - *Grab a user and send a funny gif.*\n"
+                "`&compliment @user` - *Send a compliment to a user. You can do this to yourself too, because why not?*\n"
+                "`&battle @user1 @user2` - *Start a virtual battle between 2 \"hot tempered\" users.*\n"
+                "`&roll` - *Roll a dice, of course.*\n"
+                "`&choose [option1] [option2]` - *Choose an option for you.*\n"
+                "`&8ball [question]` - *Consult the magic 8-ball to answer your question.*\n"
+                "`&flip` - *Flip a coin. Useful when you making a bet against someone, hehe.*\n"
+                "`&urban [term]` - *Be your 24/7 dictionary. Feel free to look for any terms you don\'t know.*\n"
+                "`&cat` - *Measures how much you look like a cat. 🐱*\n"
+                "`&kurin` - *Measures how much \"hyperkuru\" you currently are.*\n"
             ), inline=False)
         elif category == "Moderation Commands":
             embed.add_field(name="**Moderation Commands**", value=(
-                "`!mute [userID] [reason]` - *Mute a user.*\n"
-                "`!unmute [userID]` - *Unmute a user.*\n"
-                "`!kick [userID]` - *Kick a user out.*\n"
-                "`!ban [userID]` - *Ban a user.*\n"
-                "`!muterole_create` - *Create mute role if not existed. This will override mute permissions and role to all categories and channels.*\n"
-                "`!clear [all/number]` - *Delete messages.*\n"
+                "`&mute [userID] [reason]` - *Mute a user.*\n"
+                "`&unmute [userID]` - *Unmute a user.*\n"
+                "`&kick [userID]` - *Kick a user out.*\n"
+                "`&ban [userID]` - *Ban a user.*\n"
+                "`&muterole_create` - *Create mute role if not existed. This will override mute permissions and role to all categories and channels.*\n"
+                "`&clear [all/number]` - *Delete messages.*\n"
             ), inline=False)
         elif category == "Music Commands":
             embed.add_field(name="Music Commands - Beta (yes)", value=(
-                "`!play [Youtube Video URL or Search Query]` - *Join user connected voice channel and play music from given URL.*\n"
-                "`!pause` - *This will pause the song.*\n"
-                "`!resume` - *Continue playing the song.*\n"
-                '`!stop` - *Clear the queue and disconnect from current voice channel.*\n'
-                "`!queue` - *Display the current song queue.*\n"
-                "`!skip` - *Skip the current song.*\n"
-                "`!volume_up` - *Increase volume by 10%.*\n"
-                "`!volume_down` - *Decrease volume by 10%.*\n"
-                "`!clear_queue` - Clear the entire music queue.\n"
-                "`!disconnect` - *Disconnect the bot from the voice channel.*\n"
-                "`!24/7 [deephouse/lofi/hardstyle]` - *Enters 24/7 mode and start streaming/playing defined genres.*\n"
-                "`!stop_24/7` - *Similar to how `stop` command works.*\n"
+                "`&play [Youtube Video URL or Search Query]` - *Join user connected voice channel and play music from given URL.*\n"
+                "`&pause` - *This will pause the song.*\n"
+                "`&resume` - *Continue playing the song.*\n"
+                '`&stop` - *Clear the queue and disconnect from current voice channel.*\n'
+                "`&queue` - *Display the current song queue.*\n"
+                "`&skip` - *Skip the current song.*\n"
+                "`&volume_up` - *Increase volume by 10%.*\n"
+                "`&volume_down` - *Decrease volume by 10%.*\n"
+                "`&clear_queue` - Clear the entire music queue.\n"
+                "`&disconnect` - *Disconnect the bot from the voice channel.*\n"
+                "`&24/7 [deephouse/lofi/hardstyle]` - *Enters 24/7 mode and start streaming/playing defined genres.*\n"
+                "`&stop_24/7` - *Similar to how `stop` command works.*\n"
             ), inline=False)
         elif category == "Miscellaneous":
             embed.add_field(name="Miscellaneous", value=(
-                "`!usercount` - *Let you know how many members are in the current server.*\n"
-                "`!ticket` - *Create a ticket to send a request for channel creation.*\n"
-                "`!help` - *Show this help message*"
+                "`&usercount` - *Let you know how many members are in the current server.*\n"
+                "`&ticket` - *Create a ticket to send a request for channel creation.*\n"
+                "`&help` - *Show this help message*"
             ), inline=False)
 
         await interaction.response.edit_message(embed=embed)
