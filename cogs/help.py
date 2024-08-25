@@ -51,7 +51,7 @@ class Help(commands.Cog):
         embed.add_field(name="Miscellaneous", value=(
             "`&usercount` - *Let you know how many members are in the current server.*\n"
         	"`&ticket` - Create a ticket to send a request for channel creation."), inline=False)
-        await ctx.reply(embed=embed)
+        await ctx.send(embed=embed)
 
     # Command to show developer features
     @commands.command(name='dev')
