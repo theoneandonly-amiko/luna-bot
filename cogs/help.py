@@ -8,8 +8,7 @@ class Help(commands.Cog):
 
 
     async def list(self, ctx, command=None):
-        if command:
-            return
+
         embed = discord.Embed(title="Help - Commands List", color=discord.Color.dark_purple())
 
         embed.add_field(name="Command Prefix: &", value=("Needed help, are ya?"))
