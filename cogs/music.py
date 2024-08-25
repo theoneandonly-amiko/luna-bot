@@ -1,5 +1,9 @@
+import asyncio
+import random
+import re
 import discord
 from discord.ext import commands
+import yt_dlp
 
 # ================ Music Function ======================
 
@@ -47,7 +51,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
             webpage_url = info.get('webpage_url')
             data = {'title': title, 'url': webpage_url, 'thumbnail': thumbnail}
     
-            return cls(discord.FFmpegPCMAudio(url), data=data)
+            return cls(discord.FFmpegPCMAudio(url), data=data) # type: ignore
 
         except yt_dlp.utils.DownloadError as e:
             raise commands.CommandError(f"Download error: {e}")
@@ -126,12 +130,12 @@ class Music(commands.Cog):
             return
 
         async with ctx.typing():
-            player = await YTDLSource.from_query(query, loop=bot.loop)
+            player = await YTDLSource.from_query(query, loop=self.bot.loop)
             player.volume = volume_level  # Set the volume
-            queue.append(player)
+            self.queue.append(player)
 
             if not ctx.voice_client.is_playing():
-                await play_next_song(self, ctx)
+                await self.play_next_song(ctx)
             else:
                 embed = discord.Embed(title="Added to Queue", description=f'[{player.title}]({player.url})', color=discord.Color.blue())
                 if player.thumbnail:
@@ -140,12 +144,12 @@ class Music(commands.Cog):
 
     async def play_next_song(self, ctx):
 
-        if len(queue) > 0:
-            player = queue.pop(0)
+        if len(self.queue) > 0:
+            player = self.queue.pop(0)
             self.current_player = player
 
             if ctx.voice_client.is_connected():  # Ensure bot is still connected
-                ctx.voice_client.play(player, after=lambda e: asyncio.run_coroutine_threadsafe(play_next_song(ctx), bot.loop))
+                ctx.voice_client.play(player, after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next_song(ctx), self.bot.loop))
 
             embed = discord.Embed(title="Now Playing", description=f'[{player.title}]({player.url})', color=discord.Color.green())
             embed.set_thumbnail(url=player.data['thumbnail'])  # Display the thumbnail
@@ -153,11 +157,11 @@ class Music(commands.Cog):
         else:
             embed = discord.Embed(title="Queue", description="Queue is empty.", color=discord.Color.orange())
             await ctx.send(embed=embed)
-            await check_idle_disconnect(ctx)
+            await self.check_idle_disconnect(ctx)
 
     async def check_idle_disconnect(self, ctx):
-        await asyncio.sleep(IDLE_TIMEOUT)  # Wait for the idle timeout
-        if ctx.voice_client and not ctx.voice_client.is_playing() and not queue:
+        await asyncio.sleep(self.IDLE_TIMEOUT)  # Wait for the idle timeout
+        if ctx.voice_client and not ctx.voice_client.is_playing() and not self.queue:
             await ctx.voice_client.disconnect()
             embed = discord.Embed(title="Disconnected", description="Disconnected due to inactivity.", color=discord.Color.red())
             await ctx.send(embed=embed)
@@ -193,13 +197,13 @@ class Music(commands.Cog):
         else:
             embed = discord.Embed(title="Error", description="The bot is not playing anything at the moment.", color=discord.Color.red())
             await ctx.send(embed=embed)
-        await check_idle_disconnect(self, ctx)
+        await self.check_idle_disconnect(ctx)
 
     @commands.command(name='queue', help='Displays the current song queue')
     
     async def display_queue(self, ctx):
-        if len(queue) > 0:
-            queue_list = "\n".join([f"{i + 1}. [{song.title}]({song.url})" for i, song in enumerate(queue)])
+        if len(self.queue) > 0:
+            queue_list = "\n".join([f"{i + 1}. [{song.title}]({song.url})" for i, song in enumerate(self.queue)])
             embed = discord.Embed(title="Current Queue", description=f"{queue_list}", color=discord.Color.blue())
             await ctx.send(embed=embed)
         else:
@@ -246,12 +250,10 @@ class Music(commands.Cog):
             await ctx.send(embed=embed)
 
     @commands.command(name='clear_queue', help='Clears the entire music queue')
-    
     async def clear_queue(self, ctx):
-        global queue
 
-        if len(queue) > 0:
-            queue.clear()
+        if len(self.queue) > 0:
+            self.queue.clear()
 
 
             embed = discord.Embed(title="Queue Cleared", description="The music queue has been cleared.", color=discord.Color.red())
@@ -267,7 +269,7 @@ class Music(commands.Cog):
             await ctx.voice_client.disconnect()
 
             # Clear the queue and reset variables
-            queue.clear()
+            self.queue.clear()
             global current_player, streaming_mode
             current_player = None
             streaming_mode = False
@@ -283,14 +285,14 @@ class Music(commands.Cog):
     async def start_stream(self, ctx, genre: str):
         global streaming_mode
         streaming_mode = True
-        await self.ensure_voice(self, ctx)
+        await self.ensure_voice(ctx)
 
         genre = genre.lower()
-        if genre not in genre_urls:
-            await ctx.send(f"Invalid genre. Available genres are: {', '.join(genre_urls.keys())}")
+        if genre not in self.genre_urls:
+            await ctx.send(f"Invalid genre. Available genres are: {', '.join(self.genre_urls.keys())}")
             return
 
-        playlist = genre_urls[genre]
+        playlist = self.genre_urls[genre]
         embed = discord.Embed(title="Now Playing", description=f"Streaming {genre.capitalize()} music 24/7", color=discord.Color.green())
         await ctx.send(embed=embed)
         async def play_next_video():
@@ -324,7 +326,7 @@ class Music(commands.Cog):
             ctx.voice_client.stop()  # Stop the current streaming video
 
             # Clear any remaining videos in the queue
-            queue.clear()
+            self.queue.clear()
         else:
             await ctx.send(embed=discord.Embed(title="Error", description="The bot is not streaming anything at the moment.", color=discord.Color.red()))
 
