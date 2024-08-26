@@ -86,7 +86,7 @@ class HelpCommand(commands.Cog):
         self.bot = bot
 
     @commands.command(name='list', help='Shows this help message')
-    async def list(self, ctx):
+    async def help(self, ctx):
         embed = discord.Embed(title="Help - Select a Category", color=discord.Color.dark_purple())
         embed.description = "Use the dropdown menu to select a category for help."
         view = HelpView()
