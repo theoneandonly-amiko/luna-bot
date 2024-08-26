@@ -16,8 +16,6 @@ class LunaBot(commands.Bot):
         self.YOUTUBE_API_KEY = youtube_api_key
         self.YOUTUBE_CHANNEL_ID = youtube_channel_id
         self.DEV_USER_ID = dev_user_id
-        self.BLACKLIST_FILE = 'blacklist.json'
-        self.blacklisted_users = set()
     
         discord.utils.setup_logging(root=True)
 
