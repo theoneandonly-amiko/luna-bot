@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord.ui import View, Select
 
 class Help(commands.Cog):
     def __init__(self, bot):
