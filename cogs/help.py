@@ -1,11 +1,8 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands.help import HelpCommand
 from discord.ui import View, Select
 
-class Help(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-    # ================= Help Categories =======================
 
 class HelpDropdown(Select):
     def __init__(self):
@@ -69,29 +66,43 @@ class HelpDropdown(Select):
         await interaction.response.edit_message(embed=embed)
 
 class HelpView(View):
-    def __init__(self):
+    def __init__(self, channel):
+        self.channel = channel
         super().__init__(timeout=60)
         self.add_item(HelpDropdown())
 
     async def on_timeout(self):
         # Find the message and delete it after the timeout
-        channel = self.ctx.channel
+        channel: discord.TextChannel = self.channel
         async for message in channel.history(limit=100):
-            if message.author == self.ctx.me and message.embeds:
+            if message.author == channel.guild.me and message.embeds:
                 await message.delete()
                 break
 
-class HelpCommand(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+class MyHelpCommand(HelpCommand):
 
-    @commands.command(name='list', help='Shows this help message')
-    async def help(self, ctx):
+    async def send_bot_help(self, mapping):
         embed = discord.Embed(title="Help - Select a Category", color=discord.Color.dark_purple())
         embed.description = "Use the dropdown menu to select a category for help."
-        view = HelpView()
-        await ctx.send(embed=embed, view=view)
-    # Command to show developer features
+        view = HelpView(self.get_destination())
+        await self.get_destination().send(embed=embed, view=view)
+    
+    async def send_cog_help(self, cog):
+        # sends information about a given category
+        raise NotImplementedError
+    
+    async def send_command_help(self, command):
+        # sends information about a given command
+        raise NotImplementedError
+    
+class Help(commands.Cog):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+        self._original_help_command = bot.help_command
+        bot.help_command = MyHelpCommand()
+        bot.help_command.cog = self
+        # Command to show developer features
+        
     @commands.command(name='dev')
     async def dev(self, ctx):
         if ctx.author.id != self.bot.DEV_USER_ID:
