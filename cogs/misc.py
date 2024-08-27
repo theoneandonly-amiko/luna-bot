@@ -20,6 +20,12 @@ class Misc(commands.Cog):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send(f'Too fast. Please try again after {int(error.retry_after)} seconds.')
 
+    @commands.command(name='ping')
+    async def ping(self, ctx):
+        latency = round(self.bot.latency * 1000)
+        ping_message = f"Pong! Latency: {latency}ms"
+
+        await ctx.send(ping_message)
 
 async def setup(bot):
     await bot.add_cog(Misc(bot))
