@@ -11,6 +11,7 @@ class HelpDropdown(Select):
             discord.SelectOption(label="Moderation Commands", description="List of moderation commands"),
             discord.SelectOption(label="Music Commands", description="List of music commands"),
             discord.SelectOption(label="Miscellaneous", description="List of miscellaneous commands")
+            discord.SelectOption(label="Games", description="List of available games.")
         ]
         super().__init__(placeholder="Select a category...", min_values=1, max_values=1, options=options)
 
@@ -61,6 +62,15 @@ class HelpDropdown(Select):
                 "`&usercount` - *Let you know how many members are in the current server.*\n"
                 "`&ticket` - *Create a ticket to send a request for channel creation.*\n"
                 "`&help` - *Show this help message*"
+            ), inline=False)
+        elif category == "Games":
+            embed.add_field(name="Game", value=(
+                "`!hangman` - *Play Hangman game.*\n"
+                "`!rps [rock/paper/scissors]` - *Play Rock Paper Scissors with bot.*\n"
+                "`!numberguess` - *Play Number Guessing game.*\n"
+                "`!scramble` - *Play Word Scramble game.*\n"
+                "`!bet [red/black/number (range 0 - 36)]` - *Play Roulette game.*\n"
+                "`!memory` - *Play Memory Game.*"
             ), inline=False)
 
         await interaction.response.edit_message(embed=embed)
