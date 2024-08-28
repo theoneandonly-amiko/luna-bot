@@ -65,12 +65,12 @@ class HelpDropdown(Select):
             ), inline=False)
         elif category == "Games":
             embed.add_field(name="Game", value=(
-                "`!hangman` - *Play Hangman game.*\n"
-                "`!rps [rock/paper/scissors]` - *Play Rock Paper Scissors with bot.*\n"
-                "`!numberguess` - *Play Number Guessing game.*\n"
-                "`!scramble` - *Play Word Scramble game.*\n"
-                "`!bet [red/black/number (range 0 - 36)]` - *Play Roulette game.*\n"
-                "`!memory` - *Play Memory Game.*"
+                "`&hangman` - *Play Hangman game.*\n"
+                "`&rps [rock/paper/scissors]` - *Play Rock Paper Scissors with bot.*\n"
+                "`&numberguess` - *Play Number Guessing game.*\n"
+                "`&scramble` - *Play Word Scramble game.*\n"
+                "`&bet [red/black/number (range 0 - 36)]` - *Play Roulette game.*\n"
+                "`&memory` - *Play Memory Game.*"
             ), inline=False)
 
         await interaction.response.edit_message(embed=embed)
