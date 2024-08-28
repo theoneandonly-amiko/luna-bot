@@ -10,7 +10,7 @@ class HelpDropdown(Select):
             discord.SelectOption(label="Fun Commands", description="List of fun commands"),
             discord.SelectOption(label="Moderation Commands", description="List of moderation commands"),
             discord.SelectOption(label="Music Commands", description="List of music commands"),
-            discord.SelectOption(label="Miscellaneous", description="List of miscellaneous commands")
+            discord.SelectOption(label="Miscellaneous", description="List of miscellaneous commands"),
             discord.SelectOption(label="Games", description="List of available games.")
         ]
         super().__init__(placeholder="Select a category...", min_values=1, max_values=1, options=options)
