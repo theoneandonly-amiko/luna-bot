@@ -54,13 +54,13 @@ class HelpDropdown(Select):
                 "`&volume_down` - *Decrease volume by 10%.*\n"
                 "`&clear_queue` - Clear the entire music queue.\n"
                 "`&disconnect` - *Disconnect the bot from the voice channel.*\n"
-                "`&24/7 [deephouse/lofi/hardstyle]` - *Enters 24/7 mode and start streaming/playing defined genres.*\n"
-                "`&stop_24/7` - *Similar to how `stop` command works.*\n"
+                "`&stream247 [deephouse/lofi/hardstyle]` - *Enters 24/7 mode and start streaming/playing defined genres.*\n"
+                "`&stop247` - *Similar to how `stop` command works.*\n"
             ), inline=False)
         elif category == "Miscellaneous":
             embed.add_field(name="Miscellaneous", value=(
                 "`&usercount` - *Let you know how many members are in the current server.*\n"
-                "`&ticket` - *Create a ticket to send a request for channel creation.*\n"
+                "`&info` - *About me, simple ;) *\n"
                 "`&help` - *Show this help message*"
             ), inline=False)
         elif category == "Games":
