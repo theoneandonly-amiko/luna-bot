@@ -49,7 +49,7 @@ class Misc(commands.Cog):
         await ctx.send(f'This server has {member_count} members!')
 
     @totaluser.error
-    async def usercount_error(self, ctx, error):
+    async def totaluser_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send(f'Too fast. Please try again after {int(error.retry_after)} seconds.')
 
