@@ -75,14 +75,15 @@ class Misc(commands.Cog):
     async def info(self, ctx):
         embed = discord.Embed(title="About me", color=discord.Color.brand_green())
         embed.add_field(name="Short description", value=
-            "I'm Amiker, the bot served with most basic purposed. I was built during the first coding journey of owner, ehehe.\n"
+            "I'm Luna, the bot served with most basic purposed. I was built during the first coding journey of owner, ehehe.\n"
             "You may see some errors when using some function of me, because of some oversights that my owner made. Well, programming is fun, at least it is what it is. *sigh*... 🙄\n"
             "In the future I will be widely used, for now I'm under development, so you all are the best testers ever. Suggest features for a broad credit. Yee.", inline=False)
         embed.set_footer(text='"Big W in programming, ehe. - Lunatico"')
         
         credit = discord.Embed(title="Credits", color=discord.Color.blurple())
-        credit.add_field(name='Additional Designs', value=
-            "1. the_peacekeeper_recruitment (ErrorBonnieTPkR)")
+        credit.add_field(name='Additional Designs/Quality Assurances:', value=
+            "1. stealthninja (or stealthyninja) - Server provider, code refactor.\n"
+            "2. the_peacekeeper_recruitment (ErrorBonnieTPkR)")
         
         await ctx.send(embed=embed)
         await ctx.send(embed=credit)
