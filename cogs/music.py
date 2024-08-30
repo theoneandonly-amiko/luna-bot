@@ -86,6 +86,8 @@ class YTDLSource(discord.PCMVolumeTransformer):
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.music_queues = {}
+        self.voice_clients = {}
         self.queue = []
         self.IDLE_TIMEOUT = 30
         self.current_player = None
@@ -99,28 +101,37 @@ class Music(commands.Cog):
 
             'hardstyle': ['https://youtu.be/U3ZxZEFo1lk?si=c1ExdwWLuem8jgJZ', 'https://youtu.be/I6Tgl33CAjc?si=20pUmynbbnB5Uuwt', 'https://youtu.be/QhYlAM40oUY?si=7ovc1y3ng_QEOwJ8'],
 
-            'synthwave': ['https://youtu.be/k3WkJq478To?si=rf_xpFYGhRZ0Wsay', 'https://youtu.be/cCTaiJZAZak?si=zu17yQiXAR_PYEO3',],
+            'synthwave': ['https://youtu.be/k3WkJq478To?si=rf_xpFYGhRZ0Wsay', 'https://youtu.be/cCTaiJZAZak?si=zu17yQiXAR_PYEO3', ''],
 
             'progressive_house': ['https://youtu.be/jaE6M5Lr0mo?si=gP8jpPGMBq7ZN2Fp', 'https://youtu.be/CEbXiuDKRlM?si=HN8Svh7AChUqxhx1', 'https://youtu.be/GQ3qAnkrLzI?si=OcAcK0A_TLN_fMR4', 'https://youtu.be/8NsEHIU_iuE?si=lqEvAlpcEJEHcSkK'],
+
+            'kw_futurebass': ['https://youtu.be/urm1kR7vewM?si=Kw79owZnW_IPZZcO', 'https://youtu.be/tGhEMlxrjA8?si=gNdEuXSCYx2yyI5p', 'https://youtu.be/Ym0WFiHMuyw?si=IwixdnzpYEfDhlPS', 'https://youtu.be/iTyKy_AvhPM?si=PztjS99leqWIjhXn', 'https://youtu.be/goDcxp5K6ls?si=B375P15fpUklp99A']
             # Add more genres and URLs as needed
         }
 
+    def get_guild_queue(self, guild_id):
+        if guild_id not in self.music_queues:
+            self.music_queues[guild_id] = []
+        return self.music_queues[guild_id]
+
+    def get_guild_voice_client(self, guild_id):
+        return self.voice_clients.get(guild_id)
+
     async def ensure_voice(self, ctx):
         if ctx.author.voice:
-            if ctx.voice_client:
-                if ctx.voice_client.channel != ctx.author.voice.channel:
-                    await ctx.voice_client.move_to(self, ctx.author.voice.channel)
-            else:
-                await ctx.author.voice.channel.connect()
-                last_active_channel = ctx.channel
+            if ctx.guild.id not in self.voice_clients:
+                self.voice_clients[ctx.guild.id] = await ctx.author.voice.channel.connect()
+            elif self.voice_clients[ctx.guild.id] not in self.bot.voice_clients:
+                self.voice_clients[ctx.guild.id] = await ctx.author.voice.channel.connect()
         else:
-            await ctx.send("You are not connected to a voice channel.", delete_after=20)
+            await ctx.send("You are not connected to a voice channel.")
 
     
     @commands.command(name='play', help='Joins the voice channel and plays a song')
     async def play(self, ctx, *, query):
         self.last_channel = ctx.channel  
         await self.ensure_voice(ctx)
+        queue = self.get_guild_queue(ctx.guild.id)
 
         if self.streaming_mode:
             embed = discord.Embed(title="Streaming Mode", description="Cannot add songs while in 24/7 streaming mode.", color=discord.Color.red())
@@ -128,30 +139,45 @@ class Music(commands.Cog):
             return
 
         async with ctx.typing():
-            player = await YTDLSource.from_query(query, loop=self.bot.loop)
-            player.volume = self.volume_level  # Set the volume
-            self.queue.append(player)
+            try:
+                player = await YTDLSource.from_query(query, loop=self.bot.loop)
+                player.volume = self.volume_level  # Set the volume
+                self.queue.append(player)
 
-            if not ctx.voice_client.is_playing():
-                await self.play_next_song(ctx)
-            else:
-                embed = discord.Embed(title="Added to Queue", description=f'[{player.title}]({player.url})', color=discord.Color.blue())
-                if player.thumbnail:
-                    embed.set_thumbnail(url=player.thumbnail)
+                if not ctx.voice_client.is_playing():
+                    await self.play_next_song(ctx)
+                else:
+                    embed = discord.Embed(title="Added to Queue", description=f'[{player.title}]({player.url})', color=discord.Color.blue())
+                    if player.thumbnail:
+                        embed.set_thumbnail(url=player.thumbnail)
+                        await ctx.send(embed=embed)
+
+            except Exception as e:
+                embed = discord.Embed(title="Error", description=f"An error occurred: {str(e)}", color=discord.Color.red())
                 await ctx.send(embed=embed)
 
     async def play_next_song(self, ctx):
-
+        queue = self.get_guild_queue(ctx.guild.id)
         if len(self.queue) > 0:
             player = self.queue.pop(0)
             self.current_player = player
 
-            if ctx.voice_client.is_connected():  # Ensure bot is still connected
-                ctx.voice_client.play(player, after=lambda e: asyncio.run_coroutine_threadsafe(self.play_next_song(ctx), self.bot.loop))
+            def after_playing(error):
+                if error:
+                    print(f"Error occurred while playing the song: {error}")
+                asyncio.run_coroutine_threadsafe(self.play_next_song(ctx), self.bot.loop)
 
-            embed = discord.Embed(title="Now Playing", description=f'[{player.title}]({player.url})', color=discord.Color.green())
-            embed.set_thumbnail(url=player.data['thumbnail'])  # Display the thumbnail
-            await ctx.send(embed=embed)
+            if ctx.voice_client and ctx.voice_client.is_connected():  # Ensure bot is still connected
+                try:
+                    ctx.voice_client.play(player, after=after_playing)
+                except Exception as e:
+                    print(f"Error occurred during playback: {e}")
+                    await ctx.send(f"An error occurred: {e}")
+
+                embed = discord.Embed(title="Now Playing", description=f'[{player.title}]({player.url})', color=discord.Color.green())
+                embed.set_thumbnail(url=player.data['thumbnail'])  # Display the thumbnail
+                await ctx.send(embed=embed)
+
         else:
             embed = discord.Embed(title="Queue", description="Queue is empty.", color=discord.Color.orange())
             await ctx.send(embed=embed)
@@ -159,8 +185,9 @@ class Music(commands.Cog):
 
     async def check_idle_disconnect(self, ctx):
         await asyncio.sleep(self.IDLE_TIMEOUT)  # Wait for the idle timeout
-        if ctx.voice_client and not ctx.voice_client.is_playing() and not self.queue:
+        if ctx.voice_client and not ctx.voice_client.is_playing() and not self.get_guild_queue(ctx.guild.id):
             await ctx.voice_client.disconnect()
+            del self.voice_clients[ctx.guild.id]
             embed = discord.Embed(title="Disconnected", description="Disconnected due to inactivity.", color=discord.Color.red())
             await ctx.send(embed=embed)
 
@@ -280,7 +307,7 @@ class Music(commands.Cog):
     async def start_stream(self, ctx, genre: str):
         self.streaming_mode = True
         await self.ensure_voice(ctx)
-
+        
         genre = genre.lower()
         if genre not in self.genre_urls:
             await ctx.send(f"Invalid genre. Available genres are: {', '.join(self.genre_urls.keys())}")
