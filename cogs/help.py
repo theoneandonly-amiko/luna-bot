@@ -131,16 +131,6 @@ class Help(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    # ================= Info Category ======================
-    @commands.command(name='info')
-    async def _help(self, ctx):
-        embed = discord.Embed(title="**About me**", color=discord.Color.brand_green())
-        embed.add_field(name="Short description", value=(
-            "I\'m Luna, the bot serve with most basic purposes. Currently I\'m under development, but I\'ll be sure to not make you feel disappointed, hehe. ;)\n"
-            "I was built from the migrations of Miko bot and Amiker bot, because of some inconvenient monitors and constant downtime from server side, with some more improvements and optimisations. If there\'s any new feature, feel free to suggest. Any cockroach I made? Catch them. 😁"
-        ), inline=False)
-        await ctx.send(embed=embed)
-
 
 
 async def setup(bot):
