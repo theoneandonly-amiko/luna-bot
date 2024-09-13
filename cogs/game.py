@@ -174,7 +174,7 @@ class Games(commands.Cog):
             "scrambled": scrambled,
             "theme": theme
         }
-        await ctx.send(f"Scramble game started! The theme is '{theme}'. Unscramble this word: `{scrambled}`. Use `&guess [answer] to unscramble the word!`")
+        await ctx.send(f"Scramble game started! The theme is '{theme}'. Unscramble this word: `{scrambled}`. Use `&guess [answer]` to unscramble the word!")
 
     @commands.command()
     async def guess(self, ctx, *, guess: str):
