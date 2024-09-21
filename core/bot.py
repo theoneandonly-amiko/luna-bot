@@ -81,7 +81,7 @@ class LunaBot(commands.Bot):
     
 
     async def on_message(self, message):
-        if message.author == self.user:
+        if message.author.bot:
             return  # Ignore messages sent by the bot itself
     
         # Check for keywords and send appropriate responses with username
