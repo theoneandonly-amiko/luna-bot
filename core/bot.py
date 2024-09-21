@@ -90,5 +90,3 @@ class LunaBot(commands.Bot):
                 response = random.choice(responses)
                 await message.channel.send(f'{response}')
                 break  # Exit loop after sending a response
-    
-        await self.process_commands(message)  # "Again, please don't stop working", Amiko said.
