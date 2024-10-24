@@ -1,358 +1,582 @@
-import asyncio
-import random
-import re
+# Made with ❤️ by Lunatico Annie. Status: Finished!
+
 import discord
 from discord.ext import commands
 import yt_dlp
+import asyncio
+import random
 
-# ================ Music Function ======================
 class YTDLSource(discord.PCMVolumeTransformer):
-    def __init__(self, source, *, data, volume=0.5):
-        super().__init__(source, volume)
-
+    def __init__(self, source, *, data, volume=0.8):
+        super().__init__(source, volume=volume)
         self.data = data
         self.title = data.get('title')
         self.url = data.get('url')
-        self.thumbnail = data.get('thumbnail')
 
     @classmethod
-    async def from_query(cls, query, *, loop=None):
-        loop = loop or asyncio.get_event_loop()
-        ytdl_format_options = {
-        'format': 'bestaudio',
-        'noplaylist': 'True',
-        }
-        ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
-
-    # Regular expression to check if the query is a URL
-        url_regex = re.compile(
-            r'^(https?://)?(www\.)?(youtube\.com|youtu\.?be)/.+$'
-        )
-
-        try:
-            if url_regex.match(query):            
-            #Directly extract info from the URL
-                info = await loop.run_in_executor(None, lambda: ytdl.extract_info(query, download=False))
-            else:            
-            # If not URL, treat it as a search query
-                search_query = f"ytsearch:{query}"
-                info = await loop.run_in_executor(None, lambda: ytdl.extract_info(search_query, download=False)['entries'][0])
-
-            # Log: Display fetched information
-
-            if not info:
-                raise commands.CommandError("No results found for the provided query.")
-
-            url = info.get('url')
-            title = info.get('title')
-            thumbnail = info.get('thumbnail')
-            webpage_url = info.get('webpage_url')
-            data = {'title': title, 'url': webpage_url, 'thumbnail': thumbnail}
-    
-            return cls(discord.FFmpegPCMAudio(url), data=data) # type: ignore
-
-        except yt_dlp.utils.DownloadError as e:
-            raise commands.CommandError(f"Download error: {e}")
-        except IndexError:
-            raise commands.CommandError("No results found. Please try a different query or URL.")
-        except Exception as e:
-        # Log the exact error
-            print(f"An unexpected error occurred: {str(e)}")
-            raise commands.CommandError(f"An unexpected error occurred: {str(e)}")
-    @classmethod
-    async def from_url(cls, url, *, loop=None, stream=False):
-        loop = loop or asyncio.get_event_loop()
-        ytdl_format_options = {
+    async def from_url(cls, url, *, loop=None, stream=False, current_mode="normal", timeout=20):
+        ydl_opts = {
             'format': 'bestaudio/best',
-            'noplaylist': 'True',
+            'noplaylist': True,
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'opus',
+                'preferredquality': '192',
+            }],
+            'postprocessor_args': [
+                '-ar', '48000',
+                '-ac', '2',
+            ],
+            'prefer_ffmpeg': True,
+            'duration_min': 61,  # Exclude Shorts by requiring a minimum duration of 61 seconds
+            'socket_timeout': 20,  # Increase timeout (seconds)
         }
-        ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
 
-        info = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
-        if 'entries' in info:
-            info = info['entries'][0]
+        # Check if the query is a URL or not
+        if not url.startswith(('http://', 'https://')):
+            # If it's not a URL, perform a YouTube search using yt-dlp
+            ydl_opts['default_search'] = 'ytsearch1'
 
-        data = {
-            'title': info.get('title'),
-            'url': info.get('url'),
+        def extract_info():
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+                
+                # Handle multiple entries and sort by view count
+                if 'entries' in info:
+                    info = sorted(info['entries'], key=lambda x: x.get('view_count', 0), reverse=True)[0]
+                return info
+
+        # Use asyncio to apply a timeout for yt-dlp extraction
+        try:
+            loop = loop or asyncio.get_event_loop()
+            info = await asyncio.wait_for(loop.run_in_executor(None, extract_info), timeout)
+        except asyncio.TimeoutError:
+            print(f"Timeout after {timeout} seconds while fetching {url}")
+            return None
+
+        # Apply filters based on current_mode
+        filters = None
+        if current_mode == "nightcore":
+            filters = '-filter:a "asetrate=44100*1.2,aresample=44100"'
+        elif current_mode == "slowed":
+            filters = '-filter:a "asetrate=44100*0.85,aresample=44100"'
+
+        # FFmpeg options
+        ffmpeg_options = {
+            'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+            'options': filters if filters else '-vn'
         }
 
-        if stream:
-            return cls(discord.FFmpegPCMAudio(info['url']), data=data)
-        else:
-            return cls(discord.FFmpegPCMAudio(info['url']), data=data)
-        
+        return cls(discord.FFmpegPCMAudio(info['url'], **ffmpeg_options), data=info)
 
-class Music(commands.Cog):
+class Song:
+    def __init__(self, title, url):
+        self.title = title
+        self.url = url
+
+class MusicCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.music_queues = {}
-        self.voice_clients = {}
-        self.queue = []
-        self.IDLE_TIMEOUT = 30
-        self.current_player = None
-        self.volume_level = 0.8  # Default volume level
-        self.last_channel = None # Store the last active channel
-        self.streaming_mode = False
-        self.genre_urls = {
-            'lofi': ['https://youtu.be/MadEqVeRFuM?si=bujQinAYu950qYuv', 'https://youtu.be/Nyx6SBixRE8?si=6w8lhmLQltm1ANXR', 'https://youtu.be/i43tkaTXtwI?si=j4Fxq08tqtrladuM', 'https://youtu.be/1fueZCTYkpA?si=OdkyV5j1pA38avX1'],
+        self.queue = []  # Normal queue
+        self.slowed_queue = [] # Slowed queue
+        self.nightcore_queue = []  # Nightcore queue
+        self.is_streaming_mode = False
+        self.current_mode = "normal"  # Flag to check current playback mode. Default is normal.
+        self.genre_streams = {
+            'lofi': ['https://www.youtube.com/live/jfKfPfyJRdk?si=-0LEOJqrjSQll2Fx', 'https://www.youtube.com/live/mwPR8aizAyo?si=513xFxn5evg2ky8I', 'https://www.youtube.com/live/ralJmHG-DII?si=yD21si4hfIssL-a6', 'https://www.youtube.com/live/7p41rWD3s-c?si=PrF1E8aPYQ3kFkCv'],
 
             'deep_house': ['https://youtu.be/cnVPm1dGQJc?si=5g08aZZPQl5c2mtn', 'https://youtu.be/DsAd2Brhr-M?si=mFBVQn77MpqvsrIj', 'https://youtu.be/ZiyYqg75v7Y?si=hGyWqzuRYNnbU6if', 'https://youtu.be/B-rrm46WGhE?si=hi23i1aLSs7GUmHG'],
 
             'hardstyle': ['https://youtu.be/U3ZxZEFo1lk?si=c1ExdwWLuem8jgJZ', 'https://youtu.be/I6Tgl33CAjc?si=20pUmynbbnB5Uuwt', 'https://youtu.be/QhYlAM40oUY?si=7ovc1y3ng_QEOwJ8'],
 
-            'synthwave': ['https://youtu.be/k3WkJq478To?si=rf_xpFYGhRZ0Wsay', 'https://youtu.be/cCTaiJZAZak?si=zu17yQiXAR_PYEO3', ''],
+            'synthwave': ['https://www.youtube.com/live/4xDzrJKXOOY?si=2NgFq-GZqKm_ZNlu', 'https://www.youtube.com/live/UedTcufyrHc?si=ZAwoaD1tOAq6MrUp','https://www.youtube.com/live/5-anTj1QrWs?si=lNMP_kB4GsfPmYVY', 'https://www.youtube.com/live/KNJyQwgzrMg?si=WLjD3g0hzNBpFAKI', 'https://youtu.be/k3WkJq478To?si=rf_xpFYGhRZ0Wsay', 'https://youtu.be/cCTaiJZAZak?si=zu17yQiXAR_PYEO3'],
 
-            'progressive_house': ['https://youtu.be/jaE6M5Lr0mo?si=gP8jpPGMBq7ZN2Fp', 'https://youtu.be/CEbXiuDKRlM?si=HN8Svh7AChUqxhx1', 'https://youtu.be/GQ3qAnkrLzI?si=OcAcK0A_TLN_fMR4', 'https://youtu.be/8NsEHIU_iuE?si=lqEvAlpcEJEHcSkK'],
+            'progressive_house': ['https://youtu.be/jaE6M5Lr0mo?si=gP8jpPGMBq7ZN2Fp', 'https://youtu.be/CEbXiuDKRlM?si=HN8Svh7AChUqxhx1', 'https://youtu.be/GQ3qAnkrLzI?si=OcAcK0A_TLN_fMR4', 'https://youtu.be/8NsEHIU_iuE?si=lqEvAlpcEJEHcSkK', 'https://youtu.be/jaE6M5Lr0mo?si=gP8jpPGMBq7ZN2Fp', 'https://youtu.be/CEbXiuDKRlM?si=HN8Svh7AChUqxhx1', 'https://youtu.be/GQ3qAnkrLzI?si=OcAcK0A_TLN_fMR4', 'https://youtu.be/8NsEHIU_iuE?si=lqEvAlpcEJEHcSkK'],
 
-            'kw_futurebass': ['https://youtu.be/urm1kR7vewM?si=Kw79owZnW_IPZZcO', 'https://youtu.be/tGhEMlxrjA8?si=gNdEuXSCYx2yyI5p', 'https://youtu.be/Ym0WFiHMuyw?si=IwixdnzpYEfDhlPS', 'https://youtu.be/iTyKy_AvhPM?si=PztjS99leqWIjhXn', 'https://youtu.be/goDcxp5K6ls?si=B375P15fpUklp99A']
-            # Add more genres and URLs as needed
+            'kw_futurebass': ['https://youtu.be/urm1kR7vewM?si=Kw79owZnW_IPZZcO', 'https://youtu.be/tGhEMlxrjA8?si=gNdEuXSCYx2yyI5p', 'https://youtu.be/Ym0WFiHMuyw?si=IwixdnzpYEfDhlPS', 'https://youtu.be/iTyKy_AvhPM?si=PztjS99leqWIjhXn','https://youtu.be/Ym0WFiHMuyw?si=4b-zeuB5OzzwGZVX', 'https://youtu.be/0zYsGzdwfjg?si=PizQPEZMAlHgW89s', 'https://youtu.be/iTyKy_AvhPM?si=BYPq4-k1VFtpwvWA'],
         }
+# Updated on_song_finished function to check when a song ends
+    def on_song_finished(self, ctx):
+        """Callback when the current song finishes."""
+        if ctx.voice_client and not ctx.voice_client.is_playing():
+            self.play_next(ctx)
 
-    def get_guild_queue(self, guild_id):
-        if guild_id not in self.music_queues:
-            self.music_queues[guild_id] = []
-        return self.music_queues[guild_id]
+# Optimized play_next function
+    def play_next(self, ctx):
+        """Plays the next song in the appropriate queue, switching modes if necessary."""
+        if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
+            return  # Skip if already playing or paused
 
-    def get_guild_voice_client(self, guild_id):
-        return self.voice_clients.get(guild_id)
+        next_song = None
 
-    async def ensure_voice(self, ctx):
-        if ctx.author.voice:
-            if ctx.guild.id not in self.voice_clients:
-                self.voice_clients[ctx.guild.id] = await ctx.author.voice.channel.connect()
-            elif self.voice_clients[ctx.guild.id] not in self.bot.voice_clients:
-                self.voice_clients[ctx.guild.id] = await ctx.author.voice.channel.connect()
-        else:
-            await ctx.send("You are not connected to a voice channel.")
+        # Try selecting a song from the current mode's queue
+        if self.current_mode == "nightcore" and self.nightcore_queue:
+            next_song = self.nightcore_queue.pop(0)
+        elif self.current_mode == "slowed" and self.slowed_queue:
+            next_song = self.slowed_queue.pop(0)
+        elif self.queue:
+            next_song = self.queue.pop(0)
 
+        # If the current queue is empty, switch to another queue if available
+        if next_song is None:
+            if self.current_mode == "nightcore" and not self.nightcore_queue:
+                if self.slowed_queue:
+                    self.current_mode = "slowed"
+                    next_song = self.slowed_queue.pop(0)
+                elif self.queue:
+                    self.current_mode = "normal"
+                    next_song = self.queue.pop(0)
+
+            elif self.current_mode == "slowed" and not self.slowed_queue:
+                if self.nightcore_queue:
+                    self.current_mode = "nightcore"
+                    next_song = self.nightcore_queue.pop(0)
+                elif self.queue:
+                    self.current_mode = "normal"
+                    next_song = self.queue.pop(0)
+
+            elif self.current_mode == "normal" and not self.queue:
+                if self.nightcore_queue:
+                    self.current_mode = "nightcore"
+                    next_song = self.nightcore_queue.pop(0)
+                elif self.slowed_queue:
+                    self.current_mode = "slowed"
+                    next_song = self.slowed_queue.pop(0)
+
+        # If no songs are found in any queue, send a message
+        if next_song is None:
+            self.current_mode = "normal"
+            embed = discord.Embed(
+                title="Queue Empty",
+                description="All queues are empty. No more songs to play.",
+                color=discord.Color.orange()
+            )
+            asyncio.run_coroutine_threadsafe(ctx.send(embed=embed), self.bot.loop).result()
+            return
+
+        # Debugging statement to confirm mode and song
+        print(f"Playing next song in mode: {self.current_mode}, Song: {next_song.title}")
+
+        # Play the selected song
+        try:
+            ctx.voice_client.play(next_song, after=lambda e: self.on_song_finished(ctx))
+            embed = discord.Embed(
+                title=f'Now playing in {self.current_mode.capitalize()} mode',
+                description=f'[{next_song.title}]({next_song.data.get("webpage_url")})',
+                color=discord.Color.blue()
+            )
+            if next_song.data.get('thumbnail'):
+                embed.set_thumbnail(url=next_song.data.get('thumbnail'))
+            fut = asyncio.run_coroutine_threadsafe(ctx.send(embed=embed), self.bot.loop)
+            fut.result()
+        except Exception as e:
+            print(f"Error playing next song: {e}")
+
+
+    @commands.command(name="play")
+    async def play(self, ctx, *, query=None):
+        """Plays a song from YouTube (can be URL or search query)."""
+        if ctx.voice_client is None:
+            if ctx.author.voice:
+                await ctx.author.voice.channel.connect()
+            else:
+                return
+
+        if self.is_streaming_mode:
+            embed = discord.Embed(title="Unavailable", description="The bot is currently in 24/7 streaming mode. You can't add new songs.", color=discord.Color.red())
+            await ctx.send(embed=embed)
+            return
+
+
+        async with ctx.typing():
+            try:
+                player = await YTDLSource.from_url(query, loop=self.bot.loop, stream=True, current_mode=self.current_mode)
+            except Exception as e:
+                print(f"Error fetching the song: {e}")
+                return
+
+
+        if ctx.voice_client.is_playing():
+            self.queue.append(player)
+            embed = discord.Embed(title="Added to queue", description=f'[{player.title}]({player.data.get("webpage_url")})', color=discord.Color.green())
+            await ctx.send(embed=embed)
+            return
+
+        try:
+            ctx.voice_client.play(player, after=lambda e: self.play_next(ctx))
+            embed = discord.Embed(title='Now playing', description=f'[{player.title}]({player.data.get("webpage_url")})', color=discord.Color.blue())
+            thumbnail_url = player.data.get('thumbnail')
+            if thumbnail_url:
+                embed.set_thumbnail(url=thumbnail_url)
+            await ctx.send(embed=embed)
+        except Exception as e:
+            await ctx.send(f"An error occurred while playing the song: {e}")
+            print(f"Error playing the song: {e}")
+            return
     
-    @commands.command(name='play', help='Joins the voice channel and plays a song')
-    async def play(self, ctx, *, query):
-        self.last_channel = ctx.channel  
-        await self.ensure_voice(ctx)
-        queue = self.get_guild_queue(ctx.guild.id)
+    # Optimized nightcore command
+    @commands.command(name="nightcore")
+    async def nightcore(self, ctx, *, query=None):
+        """Plays a song in Nightcore mode (can be URL or search query)."""
+        if ctx.voice_client is None:
+            if ctx.author.voice:
+                await ctx.author.voice.channel.connect()
+            else:
+                return
 
-        if self.streaming_mode:
-            embed = discord.Embed(title="Streaming Mode", description="Cannot add songs while in 24/7 streaming mode.", color=discord.Color.red())
+        if self.is_streaming_mode:
+            embed = discord.Embed(title="Unavailable", description="The bot is currently in 24/7 streaming mode. You can't add new songs.", color=discord.Color.red())
             await ctx.send(embed=embed)
             return
 
         async with ctx.typing():
             try:
-                player = await YTDLSource.from_query(query, loop=self.bot.loop)
-                player.volume = self.volume_level  # Set the volume
-                self.queue.append(player)
-
-                if not ctx.voice_client.is_playing():
-                    await self.play_next_song(ctx)
-                else:
-                    embed = discord.Embed(title="Added to Queue", description=f'[{player.title}]({player.url})', color=discord.Color.blue())
-                    if player.thumbnail:
-                        embed.set_thumbnail(url=player.thumbnail)
-                        await ctx.send(embed=embed)
-
+                player = await YTDLSource.from_url(query, loop=self.bot.loop, stream=True, current_mode="nightcore")
             except Exception as e:
-                embed = discord.Embed(title="Error", description=f"An error occurred: {str(e)}", color=discord.Color.red())
-                await ctx.send(embed=embed)
+                await ctx.send(f"An error occurred while fetching the song: {e}")
+                print(f"Error fetching the song: {e}")
+                return
 
-    async def play_next_song(self, ctx):
-        queue = self.get_guild_queue(ctx.guild.id)
-        if len(self.queue) > 0:
-            player = self.queue.pop(0)
-            self.current_player = player
-
-            def after_playing(error):
-                if error:
-                    print(f"Error occurred while playing the song: {error}")
-                asyncio.run_coroutine_threadsafe(self.play_next_song(ctx), self.bot.loop)
-
-            if ctx.voice_client and ctx.voice_client.is_connected():  # Ensure bot is still connected
-                try:
-                    ctx.voice_client.play(player, after=after_playing)
-                except Exception as e:
-                    print(f"Error occurred during playback: {e}")
-                    await ctx.send(f"An error occurred: {e}")
-
-                embed = discord.Embed(title="Now Playing", description=f'[{player.title}]({player.url})', color=discord.Color.green())
-                embed.set_thumbnail(url=player.data['thumbnail'])  # Display the thumbnail
-                await ctx.send(embed=embed)
-
-        else:
-            embed = discord.Embed(title="Queue", description="Queue is empty.", color=discord.Color.orange())
-            await ctx.send(embed=embed)
-            await self.check_idle_disconnect(ctx)
-
-    async def check_idle_disconnect(self, ctx):
-        await asyncio.sleep(self.IDLE_TIMEOUT)  # Wait for the idle timeout
-        if ctx.voice_client and not ctx.voice_client.is_playing() and not self.get_guild_queue(ctx.guild.id):
-            await ctx.voice_client.disconnect()
-            del self.voice_clients[ctx.guild.id]
-            embed = discord.Embed(title="Disconnected", description="Disconnected due to inactivity.", color=discord.Color.red())
-            await ctx.send(embed=embed)
-
-    @commands.command(name='pause', help='This command pauses the song')
-    async def pause(self, ctx):
         if ctx.voice_client.is_playing():
-            ctx.voice_client.pause()
-            embed = discord.Embed(title="Paused", description="The song has been paused.", color=discord.Color.yellow())
+            self.nightcore_queue.append(player)
+            embed = discord.Embed(title="Added to Nightcore queue", description=f'[{player.title}]({player.data.get("webpage_url")})', color=discord.Color.green())
             await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Error", description="The bot is not playing anything at the moment.", color=discord.Color.red())
-            await ctx.send(embed=embed)
-
-    @commands.command(name='resume', help='Resumes the song')
-    
-    async def resume(self, ctx):
-        if ctx.voice_client.is_paused():
-            ctx.voice_client.resume()
-            embed = discord.Embed(title="Resumed", description="The song has been resumed.", color=discord.Color.green())
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Error", description="The bot was not playing anything before this. Use play command", color=discord.Color.red())
-            await ctx.send(embed=embed)
-
-    @commands.command(name='stop', help='Stops the currently playing song')
-    
-    async def stop(self, ctx):
-        if ctx.voice_client.is_playing():
-            ctx.voice_client.stop()
-            embed = discord.Embed(title="Stopped", description="The current song has been stopped.", color=discord.Color.red())
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Error", description="The bot is not playing anything at the moment.", color=discord.Color.red())
-            await ctx.send(embed=embed)
-        await self.check_idle_disconnect(ctx)
-
-    @commands.command(name='queue', help='Displays the current song queue')
-    
-    async def display_queue(self, ctx):
-        if len(self.queue) > 0:
-            queue_list = "\n".join([f"{i + 1}. [{song.title}]({song.url})" for i, song in enumerate(self.queue)])
-            embed = discord.Embed(title="Current Queue", description=f"{queue_list}", color=discord.Color.blue())
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Queue", description="The queue is empty.", color=discord.Color.orange())
-            await ctx.send(embed=embed)
-
-    @commands.command(name='skip', help='Skips the current song')
-    
-    async def skip(self, ctx):
-        if ctx.voice_client.is_playing():
-            ctx.voice_client.stop()
-            embed = discord.Embed(title="Skipped", description="The current song has been skipped.", color=discord.Color.green())
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Error", description="The bot is not playing anything at the moment.", color=discord.Color.red())
-            await ctx.send(embed=embed)
-
-    @commands.command(name='volume_up', help='Increases the volume by 10%')
-    
-    async def volume_up(self, ctx):
-        if self.volume_level < 1.0:
-            self.volume_level = min(self.volume_level + 0.1, 1.0)
-            if self.current_player:
-                self.current_player.volume = self.volume_level
-            embed = discord.Embed(title="Volume Up", description=f'Volume increased to {int(self.volume_level * 100)}%', color=discord.Color.green())
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Volume", description='Volume is already at maximum.', color=discord.Color.orange())
-            await ctx.send(embed=embed)
-
-    @commands.command(name='volume_down', help='Decreases the volume by 10%')
-    
-    async def volume_down(self, ctx):
-        if self.volume_level > 0.0:
-            self.volume_level = max(self.volume_level - 0.1, 0.0)
-            if self.current_player:
-                self.current_player.volume = self.volume_level
-            embed = discord.Embed(title="Volume Down", description=f'Volume decreased to {int(self.volume_level * 100)}%', color=discord.Color.red())
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Volume", description='Volume is already at minimum.', color=discord.Color.orange())
-            await ctx.send(embed=embed)
-
-    @commands.command(name='clear_queue', help='Clears the entire music queue')
-    async def clear_queue(self, ctx):
-
-        if len(self.queue) > 0:
-            self.queue.clear()
-
-
-            embed = discord.Embed(title="Queue Cleared", description="The music queue has been cleared.", color=discord.Color.red())
-            await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(title="Queue Empty", description="The queue is already empty.", color=discord.Color.orange())
-            await ctx.send(embed=embed)
-
-    @commands.command(name='disconnect', help='Disconnects the bot from the voice channel')
-    
-    async def disconnect(self, ctx):
-        if ctx.voice_client:
-            await ctx.voice_client.disconnect()
-
-            # Clear the queue and reset variables
-            self.queue.clear()
-            self.current_player = None
-            self.streaming_mode = False
-
-            embed = discord.Embed(title="Disconnected", description="Disconnected from the voice channel.", color=discord.Color.green())
-            await ctx.send(embed=embed, delete_after=20)
-        else:
-            embed = discord.Embed(title="Idling", description="I'm not connected to any voice channel.", color=discord.Color.red())
-            await ctx.send(embed=embed, delete_after=20)
-
-    @commands.command(name='stream247', help='Starts streaming the chosen genre 24/7')
-    
-    async def start_stream(self, ctx, genre: str):
-        self.streaming_mode = True
-        await self.ensure_voice(ctx)
-        
-        genre = genre.lower()
-        if genre not in self.genre_urls:
-            await ctx.send(f"Invalid genre. Available genres are: {', '.join(self.genre_urls.keys())}")
             return
 
-        playlist = self.genre_urls[genre]
-        embed = discord.Embed(title="Now Playing", description=f"Streaming {genre.capitalize()} music 24/7", color=discord.Color.green())
-        await ctx.send(embed=embed)
-        async def play_next_video():
-            if not ctx.voice_client:
-                return  # Ensure the bot is still connected to a voice channel before playing the next video.
+        try:
+            ctx.voice_client.play(player, after=lambda e: self.play_next(ctx))
+            embed = discord.Embed(title='Now playing in Nightcore mode', description=f'[{player.title}]({player.data.get("webpage_url")})', color=discord.Color.blue())
+            thumbnail_url = player.data.get('thumbnail')
+            if thumbnail_url:
+                embed.set_thumbnail(url=thumbnail_url)
+            await ctx.send(embed=embed)
+        except Exception as e:
+            await ctx.send(f"An error occurred while playing the song: {e}")
+            print(f"Error playing the song: {e}")
+            return
 
-            video_url = random.choice(playlist)
+    @commands.command(name="slowed")
+    async def slowed(self, ctx, *, query=None):
+        """Plays a song in Slowed mode (can be URL or search query)."""
+        if ctx.voice_client is None:
+            if ctx.author.voice:
+                await ctx.author.voice.channel.connect()
+            else:
+                return
 
+        if self.is_streaming_mode:
+            embed = discord.Embed(title="Unavailable", description="The bot is currently in 24/7 streaming mode. You can't add new songs.", color=discord.Color.red())
+            await ctx.send(embed=embed)
+            return
+
+        async with ctx.typing():
             try:
-                player = await YTDLSource.from_url(video_url, loop=self.bot.loop, stream=True)
-                if ctx.voice_client:
-                    ctx.voice_client.play(player, after=lambda e: asyncio.run_coroutine_threadsafe(play_next_video(), self.bot.loop))
+                player = await YTDLSource.from_url(query, loop=self.bot.loop, stream=True, current_mode="slowed")
             except Exception as e:
-                print(f"Error playing video: {e}")
-                embed = discord.Embed(title='Error', description='An error occurred while trying to start the stream.', color=discord.Color.red())
+                await ctx.send(f"An error occurred while fetching the song: {e}")
+                print(f"Error fetching the song: {e}")
+                return
+
+        if ctx.voice_client.is_playing():
+            self.slowed_queue.append(player)
+            embed = discord.Embed(title="Added to Slowed queue", description=f'[{player.title}]({player.data.get("webpage_url")})', color=discord.Color.green())
+            await ctx.send(embed=embed)
+            return
+
+        try:
+            ctx.voice_client.play(player, after=lambda e: self.play_next(ctx))
+            embed = discord.Embed(title='Now playing in Slowed mode', description=f'[{player.title}]({player.data.get("webpage_url")})', color=discord.Color.blue())
+            thumbnail_url = player.data.get('thumbnail')
+            if thumbnail_url:
+                embed.set_thumbnail(url=thumbnail_url)
+            await ctx.send(embed=embed)
+        except Exception as e:
+            await ctx.send(f"An error occurred while playing the song: {e}")
+            print(f"Error playing the song: {e}")
+            return
+
+    @commands.command(name="toggle_effects")
+    async def toggle_effects(self, ctx, mode: str = None):
+        """
+        Toggle between Normal, Nightcore, and Slowed modes, or switch to the specified mode.
+    
+        Usage:
+        - am/toggle_effects -> Automatically switch between modes.
+        - am/toggle_effects normal -> Switches to normal mode.
+        - am/toggle_effects nightcore -> Switches to nightcore mode.
+        - am/toggle_effects slowed -> Switches to slowed mode.
+        """
+    
+        valid_modes = ["normal", "nightcore", "slowed"]
+    
+        # Normalize mode input
+        if mode:
+            mode = mode.lower()
+
+    # If no mode is provided, cycle through the modes
+        if mode is None:
+            if self.current_mode == "normal":
+                self.current_mode = "nightcore"
+                response = "Switched to Nightcore mode."
+            elif self.current_mode == "nightcore":
+                self.current_mode = "slowed"
+                response = "Switched to Slowed mode."
+            else:
+                self.current_mode = "normal"
+                response = "Switched to Normal mode."
+    
+    # Switch to the specified mode
+        elif mode in valid_modes:
+            self.current_mode = mode
+            response = f"Switched to {mode.capitalize()} mode."
+    
+        else:
+            response = f"Invalid mode! Choose from: {', '.join(valid_modes)}"
+
+    # Send confirmation to the user
+        embed = discord.Embed(title="Mode Changed", description=response, color=discord.Color.green())
+        await ctx.send(embed=embed)
+    
+    # Apply the appropriate flag depending on the selected mode
+        if self.current_mode == "normal":
+            self.current_mode = "normal"
+            
+        elif self.current_mode == "nightcore":
+            self.current_mode = "nightcore"
+            
+        elif self.current_mode == "slowed":
+            self.current_mode = "slowed"
+
+
+    @commands.command(name="stop")
+    async def stop(self, ctx):
+        """Stops and disconnects the bot from voice."""
+        if ctx.voice_client is None or not ctx.voice_client.is_connected():
+            embed = discord.Embed(title="Ahem! Hold up!", description="I'm not connected to a voice channel.", color=discord.Color.yellow())
+            await ctx.send(embed=embed)
+            return
+
+        if self.is_streaming_mode:
+            embed = discord.Embed(title="Hold up!", description="You cannot use this command when streaming mode is active. Consider using `stopstream` command instead.", color=discord.Color.brand_red())
+            await ctx.send(embed=embed) # Prevent this command from executing if streaming mode is True (or active).
+            return
+
+        self.queue.clear()
+        self.nightcore_queue.clear()
+        self.slowed_queue.clear()
+        self.current_mode = "normal"
+        await ctx.voice_client.disconnect()
+        embed = discord.Embed(title="Stopped", description="Stopped music and disconnected.", color=discord.Color.green())
+        await ctx.send(embed=embed)
+
+
+    @commands.command(name="queue")
+    async def queue(self, ctx):
+        """Displays all current song queues."""
+        if not self.queue and not self.nightcore_queue and not self.slowed_queue:
+            embed = discord.Embed(title="Queue", description="All queues are currently empty.", color=discord.Color.orange())
+            await ctx.send(embed=embed)
+            return
+
+        if self.is_streaming_mode:
+            embed = discord.Embed(title="Unavailable", description="This command is unavailable when streaming mode is active.", color=discord.Color.red())
+            await ctx.send(embed=embed)
+            return
+
+        embed = discord.Embed(title="Music Queue", color=discord.Color.blue())
+
+    # Add normal queue songs to the embed
+        if self.queue:
+            normal_queue_desc = "\n".join([f"{i + 1}. [{song.title}]({song.data.get('webpage_url')})" for i, song in enumerate(self.queue)])
+            embed.add_field(name="Normal Queue", value=normal_queue_desc, inline=False)
+
+    # Add nightcore queue songs to the embed
+        if self.nightcore_queue:
+            nightcore_queue_desc = "\n".join([f"{i + 1}. [{song.title}]({song.data.get('webpage_url')})" for i, song in enumerate(self.nightcore_queue)])
+            embed.add_field(name="Nightcore Queue", value=nightcore_queue_desc, inline=False)
+
+    # Add slowed queue songs to the embed
+        if self.slowed_queue:
+            slowed_queue_desc = "\n".join([f"{i + 1}. [{song.title}]({song.data.get('webpage_url')})" for i, song in enumerate(self.slowed_queue)])
+            embed.add_field(name="Slowed Queue", value=slowed_queue_desc, inline=False)
+
+        await ctx.send(embed=embed)
+
+        
+    @commands.command(name="stream")
+    async def stream(self, ctx, genre=None):
+        """Starts 24/7 streaming mode for a specific genre."""
+
+    # Check if the genre is valid
+        if genre is None or genre.lower() not in self.genre_streams:
+            available_genres = ', '.join(self.genre_streams.keys())
+            embed = discord.Embed(title="Genre List", description=f"Here are available genres: {available_genres}", color=discord.Color.blue())
+            await ctx.send(embed=embed)
+            return
+
+        embed = discord.Embed(title="Stream Mode!", description=f"Starting 24/7 {genre} stream!", color=discord.Color.green())
+        await ctx.send(embed=embed)
+    # Join the voice channel if not already connected
+        if ctx.voice_client is None:
+            if ctx.author.voice:
+                await ctx.author.voice.channel.connect()
+            else:
+                return
+
+    # Stop any currently playing audio
+        if ctx.voice_client.is_playing():
+            ctx.voice_client.stop()
+    
+    # Enable streaming mode
+        self.is_streaming_mode = True
+        self.queue.clear()  # Clear the regular song queue
+
+    # Select a random stream URL from the genre's list
+        genre_urls = self.genre_streams[genre.lower()]
+        random_url = random.choice(genre_urls)
+
+    # Play the stream immediately
+        await self.play_stream(ctx, random_url, genre)
+
+    async def play_stream(self, ctx, url, genre):
+        """Plays the given stream URL."""
+        async with ctx.typing():
+            try:
+            # Fetch the audio source
+                player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
+            
+            # Check if the player is None (invalid source)
+                if player is None:
+                    raise ValueError(f"Could not retrieve an audio source for URL: {url}")
+            
+            # Play the audio source
+                ctx.voice_client.play(player, after=lambda e: self.play_next_genre_stream(ctx, genre) if e is None else print(f'Error: {e}'))
+
+            except Exception as e:
+            # Log the error and send feedback to the user
+                print(f"Error while trying to play the stream: {e}")
+                
+    def play_next_genre_stream(self, ctx, genre):
+        """Plays the next stream URL in the same genre."""
+        # Check if the bot is still connected and if voice_client exists
+        if not ctx.voice_client or not ctx.voice_client.is_connected():
+            print("Bot is not connected to a voice channel. Stopping stream.")
+            return
+
+        if self.is_streaming_mode and genre in self.genre_streams:
+
+        
+            try:
+            # Run the coroutine thread-safely on the bot's loop
+                # Pick the next random stream URL from the genre's list
+                next_stream_url = random.choice(self.genre_streams[genre])
+
+            # Create a coroutine for playing the stream
+                coro = self.play_stream(ctx, next_stream_url, genre)
+                fut = asyncio.run_coroutine_threadsafe(coro, self.bot.loop)
+                fut.result()  # Wait for the coroutine to finish and raise exceptions if any
+            except Exception as e:
+                print(f'Error occurred while playing next stream: {e}')
+
+
+    @commands.command(name="stopstream")
+    async def stopstream(self, ctx):
+        """Stops the current stream and exits streaming mode."""
+        if not self.is_streaming_mode:
+            embed = discord.Embed(title="Error", description="The bot is not currently in streaming mode.", color=discord.Color.red())
+            await ctx.send(embed=embed)
+            return
+    
+        self.is_streaming_mode = False
+        self.queue.clear()
+
+        if ctx.voice_client.is_playing():
+            ctx.voice_client.stop()  # Stop the current playing stream
+        
+        await asyncio.sleep(0.5)  # Delay to allow FFmpeg to clean up
+    
+    # Optionally, forcibly terminate the FFmpeg process (possible?)
+        if ctx.voice_client and ctx.voice_client.source:
+            ctx.voice_client.source.cleanup()  # This should clean up the source, if implemented
+            ctx.voice_client.source = None  # Clear the source
+
+        if ctx.voice_client:
+            await ctx.voice_client.disconnect(force=True)  # Use force to disconnect
+
+        embed = discord.Embed(title="Stream Stopped", description="Stopped streaming and exited streaming mode.", color=discord.Color.green())
+        await ctx.send(embed=embed)
+
+    @commands.command(name="pause")
+    async def pause(self, ctx):
+        """Pauses the currently playing song."""
+        if ctx.voice_client is None or not ctx.voice_client.is_connected(): # Where do you want the bot to go??
+            embed = discord.Embed(title="Pause where?", description="I'm not connected to a voice channel.", color=discord.Color.red())
+            await ctx.send(embed=embed)
+            return
+        
+        if not ctx.voice_client.is_playing():
+            embed = discord.Embed(title="Pause...what?", description="I'm not playing anything at the moment.", color=discord.Color.red())
+            await ctx.send(embed=embed)
+            return
+        if ctx.voice_client.is_playing():
+            ctx.voice_client.pause()
+            embed = discord.Embed(title="La la la l-", description="Paused the song.", color=discord.Color.yellow())
+            await ctx.send(embed=embed)
+
+    @commands.command(name="resume")
+    async def resume(self, ctx):
+        """Resumes the paused song."""
+        if ctx.voice_client is None or not ctx.voice_client.is_connected():
+            embed = discord.Embed(title="Ahem! Hold up!", description="I'm not connected to a voice channel.", color=discord.Color.yellow())
+            await ctx.send(embed=embed)
+            return
+
+    # Check if the bot is paused
+        if not ctx.voice_client.is_paused():
+            embed = discord.Embed(title="Resume?", description="There's nothing to resume. I'm not paused.", color=discord.Color.orange())
+            await ctx.send(embed=embed)
+            return
+        if ctx.voice_client.is_paused():
+                ctx.voice_client.resume()
+                embed = discord.Embed(title="-a la la la.", description="Resumed the song", color=discord.Color.yellow())
+                await ctx.send(embed=embed)
+    @commands.command(name="volume")
+    async def volume(self, ctx, volume: int):
+        """Changes the player's volume. Volume should be between 0 and 100."""
+    
+    # Check if the user is in a voice channel
+        if not ctx.voice_client:
+            embed = discord.Embed(title="Ahem. Hold up", description="I'm not connected to a voice channel", color=discord.Color.yellow())
+            await ctx.send(embed=embed)
+            return
+
+        if ctx.voice_client.source is None:
+            embed = discord.Embed(title="Uh...", description="I'm not playing anything at the moment.", color=discord.Color.yellow())
+            await ctx.send(embed=embed)
+            return
+
+    # Ensure volume is within the valid range (0 to 100)
+        if volume < 0 or volume > 100:
+            embed = discord.Embed(title="Invalid value", description="Please provide a volume between 0 and 100.", color=discord.Color.red())
+            await ctx.send(embed=embed)
+            return
+    
+    # Convert the volume to a 0.0 - 1.0 range for ffmpeg
+        ctx.voice_client.source.volume = volume / 100.0
+        embed = discord.Embed(title="Success", description=f"Volume has been set to {volume}%.", color=discord.Color.blurple())
+        await ctx.send(embed=embed)
+
+
+    @play.before_invoke
+    @nightcore.before_invoke
+    @slowed.before_invoke
+    async def ensure_voice(self, ctx):
+        if ctx.voice_client is None:
+            if ctx.author.voice:
+                await ctx.author.voice.channel.connect()
+            else:
+                embed = discord.Embed(title="Ahem. Hold up!", description="You are not connected to a voice channel.", color=discord.Color.yellow())
                 await ctx.send(embed=embed)
 
-        await play_next_video()  # Start playing the first video in the playlist
-
-        while self.streaming_mode:
-            if not ctx.voice_client or not ctx.voice_client.is_playing():
-                await play_next_video()
-            await asyncio.sleep(5)  # Check every 5 seconds if the stream has stopped
-
-    @commands.command(name='stop247', help='Stops the 24/7 streaming.')
-    async def stop_streaming(self, ctx):
-        self.streaming_mode = False
-
-        if ctx.voice_client and ctx.voice_client.is_playing():
-            ctx.voice_client.stop()  # Stop the current streaming video
-
-            # Clear any remaining videos in the queue
-            self.queue.clear()
-        else:
-            await ctx.send(embed=discord.Embed(title="Error", description="The bot is not streaming anything at the moment.", color=discord.Color.red()))
-
-        if ctx.voice_client and ctx.voice_client.is_connected():
-            await ctx.voice_client.disconnect()  # Optionally, disconnect from the voice channel
-            await ctx.send(embed=discord.Embed(title="Streaming Stopped", description="Exited 24/7 streaming mode.", color=discord.Color.red()))
-
 async def setup(bot):
-    await bot.add_cog(Music(bot))
+    await bot.add_cog(MusicCog(bot))
