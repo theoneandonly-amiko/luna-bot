@@ -152,61 +152,6 @@ class Misc(commands.Cog):
         await ctx.send(embed=embed)
         await ctx.send(embed=credit)
         
-    @commands.command(name="scandm")
-    @commands.is_owner()  # Only bot owner can use this command
-    async def scan_dm(self, ctx, user_id: int = None):
-        """Scans the bot's DMs and forwards them to the bot owner. Optionally, scans DMs from a specific user ID."""
-        owner = await self.bot.fetch_user(self.bot.owner_id)
-        forwarded_count = 0
-
-        if user_id:
-            try:
-                # Fetch the user by ID
-                user = await self.bot.fetch_user(user_id)
-                # Open or create the DM channel with the user
-                dm_channel = await user.create_dm()
-
-                # Fetch all messages in the DM channel
-                async for message in dm_channel.history(limit=None):
-                    if message.author != self.bot.user:
-                        # Forward each message to the bot owner
-                        forward_message = (
-                            f"**DM from {message.author}**:\n"
-                            f"{message.content}"
-                        )
-                        await owner.send(forward_message)
-                        forwarded_count += 1
-                
-                if forwarded_count > 0:
-                    await ctx.send(f"Forwarded {forwarded_count} messages from user {user_id} to the bot owner.")
-                else:
-                    await ctx.send(f"No DMs found from user {user_id}.")
-            except discord.NotFound:
-                await ctx.send(f"User with ID {user_id} not found.")
-        else:
-            # Loop through the bot's private channels (DMs)
-            for channel in self.bot.private_channels:
-                if isinstance(channel, discord.DMChannel):
-                    user = channel.recipient
-                    if user:  # Ensure we have a valid user
-                        # Reopen or create the DM channel
-                        dm_channel = await user.create_dm()
-
-                        # Fetch all messages in the DM channel
-                        async for message in dm_channel.history(limit=None):
-                            if message.author != self.bot.user:
-                                # Forward each message to the bot owner
-                                forward_message = (
-                                    f"**DM from {message.author}**:\n"
-                                    f"{message.content}"
-                                )
-                                await owner.send(forward_message)
-                                forwarded_count += 1
-
-            if forwarded_count > 0:
-                await ctx.send(f"Forwarded {forwarded_count} messages. Please check your DM, owner.")
-            else:
-                await ctx.send("No DM messages found or forwarded.")
 
     @commands.command(name="guildinfo", help="Shows information about the guild.")
     async def guild_info(self, ctx):
