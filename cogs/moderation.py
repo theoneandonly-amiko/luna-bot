@@ -534,17 +534,6 @@ class Moderation(commands.Cog):
 
         await ctx.send(f"{member.mention} has been warned. Total warnings: {self.warnings[user_id]}")
 
-    @commands.command(name="dm")
-    async def dm(self, ctx, user_id: int, *, message: str):
-        try:
-            # Fetch the user by ID
-            user = await self.bot.fetch_user(user_id)
-            await user.send(message)  # Send a DM to the user
-            await ctx.send(f"Sent a DM to {user.name}!")
-        except discord.Forbidden:
-            await ctx.send("I cannot send a DM to this user. They might have DMs disabled.")
-        except discord.HTTPException:
-            await ctx.send("Failed to send the DM. Please make sure the user ID is correct.")
 
     # Handle missing permissions
     @kick.error
