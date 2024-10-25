@@ -4,7 +4,6 @@ import os
 import requests
 import asyncio
 from discord.ext import commands
-from PIL import Image, ImageDraw
 
 class Fun(commands.Cog):
     def __init__(self, bot):
