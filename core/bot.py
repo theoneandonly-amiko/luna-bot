@@ -32,6 +32,8 @@ class LunaBot(commands.Bot):
             owner_ids=[self.DEV_USER_ID, 521226389559443461] # owner ids
         )
 
+        self.add_check(self.globally_block_dms)
+
 
     async def on_ready(self):
         self.logger.info(f"{self.user} is connected and ready to use.")
@@ -45,7 +47,11 @@ class LunaBot(commands.Bot):
             if filename.endswith(".py"):
                 await self.load_extension(f"cogs.{filename[:-3]}")
     
-   
+    # Global check to disallow commands in DMs
+    async def globally_block_dms(self, ctx):
+        if ctx.guild is None:  # Check if the command is invoked in DMs
+            return False  # Disallow the command
+        return True  # Allow the command if it's in a guild
 
     # =================== Youtube Presence ====================
     @tasks.loop(minutes=5)
@@ -67,15 +73,23 @@ class LunaBot(commands.Bot):
         await self.wait_until_ready()
 
     # ========================================================
-    # Log all commands used
+
+    # Event handler for when a command is invoked
     async def on_command(self, ctx):
-        command_name = ctx.command
-        user = ctx.author
         guild = ctx.guild
         channel = ctx.channel
-        logging.info(f"Command '{command_name}' invoked by {user} in guild '{guild}' in channel '{channel}'.")
+        author = ctx.author
+        command = ctx.command
 
-    # Log errors
+        if guild is None:
+            # Handle DM scenario, where there's no guild
+            self.logger.info(f"Command '{command}' invoked by {author} in DM on channel '{channel}'. Action prevented.")
+        else:
+            # Handle command invoked in a guild (server)
+            self.logger.info(f"Command '{command}' invoked by {author} in guild \"{guild}\" on channel '{channel}'.")
+
+
+
     # Handle and log command errors with custom messages
     async def on_command_error(self, ctx, error):
         embed = discord.Embed(title="Error", color=discord.Color.red())
