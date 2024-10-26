@@ -76,8 +76,27 @@ class LunaBot(commands.Bot):
         logging.info(f"Command '{command_name}' invoked by {user} in guild '{guild}' in channel '{channel}'.")
 
     # Log errors
+    # Handle and log command errors with custom messages
     async def on_command_error(self, ctx, error):
-        logging.error(f"Error in command '{ctx.command}' by {ctx.author}: {error}")
+        embed = discord.Embed(title="Error", color=discord.Color.red())
+
+        # Handle the case where a command is prevented due to DM check
+        if isinstance(error, commands.CheckFailure):
+            return  # Ignore this error silently
+
+        # Handle 'CommandNotFound' error
+        if isinstance(error, commands.CommandNotFound):
+            embed.description = "Sorry, I couldn't find that command. Please check the command and try again."
+            await ctx.send(embed=embed)
+
+        # Handle 'CommandOnCooldown' error
+        elif isinstance(error, commands.CommandOnCooldown):
+            embed.description = f"This command is on cooldown. Please try again in {int(error.retry_after)} seconds."
+            await ctx.send(embed=embed)
+
+        # Log other errors generically without sending a message
+        else:
+            self.logger.error(f"Error with command '{ctx.command}': {error}")
     
 
     async def on_message(self, message):

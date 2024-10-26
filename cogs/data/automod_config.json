@@ -1,1 +1,5 @@
-{}
+{
+    "word_filter": [],
+    "warn_threshold": 3,
+    "user_warnings": {}
+}

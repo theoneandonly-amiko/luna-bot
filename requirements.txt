@@ -1,6 +1,8 @@
 discord
 python-dotenv
 yt-dlp
+pillow
 pynacl
 google-api-python-client
 ffmpeg
+jishaku
