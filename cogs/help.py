@@ -109,7 +109,7 @@ class HelpDropdown(Select):
                 "`listbans` - Lists all banned users in the server.\n"), inline=False)
         elif category == "Level Commands":
             embed.add_field(name="**Level Commands**", value=
-                "`level` - Check the level and XP of a user in the current guild.\n"
+                "`level @user_mention [optional]` - Check the level and XP of a user in the current guild.\n"
                 "`setlevelchannel #channel_mention` - Set the channel where level-up messages will be sent.\n"
                 "`restrictxpchannel #channel_mention` - Mark a channel as restricted from awarding XP.\n"
                 "`unrestrictxpchannel #channel_mention` - Remove a channel from the restricted XP list.\n"
