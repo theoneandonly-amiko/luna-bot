@@ -6,11 +6,12 @@ class HelpDropdown(Select):
     def __init__(self):
         options = [
             discord.SelectOption(label="Fun Commands", description="List of fun commands"),
+            discord.SelectOption(label="Games", description="List of available games."),
+            discord.SelectOption(label="Level Commands", description="List of available level commands."),
+            discord.SelectOption(label="Manager", description="List of available manager commands."),
+            discord.SelectOption(label="Miscellaneous", description="List of miscellaneous commands"),
             discord.SelectOption(label="Moderation Commands", description="List of moderation commands"),
             discord.SelectOption(label="Music Commands", description="List of music commands"),
-            discord.SelectOption(label="Miscellaneous", description="List of miscellaneous commands"),
-            discord.SelectOption(label="Games", description="List of available games."),
-            discord.SelectOption(label="Manager", description="List of available manager commands.")
         ]
         super().__init__(placeholder="Select a category...", min_values=1, max_values=1, options=options)
 
@@ -106,6 +107,18 @@ class HelpDropdown(Select):
                 "`setservername [new name]` - Change the server's name.\n"
                 "`setverificationlevel [0-4]` - Set server verification level (0-4).\n"
                 "`listbans` - Lists all banned users in the server.\n"), inline=False)
+        elif category == "Level Commands":
+            embed.add_field(name="**Level Commands**", value=
+                "`level` - Check the level and XP of a user in the current guild.\n"
+                "`setlevelchannel #channel_mention` - Set the channel where level-up messages will be sent.\n"
+                "`restrictxpchannel #channel_mention` - Mark a channel as restricted from awarding XP.\n"
+                "`unrestrictxpchannel #channel_mention` - Remove a channel from the restricted XP list.\n"
+                "`restrictxpuser @user_mention` - Restrict a user from gaining XP in the server.\n"
+                "`grantxp @user_mention [XP amount]` - Grants a specified amount of XP to a user.\n"
+                "`toplevel` - Display the top users by XP in the current guild.\n"
+                "`viewlevelroles` - View all the level-up roles set in the current guild.\n"
+                "`setlevelrole [level] @role_mention` - Set a role to be given when a user reaches a specific level.\n"
+                "`togglexpblock` - Mark a guild as restricted from awarding XP.", inline=False)
         
         await interaction.response.edit_message(embed=embed)
 
