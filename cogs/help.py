@@ -141,7 +141,7 @@ class HelpCommand(commands.Cog):
     @commands.command(name='help', help='Shows this help message')
     async def help(self, ctx):
         embed = discord.Embed(title="Help - Select a Category", color=discord.Color.dark_purple())
-        embed.description = "Use the dropdown menu to select a category for help. Command prefix: `am/`"
+        embed.description = "Use the dropdown menu to select a category for help. Command prefix: `&`"
         help_message = await ctx.send(embed=embed, view=HelpView(None))
         
         # Pass the help_message to HelpView after sending it
