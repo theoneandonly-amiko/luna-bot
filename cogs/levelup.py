@@ -104,15 +104,17 @@ class LevelSystem(commands.Cog):
         # Level up logic
         leveled_up = False
         while True:
-            xp_needed = int(150 * (current_level ** 1.5))  # Calculate XP needed for current level
+            xp_needed = int(150 * (current_level ** 1.5))  # Calculate XP needed for the current level
             if current_xp >= xp_needed:
-                # Increment level
+                # Subtract xp_needed to reset progress for the next level
+                current_xp -= xp_needed
                 current_level += 1
                 leveled_up = True  # Mark as leveled up
             else:
                 break
 
-        # Update level if it changed
+        # Update XP and level
+        self.levels[guild_id][user_id]["xp"] = current_xp
         self.levels[guild_id][user_id]["level"] = current_level
 
         # Save levels after update
@@ -120,6 +122,7 @@ class LevelSystem(commands.Cog):
 
         # Return True if level-up occurred
         return leveled_up
+
 
 
     def get_dominant_color_from_image(self, image_url):
@@ -136,6 +139,7 @@ class LevelSystem(commands.Cog):
         progress = int((current_xp / xp_needed) * bar_length)
         bar = "█" * progress + "░" * (bar_length - progress)
         return bar
+
 
     def get_random_level_up_message(self, user):
         """Returns a random level-up message."""
