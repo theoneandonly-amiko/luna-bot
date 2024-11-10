@@ -148,8 +148,19 @@ class LevelSystem(commands.Cog):
             f"🔥 {user.mention} just hit a new level! Keep it up!",
             f"🚀 {user.mention} has leveled up! You're unstoppable!",
             f"🎇 {user.mention}, you leveled up! Keep climbing!",
-            f"✨ {user.mention} is now stronger at level {self.levels[str(user.guild.id)][str(user.id)]['level']}!"
+            f"✨ {user.mention} is now stronger at level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
+            f"⚡ {user.mention}, you've reached new heights at level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
+            f"🌠 Incredible! {user.mention} is now at level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
+            f"🌟 Whoa! {user.mention} just advanced to level {self.levels[str(user.guild.id)][str(user.id)]['level']}! Amazing job!",
+            f"🥳 Look at that! {user.mention} leveled up to {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
+            f"💫 Keep shining, {user.mention}! You've reached level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
+            f"🎖️ Impressive, {user.mention}! Level {self.levels[str(user.guild.id)][str(user.id)]['level']} is yours!",
+            f"📈 {user.mention} just leveled up to {self.levels[str(user.guild.id)][str(user.id)]['level']}! Keep the momentum going!",
+            f"🏆 Bravo {user.mention}! You've climbed to level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
+            f"🔥 Keep the heat up, {user.mention}! You've unlocked level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
+            f"✨ {user.mention} just reached level {self.levels[str(user.guild.id)][str(user.id)]['level']}! Onwards and upwards!",
         ]
+
         return random.choice(messages)
 
     def can_receive_xp(self, user_id):

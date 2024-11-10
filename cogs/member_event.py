@@ -17,16 +17,46 @@ class WelcomeGoodbyeCog(commands.Cog):
             "Hey {mention}, glad you joined us! 😊",
             "{mention}, we hope you have a great time here! ✨",
             "Hooray! {mention} is here! 🙌",
-            "Look who just joined! Welcome, {mention}! 🎊"
+            "Look who just joined! Welcome, {mention}! 🎊",
+            "We're thrilled to have you, {mention}! 🥳",
+            "A warm welcome to {mention}! 🌟 Make yourself at home.",
+            "It's awesome to see you here, {mention}! 🌈",
+            "{mention}, welcome aboard! We're going to have a blast! 🎉",
+            "{mention} has arrived! Let's get the party started! 🎶",
+            "Hey {mention}! We're so happy you're here! 💫",
+            "{mention}, you're finally here! Everyone, say hi! 👋",
+            "Big cheers for {mention}! 🎈 Let's make some memories together.",
+            "{mention}, welcome to the coolest place on Discord! 😎",
+            "Nice to meet you, {mention}! We’ve been waiting for you! 🌄",
+            "Welcome, {mention}! Ready to dive in and have fun? 🌊",
+            "{mention}, you made it! Welcome to our awesome community! 🎇",
+            "Happy to see you here, {mention}! Let's have a great time! 😊",
+            "A big hello to {mention}! Make yourself comfortable! 🎈"
         ]
+
         
         self.goodbye_messages = [
             "Goodbye {name}, we will miss you! 😢",
             "{name} just left the server. Take care! 💔",
             "It was great having you with us, {name}. See you soon! 🌟",
             "{name}, we hope to see you again! 👋",
-            "Sad to see you go, {name}. Until next time! 😥"
+            "Sad to see you go, {name}. Until next time! 😥",
+            "Farewell, {name}. The server won’t be the same without you! 😔",
+            "{name} left the chat. Safe travels and come back soon! 🌍",
+            "We’ll miss you, {name}. Best of luck on your journey! 🚀",
+            "Take care, {name}. You’re always welcome back! 🌠",
+            "{name}, our time together was amazing. Don’t be a stranger! 💌",
+            "Until next time, {name}! Hope to see you again someday! 🌅",
+            "{name}, may your next adventure be even more exciting! 🎒",
+            "It was wonderful having you here, {name}. See you around! 🌻",
+            "{name} has signed off. We’ll keep the memories close! 💭",
+            "{name}, the server won’t feel the same without you. 👋",
+            "Safe travels, {name}. Don’t forget us! 🌠",
+            "We’ll keep your seat warm, {name}! Take care! 🪑",
+            "{name}, you’ll always be part of our community! 💙",
+            "Wishing you all the best, {name}. Come back anytime! 🌈",
         ]
+
 
     # Load guild settings from a JSON file
     def load_guild_settings(self):
@@ -39,6 +69,17 @@ class WelcomeGoodbyeCog(commands.Cog):
     def save_guild_settings(self):
         with open(self.settings_file, 'w') as f:
             json.dump(self.guild_settings, f, indent=4)
+
+    def get_random_image(self, directory):
+        # Get all .gif and .png files in the specified directory
+        image_files = [f for f in os.listdir(directory) if f.endswith(('.gif', '.png', '.webp'))]
+        
+        # If there are no image files, return None
+        if not image_files:
+            return None
+
+        # Choose a random image file
+        return os.path.join(directory, random.choice(image_files))
 
     # Helper method to set the welcome channel
     @commands.command(name="setgreetchannel")
@@ -93,19 +134,18 @@ class WelcomeGoodbyeCog(commands.Cog):
                 )
                 embed.set_footer(text=f"User ID: {member.id}")
 
-                # Check if the account is new (e.g., account created within the last 7 days)
+                # Check if the account is new (e.g., created within the last 7 days)
                 account_age = datetime.now(timezone.utc) - member.created_at
                 if account_age.days < 7:
-                    # Append the new account message to the embed
                     new_account_message = f"⚠️ {member.mention} has joined, but their account is quite new (created {account_age.days} days ago)."
                     embed.add_field(name="New Account Detected", value=new_account_message, inline=False)
 
-                # Load the welcome GIF from assets
-                gif_path = "assets/welcome/welcome.gif"
-                if os.path.exists(gif_path):
-                    with open(gif_path, "rb") as gif_file:
-                        file = discord.File(gif_file, filename="welcome.gif")
-                        embed.set_image(url="attachment://welcome.gif")
+                # Get a random welcome image from the assets folder
+                image_path = self.get_random_image("assets/welcome")
+                if image_path:
+                    with open(image_path, "rb") as image_file:
+                        file = discord.File(image_file, filename=os.path.basename(image_path))
+                        embed.set_image(url=f"attachment://{os.path.basename(image_path)}")
                         await channel.send(embed=embed, file=file)
                 else:
                     await channel.send(embed=embed)
@@ -156,7 +196,8 @@ class WelcomeGoodbyeCog(commands.Cog):
             if channel:
                 permissions = channel.permissions_for(member.guild.me)
                 if not permissions.send_messages or not permissions.embed_links:
-                    return  # Exit if the bot can't send messages
+                    return  # Exit if the bot can't send messages or embed links
+
                 message = random.choice(self.goodbye_messages).format(name=member.name)
 
                 embed = discord.Embed(
@@ -170,15 +211,14 @@ class WelcomeGoodbyeCog(commands.Cog):
                 )
                 embed.set_footer(text=f"User ID: {member.id}")
 
-                # Load the goodbye GIF from assets
-                gif_path = "assets/goodbye/goodbye.gif"
-                if os.path.exists(gif_path):
-                    with open(gif_path, "rb") as gif_file:
-                        file = discord.File(gif_file, filename="goodbye.gif")
-                        embed.set_image(url="attachment://goodbye.gif")
+                # Get a random goodbye image from the assets folder
+                image_path = self.get_random_image("assets/goodbye")
+                if image_path:
+                    with open(image_path, "rb") as image_file:
+                        file = discord.File(image_file, filename=os.path.basename(image_path))
+                        embed.set_image(url=f"attachment://{os.path.basename(image_path)}")
                         await channel.send(embed=embed, file=file)
                 else:
                     await channel.send(embed=embed)
-
 async def setup(bot):
     await bot.add_cog(WelcomeGoodbyeCog(bot))
