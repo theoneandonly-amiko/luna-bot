@@ -305,7 +305,7 @@ class Moderation(commands.Cog):
     # Create a mute role and override permissions in all channels
     @commands.command()
     @has_permissions(manage_roles=True, manage_channels=True)
-    async def create_mute_role(self, ctx, role_name: str = "Muted"):
+    async def createmuterole(self, ctx, role_name: str = "Muted"):
         guild = ctx.guild
 
         # Check if the Muted role already exists
@@ -358,7 +358,7 @@ class Moderation(commands.Cog):
 # New set_mute_role command
     @commands.command(name='set_mute_role')
     @commands.has_permissions(administrator=True)
-    async def set_mute_role(self, ctx, role: discord.Role):
+    async def setmuterole(self, ctx, role: discord.Role):
         """Set a custom mute role for the guild."""
         guild_id = str(ctx.guild.id)
 
@@ -378,7 +378,7 @@ class Moderation(commands.Cog):
    # Automod feature for word filtering
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def add_filter_word(self, ctx, word):
+    async def addfilterword(self, ctx, word):
         if word not in self.config["word_filter"]:
             self.config["word_filter"].append(word)
             self.save_config()
@@ -388,7 +388,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def remove_filter_word(self, ctx, word):
+    async def removefilterword(self, ctx, word):
         if word in self.config["word_filter"]:
             self.config["word_filter"].remove(word)
             self.save_config()
@@ -398,7 +398,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def set_warn_threshold(self, ctx, threshold: int):
+    async def setwarnthreshold(self, ctx, threshold: int):
         self.config["warn_threshold"] = threshold
         self.save_config()
         await ctx.send(f"Warning threshold set to {threshold}.")

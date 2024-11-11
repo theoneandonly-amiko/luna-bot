@@ -46,9 +46,13 @@ class HelpDropdown(Select):
                 "`unmute [userID]` - Unmute a user.\n"
                 "`kick [userID]` - Kick a user out.\n"
                 "`ban [userID]` - Ban a user.\n"
-                "`create_mute_role` - Create mute role if not existed.\n"
+                "`createmuterole [optional muterole name]` - Create mute role if not existed.\n"
+                "`setmuterole @muterole` - Set the default muterole for moderating purposes.\n"
+                "`addfilterword [word]` - Add word to the filter.\n"
             ), inline=False)
             embed.add_field(name="**Moderation Commands** (2/2)", value=(
+                "`removefilterword [word]` - Remove word from the filter.\n"
+                "`setwarnthreshold [number]` - Customize warning threshold.\n"
                 "`clear [all/number]` - Delete messages.\n"
                 "`warn [userID]` - Warn a user.\n"
                 "`warnings [userID]` - Display the number of warnings a user has.\n"
