@@ -96,34 +96,37 @@ class LevelSystem(commands.Cog):
         if user_id not in self.levels[guild_id]:
             self.levels[guild_id][user_id] = {"xp": 0, "level": 1}
 
-        # Save current level and XP
+        # Retrieve current level and XP
         current_level = self.levels[guild_id][user_id]["level"]
-        current_xp = self.levels[guild_id][user_id]["xp"] + xp
-        self.levels[guild_id][user_id]["xp"] = current_xp
+        current_xp = self.levels[guild_id][user_id]["xp"]
 
-        # Level up logic
+        # Add the granted XP to current XP
+        current_xp += xp
+
+        # Level-up logic: Loop through levels and check if the user has enough XP to level up
         leveled_up = False
         while True:
-            xp_needed = int(150 * (current_level ** 1.5))  # Calculate XP needed for the current level
+            # Calculate the XP required for the current level
+            xp_needed = int(100 * (current_level ** 1.5))
+
+            # Check if the current XP is enough to level up
             if current_xp >= xp_needed:
-                # Subtract xp_needed to reset progress for the next level
+                # If enough XP, subtract the XP required to level up
                 current_xp -= xp_needed
                 current_level += 1
-                leveled_up = True  # Mark as leveled up
+                leveled_up = True  # Mark that a level-up occurred
             else:
-                break
+                break  # If not enough XP, stop the loop
 
-        # Update XP and level
-        self.levels[guild_id][user_id]["xp"] = current_xp
-        self.levels[guild_id][user_id]["level"] = current_level
+        # Update the user's level and remaining XP after leveling up
+        self.levels[guild_id][user_id]["xp"] = current_xp  # Save the leftover XP
+        self.levels[guild_id][user_id]["level"] = current_level  # Save the new level
 
-        # Save levels after update
+        # Save levels to the file after updating
         self.save_levels()
 
-        # Return True if level-up occurred
+        # Return True if a level-up occurred
         return leveled_up
-
-
 
     def get_dominant_color_from_image(self, image_url):
         """Extract the dominant color from a user's avatar."""
@@ -170,7 +173,7 @@ class LevelSystem(commands.Cog):
             self.last_message_time[user_id] = now
             return True
         last_time = self.last_message_time[user_id]
-        if now - last_time > timedelta(seconds=30):  # 1 minute cooldown
+        if now - last_time > timedelta(seconds=10): # 10 seconds cooldown.
             self.last_message_time[user_id] = now
             return True
         return False
@@ -310,21 +313,19 @@ class LevelSystem(commands.Cog):
             xp = self.levels[guild_id][user_id]["xp"]
             level = self.levels[guild_id][user_id]["level"]
 
-            # Check if the user is at level 0
-            if level > 0:
-                xp_needed = int(150 * (level ** 1.5))
-                xp_remaining = xp_needed - xp
-            else:
-                xp_needed = 0  # At level 0, they don't need any XP
-                xp_remaining = 0  # They have no XP to remain
+            # Correct XP needed for the next level
+            xp_needed = int(100 * (level ** 1.5))
 
-            # Progress bar
+            # XP remaining to level up
+            xp_remaining = xp_needed - xp
+
+            # Progress bar (using your existing method)
             progress_bar = self.create_progress_bar(xp, xp_needed)
 
             # User's avatar URL
             avatar_url = member.avatar.url if member.avatar else member.default_avatar.url
 
-            # Generate a random color based on the user's avatar
+            # Get the dominant color from the avatar image
             embed_color = self.get_dominant_color_from_image(str(avatar_url))
 
             # Create the embed message
@@ -337,17 +338,13 @@ class LevelSystem(commands.Cog):
             # Add avatar as thumbnail
             embed.set_thumbnail(url=avatar_url)
 
-            # Add more details
-            if level == 0:
-                embed.add_field(name="XP Remaining", value="You need to earn XP to level up!", inline=False)
-            else:
-                embed.add_field(name="XP Remaining", value=f"{xp_remaining} XP until next level", inline=False)
+            # Add more details about the XP remaining
+            embed.add_field(name="XP Remaining", value=f"{xp_remaining} XP until next level", inline=False)
 
             # Send the embed
             await ctx.send(embed=embed)
         else:
             await ctx.send(f"{member.mention} has no XP yet in this server.")
-
 
 
     @commands.command()
@@ -361,18 +358,51 @@ class LevelSystem(commands.Cog):
             self.levels[guild_id] = {}
 
         if user_id not in self.levels[guild_id]:
-            self.levels[guild_id][user_id] = {"xp": 0, "level": 0}  # Initialize if not present
+            self.levels[guild_id][user_id] = {"xp": 0, "level": 1}  # Initialize if not present
 
         # Grant XP
         leveled_up = self.add_xp(guild_id, user_id, amount)
 
-        self.save_levels()  # Save the updated levels data
-
+        # The XP has already been updated by add_xp, no need to save again here
         if leveled_up:
             await ctx.send(f"{user.mention} has been granted {amount} XP and leveled up!")
         else:
             await ctx.send(f"{user.mention} has been granted {amount} XP!")
 
+    @commands.command(name="resetxp")
+    @commands.has_permissions(manage_roles=True)
+    async def reset_xp(self, ctx, member: discord.Member = None):
+        """Resets a user's XP and level in the current guild."""
+        if member is None:
+            member = ctx.author
+
+        guild_id = str(ctx.guild.id)
+        user_id = str(member.id)
+
+        # Check if the user has any XP/level data in the current guild
+        if guild_id in self.levels and user_id in self.levels[guild_id]:
+            # Reset XP and level for the user
+            self.levels[guild_id][user_id] = {"xp": 0, "level": 1}
+
+            # Remove level-specific roles, if any, associated with this guild
+            if guild_id in self.level_roles:
+                user_roles = self.level_roles[guild_id]
+                for level, role_id in user_roles.items():
+                    role = ctx.guild.get_role(role_id)
+                    if role in member.roles:
+                        try:
+                            await member.remove_roles(role)
+                        except discord.Forbidden:
+                            await ctx.send(f"I don't have permission to remove the role {role.name}.")
+                        except discord.HTTPException:
+                            await ctx.send(f"Failed to remove the role {role.name} due to a network error.")
+
+            # Save the reset data
+            self.save_levels()
+
+            await ctx.send(f"{member.mention}'s XP and level have been reset.")
+        else:
+            await ctx.send(f"{member.mention} has no XP or level data to reset.")
 
     @commands.command(name="toplevel")
     async def toplevel(self, ctx):

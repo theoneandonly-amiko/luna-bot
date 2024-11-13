@@ -44,8 +44,8 @@ class HelpDropdown(Select):
             embed.add_field(name="**Moderation Commands** (1/2)", value=(
                 "`mute [userID] [reason]` - Mute a user.\n"
                 "`unmute [userID]` - Unmute a user.\n"
-                "`kick [userID]` - Kick a user out.\n"
-                "`ban [userID]` - Ban a user.\n"
+                "`kick [userID] [reason]` - Kick a user out.\n"
+                "`ban [userID] [reason]` - Ban a user.\n"
                 "`createmuterole [optional muterole name]` - Create mute role if not existed.\n"
                 "`setmuterole @muterole` - Set the default muterole for moderating purposes.\n"
                 "`addfilterword [word]` - Add word to the filter.\n"
@@ -119,6 +119,7 @@ class HelpDropdown(Select):
                 "`unrestrictxpchannel #channel_mention` - Remove a channel from the restricted XP list.\n"
                 "`restrictxpuser @user_mention` - Restrict a user from gaining XP in the server.\n"
                 "`grantxp @user_mention [XP amount]` - Grants a specified amount of XP to a user.\n"
+                "`resetxp [optional @user_mention] ` - Resets a user's XP and level to default values and removes any level roles.\n"
                 "`toplevel` - Display the top users by XP in the current guild.\n"
                 "`viewlevelroles` - View all the level-up roles set in the current guild.\n"
                 "`setlevelrole [level] @role_mention` - Set a role to be given when a user reaches a specific level.\n"

@@ -172,7 +172,7 @@ class Moderation(commands.Cog):
             return
 
         if not mute_role_id:
-            embed = discord.Embed(title="What's your mute role?", description="I don't know what your guilt mute role is. Please assign one using the `set_mute_role` command.", color=discord.Color.orange())
+            embed = discord.Embed(title="What's your mute role?", description="I don't know what your guild mute role is. Please assign one using the `set_mute_role` command.", color=discord.Color.orange())
             await ctx.send(embed=embed)
             return
         
@@ -216,7 +216,7 @@ class Moderation(commands.Cog):
         mute_role_id = self.mute_roles.get(guild_id)
 
         if not mute_role_id:
-            embed = discord.Embed(title="What's your mute role?", description="I don't know what your guilt mute role is. Please assign one using the `set_mute_role` command.", color=discord.Color.orange())
+            embed = discord.Embed(title="What's your mute role?", description="I don't know what your guild mute role is. Please assign one using the `set_mute_role` command.", color=discord.Color.orange())
             await ctx.send(embed=embed)
             return
 
@@ -234,7 +234,7 @@ class Moderation(commands.Cog):
             return
 
         if mute_role.position >= ctx.guild.me.top_role.position:
-            embed = discord.Embed(title="Unable to remove the role", description=f"I cannot rmeove your guild's mute role (name: '{mute_role.name}') because it is higher than my top role. Please move my role above the mute role and try again.", color=discord.Color.red())
+            embed = discord.Embed(title="Unable to remove the role", description=f"I cannot remove your guild's mute role (name: '{mute_role.name}') because it is higher than my top role. Please move my role above the mute role and try again.", color=discord.Color.red())
             await ctx.send(embed=embed)
             return
 
@@ -316,7 +316,7 @@ class Moderation(commands.Cog):
             return
 
         # Create the Muted role
-        mute_role = await guild.create_role(name=role_name, reason="Mute role created by command")
+        mute_role = await guild.create_role(name=role_name, color=discord.Color.dark_red(), reason="Mute role created by command")
 
 
         # Initialize counters
