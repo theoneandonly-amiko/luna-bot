@@ -410,7 +410,7 @@ class LevelSystem(commands.Cog):
         guild_id = str(ctx.guild.id)
 
         if guild_id in self.levels:
-            sorted_users = sorted(self.levels[guild_id].items(), key=lambda x: x[1]["xp"], reverse=True)
+            sorted_users = sorted(self.levels[guild_id].items(), key=lambda x: x[1]["level"], reverse=True)
 
             if sorted_users:
                 # Limit to top 10 users for the leaderboard

@@ -75,12 +75,12 @@ class HelpDropdown(Select):
             ), inline=False)
         elif category == "Miscellaneous":
             embed.add_field(name="Miscellaneous", value=(
-                "`usercount` - Let you know how many members are in the current server.\n"
+                "`totaluser` - Let you know how many members are in the current server.\n"
                 "`help` - Show this help message\n"
                 "`stats` - Show bot statistics\n"
                 "`info` - Description about me.\n"
-                "`whois @user` - Show information about an user in guild.\n"
-                "`avatar @user` - Show user's avatar.\n"
+                "`whois [@optional_user]` - Show information about an user in guild.\n"
+                "`avatar [@optional_user]` - Show user's avatar.\n"
                 "`guildinfo` - Show current guild info."
             ), inline=False)
         elif category == "Games":
