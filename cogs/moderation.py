@@ -6,536 +6,902 @@ import json
 import os
 import re
 import time
-import datetime
-from discord.ext.commands import has_permissions, MissingPermissions
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta, timezone
 from collections import defaultdict
+import asyncio
+import logging
 
+# Configure logging according to your organization's standards
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config_file = "cogs/data/automod_config.json"
-        self.warnings = {}  # Initialize warnings here
-        self.load_config()
         self.mute_roles_file = "cogs/data/muteroles.json"
-        self.mute_roles = self.load_mute_roles()
-        # Spam tracking data
+        self.warnings_file = "cogs/data/warnings.json"
+        self.config = {}
+        self.mute_roles = {}
+        self.warnings = {}
         self.spam_tracker = defaultdict(list)
         self.spam_threshold = 5  # Max messages within the interval
         self.spam_interval = 10  # Time window in seconds
 
+        # Load data
+        self.load_config()
+        self.load_mute_roles()
+        self.load_warnings()
+
+    def load_config(self):
+        """Load the automod configuration."""
+        try:
+            if os.path.exists(self.config_file):
+                with open(self.config_file, "r") as f:
+                    self.config = json.load(f)
+            else:
+                self.config = {
+                    "word_filter": [],
+                    "warn_threshold": 3,
+                    "user_warnings": {},
+                    "mute_role_name": "Muted"
+                }
+                self.save_config()
+        except Exception:
+            logger.exception("Failed to load config:")
+            self.config = {
+                "word_filter": [],
+                "warn_threshold": 3,
+                "user_warnings": {},
+                "mute_role_name": "Muted"
+            }
+
+    def save_config(self):
+        """Save the automod configuration."""
+        try:
+            with open(self.config_file, "w") as f:
+                json.dump(self.config, f, indent=4)
+        except Exception:
+            logger.exception("Failed to save config:")
 
     def load_mute_roles(self):
         """Load existing mute roles from the JSON file."""
         try:
-            with open(self.mute_roles_file, 'r') as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return {}
+            if os.path.exists(self.mute_roles_file):
+                with open(self.mute_roles_file, 'r') as f:
+                    self.mute_roles = json.load(f)
+            else:
+                self.mute_roles = {}
+        except Exception:
+            logger.exception("Failed to load mute roles:")
+            self.mute_roles = {}
 
     def save_mute_roles(self):
         """Save mute roles to the JSON file."""
-        with open(self.mute_roles_file, 'w') as f:
-            json.dump(self.mute_roles, f, indent=4)
-
-    def load_config(self):
         try:
-            with open(self.config_file, "r") as file:
-                self.config = json.load(file)
-            if "word_filter" not in self.config:
-                self.config["word_filter"] = []
-            if "warn_threshold" not in self.config:
-                self.config["warn_threshold"] = 3
-            if "user_warnings" not in self.config:
-                self.config["user_warnings"] = {}
-        except FileNotFoundError:
-            self.config = {
-                "word_filter": [],
-                "warn_threshold": 3,
-                "user_warnings": {}
-            }
-        self.save_config()
-
-    def save_config(self):
-        with open(self.config_file, "w") as file:
-            json.dump(self.config, file, indent=4)
-
-    def add_warning(self, user_id: int, reason: str):
-        if str(user_id) not in self.config["user_warnings"]:
-            self.config["user_warnings"][str(user_id)] = []
-        self.config["user_warnings"][str(user_id)].append({"reason": reason, "time": str(datetime.now())})
-        self.save_config()
-        return len(self.config["user_warnings"][str(user_id)]) >= self.config["warn_threshold"]
+            with open(self.mute_roles_file, 'w') as f:
+                json.dump(self.mute_roles, f, indent=4)
+        except Exception:
+            logger.exception("Failed to save mute roles:")
 
     def load_warnings(self):
-        if os.path.exists(self.warnings_file):
-            with open(self.warnings_file, 'r') as f:
-                self.warnings = json.load(f)
-        else:
+        """Load user warnings from the JSON file."""
+        try:
+            if os.path.exists(self.warnings_file):
+                with open(self.warnings_file, 'r') as f:
+                    self.warnings = json.load(f)
+            else:
+                self.warnings = {}
+        except Exception:
+            logger.exception("Failed to load warnings:")
             self.warnings = {}
 
     def save_warnings(self):
-        with open(self.warnings_file, 'w') as f:
-            json.dump(self.warnings, f, indent=4)
+        """Save user warnings to the JSON file."""
+        try:
+            with open(self.warnings_file, 'w') as f:
+                json.dump(self.warnings, f, indent=4)
+        except Exception:
+            logger.exception("Failed to save warnings:")
+
+    def add_warning(self, user_id: int, reason: str):
+        """Add a warning to a user."""
+        user_id_str = str(user_id)
+        if user_id_str not in self.warnings:
+            self.warnings[user_id_str] = []
+        self.warnings[user_id_str].append({
+            "reason": reason,
+            "time": datetime.now(timezone.utc).isoformat()
+        })
+        self.save_warnings()
+        warn_count = len(self.warnings[user_id_str])
+        warn_threshold = self.config.get("warn_threshold", 3)
+        return warn_count >= warn_threshold
 
     async def punish_user(self, member, reason):
-        warn_count = len(self.config["user_warnings"].get(str(member.id), []))
-        if warn_count >= self.config["warn_threshold"]:
-            # Check if a custom mute role is set
+        """Punish the user after exceeding warn threshold."""
+        warn_count = len(self.warnings.get(str(member.id), []))
+        warn_threshold = self.config.get("warn_threshold", 3)
+        if warn_count >= warn_threshold:
+            guild_id = str(member.guild.id)
             mute_role = None
-            if "mute_role_id" in self.config:
-                mute_role = member.guild.get_role(self.config["mute_role_id"])
-            
-            # If no custom role, create or get the default "Muted" role
-            if not mute_role:
-                mute_role = discord.utils.get(member.guild.roles, name=self.config.get("mute_role_name", "Muted"))
+            mute_role_id = self.mute_roles.get(guild_id)
+            if mute_role_id:
+                mute_role = member.guild.get_role(int(mute_role_id))
+            else:
+                # Create or get default 'Muted' role
+                mute_role_name = self.config.get("mute_role_name", "Muted")
+                mute_role = discord.utils.get(member.guild.roles, name=mute_role_name)
                 if not mute_role:
-                    mute_role = await member.guild.create_role(name=self.config.get("mute_role_name", "Muted"))
-                    for channel in member.guild.channels:
-                        await channel.set_permissions(mute_role, send_messages=False, speak=False)
+                    mute_role = await self.create_mute_role(member.guild, mute_role_name)
 
-            await member.add_roles(mute_role)
-            await member.send(f"You have been muted for repeatedly violating server rules: {reason}")
+            # Assign the mute role to the user
+            await member.add_roles(mute_role, reason=reason)
+            try:
+                embed = discord.Embed(
+                    title="You have been muted",
+                    description=f"You have been muted in **{member.guild.name}** for: {reason}",
+                    color=discord.Color.red(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                await member.send(embed=embed)
+            except discord.Forbidden:
+                pass
 
-    # Kick command using User ID
+    async def create_mute_role(self, guild, role_name):
+        """Create a mute role with appropriate permissions."""
+        try:
+            mute_role = await guild.create_role(name=role_name, reason="Mute role created by bot")
+            channels_updated = 0
+            categories_updated = 0
+            for channel in guild.channels:
+                await channel.set_permissions(mute_role, send_messages=False, speak=False)
+                channels_updated += 1
+            for category in guild.categories:
+                await category.set_permissions(mute_role, send_messages=False, speak=False)
+                categories_updated += 1
+            # Send an embed message about the updates
+            embed = discord.Embed(
+                title="Mute Role Created",
+                description=f"Role **{mute_role.name}** has been created and configured.",
+                color=discord.Color.green(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            embed.add_field(name="Channels Updated", value=str(channels_updated), inline=True)
+            embed.add_field(name="Categories Updated", value=str(categories_updated), inline=True)
+            if guild.system_channel:
+                await guild.system_channel.send(embed=embed)
+            return mute_role
+        except Exception:
+            logger.exception("Failed to create mute role:")
+            return None
+
+    def parse_duration(self, duration_str):
+        """Parse a duration string and return the total seconds."""
+        regex = re.compile(r'(?P<value>\d+)(?P<unit>[smhd])')
+        matches = regex.findall(duration_str.lower())
+        total_seconds = 0
+        for value, unit in matches:
+            value = int(value)
+            if unit == 's':
+                total_seconds += value
+            elif unit == 'm':
+                total_seconds += value * 60
+            elif unit == 'h':
+                total_seconds += value * 3600
+            elif unit == 'd':
+                total_seconds += value * 86400
+        return total_seconds
+
+    async def resolve_user(self, ctx, user_input):
+        """Resolve a user input to a discord.Member or discord.User."""
+        try:
+            # Try to get member by mention or ID
+            user = await commands.MemberConverter().convert(ctx, user_input)
+            return user
+        except commands.MemberNotFound:
+            pass
+        try:
+            # Try to get user by ID
+            user_id = int(user_input)
+            user = await self.bot.fetch_user(user_id)
+            return user
+        except (ValueError, discord.NotFound):
+            pass
+        return None
+
     @commands.command()
-    @has_permissions(kick_members=True)
-    async def kick(self, ctx, user_id: int = None, *, reason=None):
-        if not user_id:  # Check if user_id is provided
-            embed = discord.Embed(title="Missing Required Argument", description=f"{ctx.author.mention}, please provide a valid User ID.", color=discord.Color.orange())
+    @commands.has_permissions(kick_members=True)
+    async def kick(self, ctx, user_input: str = None, *, reason=None):
+        """Kick a member by mention or user ID."""
+        if not user_input:
+            embed = discord.Embed(
+                title="Missing User",
+                description="Please mention a user or provide a valid User ID.",
+                color=discord.Color.red()
+            )
             await ctx.send(embed=embed)
             return
-
-        user = await self.bot.fetch_user(user_id)
+        user = await self.resolve_user(ctx, user_input)
+        if not user:
+            embed = discord.Embed(title="Who is this?", description="I cannot find this user. Try again.", color=discord.Color.orange())
+            await ctx.send(embed=embed)
+            return
         member = ctx.guild.get_member(user.id)
         if member:
             try:
                 await member.kick(reason=reason)
-                embed = discord.Embed(title="Success", description=f'User {user} has been kicked for {reason}.', color=discord.Color.blurple())
+                embed = discord.Embed(
+                    title="Member Kicked",
+                    description=f"User {member.mention} has been kicked.",
+                    color=discord.Color.orange(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                embed.add_field(name="Reason", value=reason or "No reason provided.", inline=False)
                 await ctx.send(embed=embed)
-            except discord.Forbidden:
-                embed = discord.Embed(title="Failed", description="I don't have permission to kick member. Make sure this permission has been enabled from my top role, then try again.", color=discord.Color.dark_orange())
+                try:
+                    dm_embed = discord.Embed(
+                        title="You have been kicked",
+                        description=f"You have been kicked from **{ctx.guild.name}**.",
+                        color=discord.Color.red(),
+                        timestamp=datetime.now(timezone.utc)
+                    )
+                    dm_embed.add_field(name="Reason", value=reason or "No reason provided.", inline=False)
+                    await user.send(embed=dm_embed)
+                except discord.Forbidden:
+                    pass
+            except Exception as e:
+                embed = discord.Embed(title="Error!", description=f"An error occurred while trying to kick the user: {e}", color=discord.Color.red())
                 await ctx.send(embed=embed)
         else:
-            embed = discord.Embed(title="User ID not found", description=f"User ID {user_id} not found in this server. Check if the User ID is valid/correct, or that member is in this server, then try again.", color=discord.Color.orange())
+            embed = discord.Embed(title="User not found.", description="User is not in the guild.", color=discord.Color.orange())
             await ctx.send(embed=embed)
 
-        try:
-            await user.send("You've been kicked from a guild. Consider calming yourself down or get some therapy cure. 🤷‍♀️")
-        except discord.Forbidden:
-            embed = discord.Embed(title="Failed", description="I cannot send a DM to this user. They might have DMs disabled.", color=discord.Color.dark_orange())
-
-    # Ban command using User ID
     @commands.command()
-    @has_permissions(ban_members=True)
-    async def ban(self, ctx, user_id: int = None, *, reason=None):
-        if not user_id:  # Check if user_id is provided
-            embed = discord.Embed(title="Missing Required Argument", description=f"{ctx.author.mention}, please provide a valid User ID.", color=discord.Color.orange())
+    @commands.has_permissions(ban_members=True)
+    async def ban(self, ctx, user_input: str = None, *, reason=None):
+        """Ban a user by mention or User ID."""
+        if not user_input:
+            embed = discord.Embed(
+                title="Missing User",
+                description="Please mention a user or provide a valid User ID.",
+                color=discord.Color.red()
+            )
             await ctx.send(embed=embed)
             return
-
-        user = await self.bot.fetch_user(user_id)
-        await ctx.guild.ban(user, reason=reason)
-        embed = discord.Embed(title="Success", description=f'User {user} has been banned for {reason}.', color=discord.Color.blurple())
-        await ctx.send(embed=embed)
-        # Send a notify to banned user in DM. If DM disabled by the user, notify the mods/admins.
+        user = await self.resolve_user(ctx, user_input)
+        if not user:
+            await ctx.send("User not found.")
+            return
         try:
-            await user.send("You have been banned from a guild. Consider following the rules better next time.")
-        except discord.Forbidden:
-            embed = discord.Embed(title="Failed", description="I cannot send messages to this user. I guess they closed their DM.", color=discord.Color.dark_orange())
+            # Check if user is already banned
+            is_banned = False
+            async for ban_entry in ctx.guild.bans():
+                if ban_entry.user.id == user.id:
+                    is_banned = True
+                    break
+            if is_banned:
+                embed = discord.Embed(
+                    title="User Already Banned",
+                    description=f"User {user.mention} is already banned.",
+                    color=discord.Color.orange(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                await ctx.send(embed=embed)
+                return
+            await ctx.guild.ban(user, reason=reason)
+            embed = discord.Embed(
+                title="Member Banned",
+                description=f"User {user.mention} has been banned.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            embed.add_field(name="Reason", value=reason or "No reason provided.", inline=False)
             await ctx.send(embed=embed)
-    # Unban command using User ID
+            try:
+                dm_embed = discord.Embed(
+                    title="You have been banned",
+                    description=f"You have been banned from **{ctx.guild.name}**.",
+                    color=discord.Color.red(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                dm_embed.add_field(name="Reason", value=reason or "No reason provided.", inline=False)
+                await user.send(embed=dm_embed)
+            except discord.Forbidden:
+                pass
+        except Exception as e:
+            embed = discord.Embed(title="Failed.", description=f"An error occurred while trying to ban the user: {e}", color=discord.Color.red())
+            await ctx.send(embed=embed)
+            
     @commands.command()
-    @has_permissions(ban_members=True)
-    async def unban(self, ctx, user_id: int = None):
-        if not user_id:  # Check if user_id is provided
-            embed = discord.Embed(title="Missing Required Argument", description=f"{ctx.author.mention}, please provide a valid User ID.", color=discord.Color.orange())
+    @commands.has_permissions(ban_members=True)
+    async def unban(self, ctx, user_input: str = None):
+        """Unban a user by mention or User ID."""
+        if not user_input:
+            embed = discord.Embed(
+                title="Missing User",
+                description="Please mention a user or provide a valid User ID.",
+                color=discord.Color.red()
+            )
             await ctx.send(embed=embed)
             return
+        user = await self.resolve_user(ctx, user_input)
+        if not user:
+            await ctx.send("User not found.")
+            return
+        try:
+            # Check if user is actually banned
+            is_banned = False
+            async for ban_entry in ctx.guild.bans():
+                if ban_entry.user.id == user.id:
+                    is_banned = True
+                    break
+            if not is_banned:
+                embed = discord.Embed(
+                    title="User Not Banned",
+                    description=f"User {user.mention} is not banned.",
+                    color=discord.Color.orange(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                await ctx.send(embed=embed)
+                return
+            await ctx.guild.unban(user)
+            embed = discord.Embed(
+                title="Member Unbanned",
+                description=f"User {user.mention} has been unbanned.",
+                color=discord.Color.green(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=embed)
+        except Exception as e:
+            embed = discord.Embed(title="Failed.", description=f"An error occurred while trying to ban the user: {e}", color=discord.Color.red())
+            await ctx.send(embed=embed)
 
-        user = await self.bot.fetch_user(user_id)
-        await ctx.guild.unban(user)
-        embed = discord.Embed(title="Success", description=f'User {user} has been unbanned.', color=discord.Color.blurple())
-        await ctx.send(embed=embed)
-
-    # Mute command using User ID
-    @commands.command(name='mute')
+    @commands.command()
     @commands.has_permissions(manage_roles=True)
-    async def mute(self, ctx, user_id: int = None, *, reason = None):
-        """Mute a member or user by ID."""
+    async def mute(self, ctx, user_input: str = None, duration: str = None, *, reason=None):
+        """Mute a member by mention or User ID for a specified duration."""
+        if not user_input:
+            await ctx.send("Please mention a user or provide a valid User ID.")
+            return
         guild_id = str(ctx.guild.id)
         mute_role_id = self.mute_roles.get(guild_id)
-        if not user_id:
-            embed = discord.Embed(title="Missing Required Argument", description=f"{ctx.author.mention}, please provide a valid User ID.", color=discord.Color.orange())
-            await ctx.send(embed=embed)
-            return
-
         if not mute_role_id:
-            embed = discord.Embed(title="What's your mute role?", description="I don't know what your guild mute role is. Please assign one using the `set_mute_role` command.", color=discord.Color.orange())
-            await ctx.send(embed=embed)
+            await ctx.send("Mute role is not set. Please use the `setmuterole` command to set it.")
             return
-        
         mute_role = ctx.guild.get_role(int(mute_role_id))
         if not mute_role:
-            embed = discord.Embed(title="Role no longer exists", description="The current mute role no longer exists. Please set a new one.", color=discord.Color.orange())
-            await ctx.send(embed=embed)
+            await ctx.send("Mute role not found. Please set a valid mute role.")
             return
-
-        user = await self.bot.fetch_user(user_id)
+        user = await self.resolve_user(ctx, user_input)
+        if not user:
+            await ctx.send("User not found.")
+            return
         member = ctx.guild.get_member(user.id)
-    # Handle the case where member isn't found in guild.
         if not member:
-            embed = discord.Embed(title="User ID not found", description=f"User ID {user_id} not found in this server. Check if the User ID is valid/correct, or that member is in this server, then try again.", color=discord.Color.orange())
-            await ctx.send(embed=embed)
+            await ctx.send("User not found in the guild.")
             return
-
-        # Check if the member is already muted
         if mute_role in member.roles:
-            embed = discord.Embed(title="Already muted", description=f"{member.mention} is already muted.", color=discord.Color.yellow())
+            embed = discord.Embed(
+                title="Member Already Muted",
+                description=f"User {member.mention} is already muted.",
+                color=discord.Color.orange(),
+                timestamp=datetime.now(timezone.utc)
+            )
             await ctx.send(embed=embed)
             return
-
-        # Check role hierarchy
-        if mute_role.position >= ctx.guild.me.top_role.position:
-            embed = discord.Embed(title="Unable to assign the role", description=f"I cannot assign your guild's mute role (name: '{mute_role.name}') because it is higher than my top role. Please move my role above the mute role and try again.", color=discord.Color.red())
+        try:
+            await member.add_roles(mute_role, reason=reason)
+            embed = discord.Embed(
+                title="Member Muted",
+                description=f"User {member.mention} has been muted.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            embed.add_field(name="Reason", value=reason or "No reason provided.", inline=False)
             await ctx.send(embed=embed)
-            return
+            if duration:
+                total_seconds = self.parse_duration(duration)
+                if total_seconds:
+                    await asyncio.sleep(total_seconds)
+                    await member.remove_roles(mute_role, reason="Mute duration expired.")
+                    unmute_embed = discord.Embed(
+                        title="Member Unmuted",
+                        description=f"User {member.mention} has been unmuted.",
+                        color=discord.Color.green(),
+                        timestamp=datetime.now(timezone.utc)
+                    )
+                    await ctx.send(embed=unmute_embed)
+            try:
+                dm_embed = discord.Embed(
+                    title="You have been muted",
+                    description=f"You have been muted in **{ctx.guild.name}**.",
+                    color=discord.Color.red(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                dm_embed.add_field(name="Reason", value=reason or "No reason provided.", inline=False)
+                if duration:
+                    dm_embed.add_field(name="Duration", value=duration, inline=False)
+                await user.send(embed=dm_embed)
+            except discord.Forbidden:
+                pass
+        except Exception as e:
+            failed_embed = discord.Embed(title="Failed", description=f"An error occurred while trying to mute the user: {e}", color=discord.Color.red())
+            await ctx.send(embed=failed_embed)
 
-        await member.add_roles(mute_role)
-        embed = discord.Embed(title="Success", description=f'User {user} has been muted for reason: {reason}.', color=discord.Color.blurple())
-        await ctx.send(embed=embed)
-
-
-    # Unmute command using User ID
-    @commands.command(name='unmute')
+    @commands.command()
     @commands.has_permissions(manage_roles=True)
-    async def unmute(self, ctx, user_id: int = None, *, reason = None):
-        """Unmute a member or user by ID."""
+    async def unmute(self, ctx, user_input: str = None):
+        """Unmute a member by mention or User ID."""
+        if not user_input:
+            await ctx.send("Please mention a user or provide a valid User ID.")
+            return
         guild_id = str(ctx.guild.id)
         mute_role_id = self.mute_roles.get(guild_id)
-
         if not mute_role_id:
-            embed = discord.Embed(title="What's your mute role?", description="I don't know what your guild mute role is. Please assign one using the `set_mute_role` command.", color=discord.Color.orange())
-            await ctx.send(embed=embed)
+            await ctx.send("Mute role is not set. Please use the `setmuterole` command to set it.")
             return
-
         mute_role = ctx.guild.get_role(int(mute_role_id))
         if not mute_role:
-            embed = discord.Embed(title="Role no longer exists", description="The current mute role no longer exists. Please set a new one.", color=discord.Color.orange())
-            await ctx.send(embed=embed)
+            await ctx.send("Mute role not found. Please set a valid mute role.")
             return
-
-        user = await self.bot.fetch_user(user_id)
+        user = await self.resolve_user(ctx, user_input)
+        if not user:
+            await ctx.send("User not found.")
+            return
         member = ctx.guild.get_member(user.id)
-    # Handle the case where member isn't found in guild.
         if not member:
-            await ctx.send(f"No member found in the guild with ID: {user_id}. Please make sure the ID is valid/correct, or that member is in the guild, then try again.")
+            await ctx.send("User not found in the guild.")
             return
-
-        if mute_role.position >= ctx.guild.me.top_role.position:
-            embed = discord.Embed(title="Unable to remove the role", description=f"I cannot remove your guild's mute role (name: '{mute_role.name}') because it is higher than my top role. Please move my role above the mute role and try again.", color=discord.Color.red())
-            await ctx.send(embed=embed)
-            return
-
-        # Check if the member is currently muted
         if mute_role not in member.roles:
-            embed = discord.Embed(title="Not muted", description=f"{member.mention} is not muted.", color=discord.Color.orange())
+            embed = discord.Embed(
+                title="Member Not Muted",
+                description=f"User {member.mention} is not muted.",
+                color=discord.Color.orange(),
+                timestamp=datetime.now(timezone.utc)
+            )
             await ctx.send(embed=embed)
             return
-
-        await member.remove_roles(mute_role)
-        embed = discord.Embed(title="Success", description=f'User {user} has been unmuted for reason: {reason}.', color=discord.Color.blurple())
-        await ctx.send(embed=embed)
-
-    # Timeout command using User ID
-    @commands.command()
-    @has_permissions(moderate_members=True)
-    async def timeout(self, ctx, user_id: int = None, minutes: int = 0, *, reason=None):
-        if not user_id:  # Check if user_id is provided
-            embed = discord.Embed(title="Missing Required Argument", description=f"{ctx.author.mention}, please provide a valid User ID.", color=discord.Color.orange())
+        try:
+            await member.remove_roles(mute_role, reason="Unmute command issued.")
+            embed = discord.Embed(
+                title="Member Unmuted",
+                description=f"User {member.mention} has been unmuted.",
+                color=discord.Color.green(),
+                timestamp=datetime.now(timezone.utc)
+            )
             await ctx.send(embed=embed)
-            return
-
-        user = await self.bot.fetch_user(user_id)
-        member = ctx.guild.get_member(user.id)
-        if member:
-            duration = timedelta(minutes=minutes)
             try:
-                await member.edit(timed_out_until=discord.utils.utcnow() + duration, reason=reason)
-                embed = discord.Embed(title="Success", description=f'User {user} has been timed out for {minutes} munites for {reason}.', color=discord.Color.blue())
-                await ctx.send(embed=embed)
+                dm_embed = discord.Embed(
+                    title="You have been unmuted",
+                    description=f"You have been unmuted in **{ctx.guild.name}**.",
+                    color=discord.Color.green(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                await user.send(embed=dm_embed)
             except discord.Forbidden:
-                embed = discord.Embed(title="Denied", description=f"Couldn't timeout {member}. Make sure I have the correct permissions.", color=discord.Color.red())
-                await ctx.send(embed=embed)
-        else:
-            embed = discord.Embed(title="User ID not found", description=f"User ID {user_id} not found in this server. Check if the User ID is valid/correct, or that member is in this server, then try again.", color=discord.Color.orange())
-            await ctx.send(embed=embed)
+                pass
+        except Exception as e:
+            failed_embed = discord.Embed(title="Failed", description=f"An error occurred while trying to unmute the user: {e}", color=discord.Color.red())
+            await ctx.send(embed=failed_embed)
 
-    # Remove timeout command using User ID
     @commands.command()
-    @has_permissions(moderate_members=True)
-    async def remove_timeout(self, ctx, user_id: int = None):
-        if not user_id:  # Check if user_id is provided
-            embed = discord.Embed(title="Missing User ID", description="Please provide a valid User ID", color=discord.Color.red())
-            await ctx.send(embed=embed)
+    @commands.has_permissions(moderate_members=True)
+    async def timeout(self, ctx, user_input: str = None, duration: str = None, *, reason=None):
+        """Timeout a member by mention or User ID for a specified duration."""
+        if not user_input or not duration:
+            await ctx.send("Please mention a user or provide a valid User ID and duration.")
             return
-
-        user = await self.bot.fetch_user(user_id)
+        user = await self.resolve_user(ctx, user_input)
+        if not user:
+            await ctx.send("User not found.")
+            return
         member = ctx.guild.get_member(user.id)
-        if member:
+        if not member:
+            await ctx.send("User not found in the guild.")
+            return
+        try:
+            total_seconds = self.parse_duration(duration)
+            if not total_seconds:
+                await ctx.send("Invalid duration format.")
+                return
+            until_time = discord.utils.utcnow() + timedelta(seconds=total_seconds)
+            await member.edit(timed_out_until=until_time, reason=reason)
+            embed = discord.Embed(
+                title="Member Timed Out",
+                description=f"User {member.mention} has been timed out for {duration}.",
+                color=discord.Color.orange(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            embed.add_field(name="Reason", value=reason or "No reason provided.", inline=False)
+            await ctx.send(embed=embed)
             try:
-                await member.edit(timed_out_until=None)
-                embed = discord.Embed(title="Success", description=f'Timeout for {user.mention} has been removed.', color=discord.Color.green())
-                await ctx.send(embed=embed)
+                dm_embed = discord.Embed(
+                    title="You have been timed out",
+                    description=f"You have been timed out in **{ctx.guild.name}** for {duration}.",
+                    color=discord.Color.red(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                dm_embed.add_field(name="Reason", value=reason or "No reason provided.", inline=False)
+                await user.send(embed=dm_embed)
             except discord.Forbidden:
-                embed = discord.Embed(Title="Permission Error", description=f"Couldn't remove timeout for ")
-                await ctx.send(f"Couldn't remove timeout for {member.mention}. Make sure I have the correct permissions.")
-        else:
-            embed = discord.Embed(title="User ID not found", description=f"User ID {user_id} not found in this server. Check if the User ID is valid/correct, or that member is in this server, then try again.", color=discord.Color.orange())
+                pass
+        except Exception as e:
+            failed_embed = discord.Embed(title="Failed", description=f"An error occurred while trying to timeout the user: {e}", color=discord.Color.red())
+            await ctx.send(embed=failed_embed)
+
+    @commands.command()
+    @commands.has_permissions(moderate_members=True)
+    async def remove_timeout(self, ctx, user_input: str = None):
+        """Remove timeout from a member by mention or User ID."""
+        if not user_input:
+            await ctx.send("Please mention a user or provide a valid User ID.")
+            return
+        user = await self.resolve_user(ctx, user_input)
+        if not user:
+            await ctx.send("User not found.")
+            return
+        member = ctx.guild.get_member(user.id)
+        if not member:
+            await ctx.send("User not found in the guild.")
+            return
+        try:
+            await member.edit(timed_out_until=None, reason="Timeout removed.")
+            embed = discord.Embed(
+                title="Timeout Removed",
+                description=f"Timeout for {member.mention} has been removed.",
+                color=discord.Color.green(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=embed)
+            try:
+                dm_embed = discord.Embed(
+                    title="Your timeout has been removed",
+                    description=f"Your timeout in **{ctx.guild.name}** has been removed.",
+                    color=discord.Color.green(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                await user.send(embed=dm_embed)
+            except discord.Forbidden:
+                pass
+        except Exception as e:
+            failed_embed = discord.Embed(title="Failed", description=f"An error occurred while trying to remove the timeout: {e}", color=discord.Color.red())
+            await ctx.send(embed=failed_embed)
+
+    @commands.command()
+    @commands.has_permissions(manage_messages=True)
+    async def clear(self, ctx, amount='10'):
+        """Clear a number of messages from the channel."""
+        try:
+            if str(amount).lower() == 'all':
+                deleted = await ctx.channel.purge(limit=None)
+                embed = discord.Embed(
+                    title="Messages Cleared",
+                    description=f"All possible messages have been cleared: ({len(deleted)} messages).",
+                    color=discord.Color.green(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+            else:
+                amount = int(amount)
+                deleted = await ctx.channel.purge(limit=amount)
+                embed = discord.Embed(
+                    title="Messages Cleared",
+                    description=f"{len(deleted)} messages have been cleared.",
+                    color=discord.Color.green(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+            await ctx.send(embed=embed, delete_after=5)
+        except ValueError:
+            embed = discord.Embed(title="Invalid input.", description="Please provide a valid integer amount or 'all'.", color=discord.Color.orange())
+            await ctx.send(embed=embed)
+        except discord.HTTPException as e:
+            if e.code == 50034:
+                embed = discord.Embed(title="Reached Limitation!", description="Cannot delete messages older than 14 days.", color=discord.Color.yellow())
+                await ctx.send(embed=embed)
+            else:
+                embed = discord.Embed(title="Failed.", description=f"An error occurred while trying to clear messages: {e}", color=discord.Color.red())
+                await ctx.send(embed=embed)
+        except Exception as h:
+            embed = discord.Embed(title="Failed.", description=f"An error occurred while trying to clear messages: {h}")
             await ctx.send(embed=embed)
 
-    # Clear command
     @commands.command()
-    @has_permissions(manage_messages=True)
-    async def clear(self, ctx, amount=10):
-        await ctx.channel.purge(limit=amount)
-        await ctx.send(f'{amount} messages cleared by {ctx.author.mention}', delete_after=5)
-
-    # Create a mute role and override permissions in all channels
-    @commands.command()
-    @has_permissions(manage_roles=True, manage_channels=True)
+    @commands.has_permissions(manage_roles=True, manage_channels=True)
     async def createmuterole(self, ctx, role_name: str = "Muted"):
+        """Create a mute role and set appropriate permissions."""
         guild = ctx.guild
-
-        # Check if the Muted role already exists
         existing_role = discord.utils.get(guild.roles, name=role_name)
         if existing_role:
-            embed = discord.Embed(title="Role already exists", description=f'Role **{role_name}** already exists in this server. If you want to recreate and reapply {role_name} role, please delete the existing role and try again.', color=discord.Color.orange())
+            embed = discord.Embed(
+                title="Role Exists",
+                description=f"Role **{role_name}** already exists.",
+                color=discord.Color.orange(),
+                timestamp=datetime.now(timezone.utc)
+            )
             await ctx.send(embed=embed)
             return
-
-        # Create the Muted role
-        mute_role = await guild.create_role(name=role_name, color=discord.Color.dark_red(), reason="Mute role created by command")
-
-
-        # Initialize counters
-        text_channel_count = 0
-        voice_channel_count = 0
-        category_count = 0
-
-
-        # Set channel permissions for the Muted role
-        for channel in guild.channels:
-            if isinstance(channel, discord.TextChannel):
-                await channel.set_permissions(mute_role, send_messages=False)
-                text_channel_count += 1
-            elif isinstance(channel, discord.VoiceChannel):
-                await channel.set_permissions(mute_role, speak=False)
-                voice_channel_count += 1
-            elif isinstance(channel, discord.CategoryChannel):
+        try:
+            mute_role = await guild.create_role(name=role_name, reason="Mute role created by bot")
+            channels_updated = 0
+            categories_updated = 0
+            for channel in guild.channels:
                 await channel.set_permissions(mute_role, send_messages=False, speak=False)
-                category_count += 1
+                channels_updated += 1
+            for category in guild.categories:
+                await category.set_permissions(mute_role, send_messages=False, speak=False)
+                categories_updated += 1
 
-        # Store the role name in the config
-        self.config["mute_role_name"] = role_name
-        self.save_config()
+            guild_id = str(guild.id)
+            self.mute_roles[guild_id] = str(mute_role.id)
+            self.save_mute_roles()
 
-        # Send success message
-        # Create the embed message
-        embed = discord.Embed(
-            title="Mute Role Permissions Set",
-            description=f'Permissions for **{role_name}** have been successfully updated in the following:',
-            color=discord.Color.blurple()  # You can change the color if needed
-        )
-        embed.add_field(name="Text Channels", value=f'{text_channel_count}')
-        embed.add_field(name="Voice Channels", value=f'{voice_channel_count}')
-        embed.add_field(name="Categories", value=f'{category_count}')
-        embed.set_footer(text=f"Requested by {ctx.author}", icon_url=ctx.author.avatar.url)
+            embed = discord.Embed(
+                title="Mute Role Created",
+                description=f"Role **{mute_role.name}** has been created and set as mute role.",
+                color=discord.Color.green(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            embed.add_field(name="Channels Updated", value=str(channels_updated), inline=True)
+            embed.add_field(name="Categories Updated", value=str(categories_updated), inline=True)
+            await ctx.send(embed=embed)
+        except Exception as e:
+            failed_embed = discord.Embed(title="Failed", description=f"An error occurred while trying to create the mute role: {e}", color=discord.Color.red())
+            await ctx.send(embed=failed_embed)
 
-        # Send the embed message
-        await ctx.send(embed=embed)
-# New set_mute_role command
-    @commands.command(name='set_mute_role')
+    @commands.command()
     @commands.has_permissions(administrator=True)
     async def setmuterole(self, ctx, role: discord.Role):
         """Set a custom mute role for the guild."""
         guild_id = str(ctx.guild.id)
-
-        # Check if the mute role is already set for this guild
-        if guild_id in self.mute_roles and self.mute_roles[guild_id] == str(role.id):
-            embed = discord.Embed(title="Already set", description=f"The mute role is already set to {role.name} for this guild.", color=discord.color.orange())
-            await ctx.send(embed=embed)
-            return
-
-        # Update the mute role for this guild
         self.mute_roles[guild_id] = str(role.id)
         self.save_mute_roles()
-        embed = discord.Embed(title="Success", description=f"Role {role.name} has been set as mute role for this guild.", color=discord.Color.brand_green())
+        embed = discord.Embed(
+            title="Mute Role Set",
+            description=f"Role **{role.name}** has been set as the mute role.",
+            color=discord.Color.green(),
+            timestamp=datetime.now(timezone.utc)
+        )
         await ctx.send(embed=embed)
 
-
-   # Automod feature for word filtering
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def addfilterword(self, ctx, word):
-        if word not in self.config["word_filter"]:
-            self.config["word_filter"].append(word)
+    async def addfilterword(self, ctx, word: str):
+        """Add a word to the word filter."""
+        word_filter = self.config.get("word_filter", [])
+        if word.lower() not in word_filter:
+            word_filter.append(word.lower())
+            self.config["word_filter"] = word_filter
             self.save_config()
-            await ctx.send(f"Added word {word} to the word filter.")
+            embed = discord.Embed(
+                title="Word Added",
+                description=f"Word '{word}' has been added to the filter.",
+                color=discord.Color.green(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=embed)
         else:
-            await ctx.send(f"The word {word} is already in the filter.")
+            embed = discord.Embed(
+                title="Word Already Exists",
+                description=f"Word '{word}' is already in the filter.",
+                color=discord.Color.orange(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=embed)
 
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def removefilterword(self, ctx, word):
-        if word in self.config["word_filter"]:
-            self.config["word_filter"].remove(word)
+    async def removefilterword(self, ctx, word: str):
+        """Remove a word from the word filter."""
+        word_filter = self.config.get("word_filter", [])
+        if word.lower() in word_filter:
+            word_filter.remove(word.lower())
+            self.config["word_filter"] = word_filter
             self.save_config()
-            await ctx.send(f"Removed word {word} from the word filter.")
+            embed = discord.Embed(
+                title="Word Removed",
+                description=f"Word '{word}' has been removed from the filter.",
+                color=discord.Color.green(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=embed)
         else:
-            await ctx.send(f"The word {word} is not in the filter.")
+            embed = discord.Embed(
+                title="Word Not Found",
+                description=f"Word '{word}' is not in the filter.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=embed)
 
     @commands.command()
     @commands.has_permissions(administrator=True)
     async def setwarnthreshold(self, ctx, threshold: int):
+        """Set the warning threshold."""
         self.config["warn_threshold"] = threshold
         self.save_config()
-        await ctx.send(f"Warning threshold set to {threshold}.")
-
-    @commands.Cog.listener()
-    async def on_message(self, message):
-    # Ignore bot's own messages or messages starting with the command prefix
-        if message.author.bot or message.content.startswith(self.bot.command_prefix):
-            return
-
-        # Check for word filter (inappropriate language)
-        for word in self.config["word_filter"]:
-            if re.search(rf"\b{re.escape(word)}\b", message.content, re.IGNORECASE):
-                # Add a warning to the user
-                self.add_warning(message.author.id, f"Used filtered word '{word}'")
-
-                # Delete the message and notify the user
-                await message.delete()
-                warning_msg = await message.channel.send(
-                    f"{message.author.mention}, your message has been removed for using inappropriate language."
-                )
-
-                # Punish the user if they exceed the threshold
-                await self.punish_user(message.author, "Using inappropriate language.")
-                await warning_msg.delete(delay=10)
-                return
-
-        # Check for specific unverified Discord Nitro links while ignoring other URLs
-        if "https://" in message.content:
-            # Only bypass non-Nitro URLs
-            if "discord.gift" not in message.content:
-                return
-            
-            # Check for unverified Discord Nitro links
-            # Regex to match valid Discord Nitro URLs (alphanumeric characters after 'discord.gift/')
-            valid_gift_url = re.compile(r"https://discord\.gift/[\w\d]+$")
-            
-            # Handle cases where only 'https://discord.gift/' is sent or incomplete/invalid links
-            if not valid_gift_url.match(message.content) or message.content.strip() == "https://discord.gift/":
-                await message.delete()
-                await message.channel.send(
-                    f"{message.author.mention}, sending unverified or incomplete Discord Nitro links is prohibited."
-                )
-                self.add_warning(message.author.id, "Sent unverified or incomplete Discord Nitro link")
-                return
-
-        user_id = message.author.id
-        current_time = time.time()
-
-        self.spam_tracker[user_id].append(current_time)
-        self.spam_tracker[user_id] = [
-            msg_time for msg_time in self.spam_tracker[user_id]
-            if current_time - msg_time <= self.spam_interval
-        ]
-
-        if len(self.spam_tracker[user_id]) > self.spam_threshold:
-            await message.delete()
-            await message.channel.send(f"{message.author.mention}, you are sending messages too quickly. Please slow down.")
-            
-            if self.add_warning(user_id, "Spamming messages"):
-                await self.punish_user(message.author, "Spamming messages")
-
-        # Full caps filter
-        caps_count = sum(1 for c in message.content if c.isupper())
-        if caps_count > 20:
-            await message.delete()
-            await message.channel.send(f"{message.author.mention}, your message contains too many capital letters. Please avoid using excessive caps.")
-            
-            if self.add_warning(user_id, "Excessive caps"):
-                await self.punish_user(message.author, "Excessive caps")
-
-    # View warnings command
-    @commands.command()
-    async def warnings(self, ctx, member: discord.Member = None):
-        if member is None:
-            member = ctx.author  # Default to the command invoker if no member is specified
-
-        user_id = str(member.id)
-
-    # Retrieve warnings for the user from the config
-        user_warnings = self.config["user_warnings"].get(user_id, [])
-
-    # Count the number of warnings
-        warning_count = len(user_warnings)
-
-    # Prepare the embed message
         embed = discord.Embed(
-        title=f"Warnings for {member.display_name}",
-        description=f"{member.mention} has {warning_count} warning(s).",
-        color=discord.Color.blue()
+            title="Warning Threshold Set",
+            description=f"Warning threshold has been set to {threshold}.",
+            color=discord.Color.green(),
+            timestamp=datetime.now(timezone.utc)
         )
         await ctx.send(embed=embed)
 
-        
-# Clear warnings command using User ID
     @commands.command()
-    @has_permissions(administrator=True)
-    async def clear_warn(self, ctx, user_id: int):
-        user_id_str = str(user_id)
+    async def warnings(self, ctx, member: discord.Member = None):
+        """View warnings for a member."""
+        if member is None:
+            member = ctx.author
+        user_id_str = str(member.id)
+        user_warnings = self.warnings.get(user_id_str, [])
+        warn_count = len(user_warnings)
+        if warn_count > 0:
+            embed = discord.Embed(
+                title=f"Warnings for {member.display_name}",
+                description=f"{member.mention} has {warn_count} warning(s).",
+                color=discord.Color.orange(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            for idx, warning in enumerate(user_warnings, start=1):
+                embed.add_field(
+                    name=f"Warning {idx}",
+                    value=f"Reason: {warning['reason']}\nTime: {warning['time']}",
+                    inline=False
+                )
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(
+                title="No Warnings",
+                description=f"{member.mention} has no warnings.",
+                color=discord.Color.green(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=embed)
 
-        user = await self.bot.fetch_user(user_id)
-        member = ctx.guild.get_member(user.id)
-
-    # Check if the user has any warnings
-        if user_id_str in self.config["user_warnings"]:
-        # Clear the warnings
-            del self.config["user_warnings"][user_id_str]
-            self.save_config()
-        
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def clear_warn(self, ctx, user_input: str):
+        """Clear warnings for a user by mention or User ID."""
+        user = await self.resolve_user(ctx, user_input)
+        if not user:
+            await ctx.send("User not found.")
+            return
+        user_id_str = str(user.id)
+        if user_id_str in self.warnings:
+            del self.warnings[user_id_str]
+            self.save_warnings()
             embed = discord.Embed(
                 title="Warnings Cleared",
-                description=f"All warnings for user {user.mention} have been cleared.",
-                color=discord.Color.green()
-                )
+                description=f"All warnings for {user.mention} have been cleared.",
+                color=discord.Color.green(),
+                timestamp=datetime.now(timezone.utc)
+            )
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
                 title="No Warnings Found",
-                description=f"No warnings found for user {user.mention}.",
-                color=discord.Color.orange()
-                )
+                description=f"No warnings found for {user.mention}.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
             await ctx.send(embed=embed)
 
     @commands.command()
-    async def warn(self, ctx, member: discord.Member):
-        user_id = str(member.id)
-        if user_id in self.warnings:
-            self.warnings[user_id] += 1
+    @commands.has_permissions(manage_messages=True)
+    async def warn(self, ctx, member: discord.Member, *, reason: str = "No reason provided"):
+        """Warn a member."""
+        if member == ctx.author:
+            embed = discord.Embed(
+                title="Action Prohibited",
+                description="You cannot warn yourself.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=embed)
+            return
+        if self.add_warning(member.id, reason):
+            await self.punish_user(member, reason)
+            embed = discord.Embed(
+                title="Member Warned and Muted",
+                description=f"{member.mention} has been warned and muted for exceeding warn threshold.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=embed)
         else:
-            self.warnings[user_id] = 1
-        
-        self.save_warnings()  # Save after warning
+            embed = discord.Embed(
+                title="Member Warned",
+                description=f"{member.mention} has been warned.",
+                color=discord.Color.orange(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=embed)
 
-        await ctx.send(f"{member.mention} has been warned. Total warnings: {self.warnings[user_id]}")
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        """Reapply mute role if a muted member rejoins."""
+        guild_id = str(member.guild.id)
+        mute_role_id = self.mute_roles.get(guild_id)
+        if mute_role_id:
+            mute_role = member.guild.get_role(int(mute_role_id))
+            if mute_role and str(member.id) in self.warnings:
+                await member.add_roles(mute_role)
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        """Automod features implemented through message listener."""
+        if message.author.bot:
+            return
+        ctx = await self.bot.get_context(message)
+        if ctx.valid:
+            return  # Ignore messages that are commands
+        user_id_str = str(message.author.id)
+        # Word filter
+        word_filter = self.config.get("word_filter", [])
+        for word in word_filter:
+            pattern = re.compile(rf'\b{re.escape(word)}\b', re.IGNORECASE)
+            if pattern.search(message.content):
+                await message.delete()
+                embed = discord.Embed(
+                    title="Prohibited Word Used",
+                    description=f"{message.author.mention}, you used a prohibited word.",
+                    color=discord.Color.red(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                await message.channel.send(embed=embed)
+                if self.add_warning(message.author.id, f"Used prohibited word: {word}"):
+                    await self.punish_user(message.author, "Used prohibited words.")
+                return
+        # Spam detection
+        current_time = time.time()
+        self.spam_tracker[message.author.id].append(current_time)
+        self.spam_tracker[message.author.id] = [
+            t for t in self.spam_tracker[message.author.id]
+            if current_time - t <= self.spam_interval
+        ]
+        if len(self.spam_tracker[message.author.id]) > self.spam_threshold:
+            await message.delete()
+            embed = discord.Embed(
+                title="Please Stop Spamming",
+                description=f"{message.author.mention}, please stop spamming.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await message.channel.send(embed=embed)
+            if self.add_warning(message.author.id, "Spamming messages"):
+                await self.punish_user(message.author, "Spamming messages.")
+            return
+        # Caps filter
+        caps_count = sum(1 for c in message.content if c.isupper())
+        if caps_count > 20:
+            await message.delete()
+            embed = discord.Embed(
+                title="Excessive Capital Letters",
+                description=f"{message.author.mention}, please avoid using excessive capital letters.",
+                color=discord.Color.orange(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await message.channel.send(embed=embed)
+            if self.add_warning(message.author.id, "Excessive capital letters"):
+                await self.punish_user(message.author, "Excessive capital letters.")
+            return
+        # Unverified Discord Nitro links
+        if "https://" in message.content:
+            if "discord.gift/" in message.content:
+                valid_gift_url = re.compile(r'https://discord\.gift/[\w\d]+$')
+                if not valid_gift_url.match(message.content.strip()):
+                    await message.delete()
+                    embed = discord.Embed(
+                        title="Unverified Discord Nitro Link",
+                        description=f"{message.author.mention}, sending unverified or incomplete Discord Nitro links is prohibited.",
+                        color=discord.Color.red(),
+                        timestamp=datetime.now(timezone.utc)
+                    )
+                    await message.channel.send(embed=embed)
+                    if self.add_warning(message.author.id, "Sent unverified Discord Nitro link"):
+                        await self.punish_user(message.author, "Sent unverified Discord Nitro links.")
+                    return
 
-    # Handle missing permissions
     @kick.error
     @ban.error
     @unban.error
@@ -544,11 +910,25 @@ class Moderation(commands.Cog):
     @timeout.error
     @remove_timeout.error
     @clear.error
-    async def missing_permissions_error(self, ctx, error):
-        if isinstance(error, MissingPermissions):
-            embed = discord.Embed(title="Prohibited!", description=f'{ctx.author.mention}, you do not have the required permissions to use this command!', color=discord.Color.red())
+    async def command_error_handler(self, ctx, error):
+        """Handle errors for moderation commands."""
+        if isinstance(error, commands.MissingPermissions):
+            embed = discord.Embed(
+                title="Permission Denied",
+                description=f"{ctx.author.mention}, you do not have permission to use this command.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=embed)
+        else:
+            logger.exception("An error occurred:")
+            embed = discord.Embed(
+                title="Error",
+                description="An error occurred while processing the command.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
             await ctx.send(embed=embed)
 
-# Setup function to add the cog (oh wow, if lacked this setup function then this cog never becomes food for the bot to eat)
 async def setup(bot):
     await bot.add_cog(Moderation(bot))

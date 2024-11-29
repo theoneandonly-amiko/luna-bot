@@ -1,87 +1,162 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from PIL import Image, ImageDraw, ImageFont
-import requests
+import aiofiles
+import aiohttp
 from io import BytesIO
 import random
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+import asyncio
+import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class LevelSystem(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.levels_file = 'cogs/data/levels.json'
         self.roles_file = 'cogs/data/roles.json'
-        self.load_levels()
-        self.load_roles()
-        self.last_message_time = {}
         self.config_file = 'cogs/data/level_config.json'
         self.block_guild_file = 'cogs/data/blocked_guilds.json'
+        self.last_message_time = {}
         self.blocked_guilds = set()
-        self.load_blocked_guilds()
-        self.load_config()
+        self.levels = {}
+        self.level_roles = {}
+        self.config = {}
 
-    def load_roles(self):
-        """Load roles for level-up from a JSON file or create a new one."""
-        if os.path.exists(self.roles_file):
-            with open(self.roles_file, 'r') as f:
-                self.level_roles = json.load(f)
-        else:
+        # Start the background task for periodic saving
+        self.save_task = self.bot.loop.create_task(self.periodic_save())
+
+    async def cog_load(self):
+        """Initialize the cog by loading data asynchronously."""
+        await self.load_levels()
+        await self.load_roles()
+        await self.load_blocked_guilds()
+        await self.load_config()
+
+    def cog_unload(self):
+        """Cleanup when the cog is unloaded."""
+        self.save_task.cancel()
+        self.bot.loop.create_task(self.save_all())
+
+    async def periodic_save(self):
+        """Periodically save data to disk."""
+        await self.bot.wait_until_ready()
+        while not self.bot.is_closed():
+            await asyncio.sleep(300)  # Save every 5 minutes
+            await self.save_all()
+
+    async def save_all(self):
+        """Save all data to disk."""
+        await self.save_levels()
+        await self.save_config()
+        await self.save_roles()
+        await self.save_blocked_guilds()
+
+    async def load_roles(self):
+        """Asynchronously load roles for level-ups from a JSON file."""
+        try:
+            if os.path.exists(self.roles_file):
+                async with aiofiles.open(self.roles_file, 'r') as f:
+                    data = await f.read()
+                    self.level_roles = json.loads(data)
+                    if not isinstance(self.level_roles, dict):
+                        self.level_roles = {}
+            else:
+                self.level_roles = {}
+        except Exception as e:
+            logger.exception("Exception occurred while loading roles:")
             self.level_roles = {}
 
-    def save_roles(self):
-        """Save roles to a JSON file."""
-        with open(self.roles_file, 'w') as f:
-            json.dump(self.level_roles, f, indent=4)
+    async def save_roles(self):
+        """Asynchronously save roles to a JSON file."""
+        try:
+            async with aiofiles.open(self.roles_file, 'w') as f:
+                data = json.dumps(self.level_roles, indent=4)
+                await f.write(data)
+        except Exception as e:
+            logger.exception("Exception occurred while saving roles:")
 
-    def load_levels(self):
-        """Load levels from a JSON file or create a new one."""
-        if os.path.exists(self.levels_file):
-            with open(self.levels_file, 'r') as f:
-                self.levels = json.load(f)
-                # Ensure self.levels is a dictionary
-                if not isinstance(self.levels, dict):
-                    self.levels = {}
-        else:
+    async def load_levels(self):
+        """Asynchronously load levels from a JSON file."""
+        try:
+            if os.path.exists(self.levels_file):
+                async with aiofiles.open(self.levels_file, 'r') as f:
+                    data = await f.read()
+                    self.levels = json.loads(data)  # Corrected line
+                    if not isinstance(self.levels, dict):
+                        self.levels = {}
+            else:
+                self.levels = {}
+        except Exception as e:
+            logger.exception("Exception occurred while loading levels:")
             self.levels = {}
 
-    def save_levels(self):
-        """Save levels to a JSON file."""
-        with open(self.levels_file, 'w') as f:
-            json.dump(self.levels, f, indent=4)
+    async def save_levels(self):
+        """Asynchronously save levels to a JSON file."""
+        try:
+            async with aiofiles.open(self.levels_file, 'w') as f:
+                data = json.dumps(self.levels, indent=4)
+                await f.write(data)
+        except Exception as e:
+            logger.exception("Exception occurred while saving levels:")
 
-    def load_config(self):
-        """Load the configuration for level-up and XP settings."""
-        if os.path.exists(self.config_file):
-            with open(self.config_file, 'r') as f:
-                self.config = json.load(f)
-        else:
+    async def load_config(self):
+        """Asynchronously load the configuration for level-up and XP settings."""
+        try:
+            if os.path.exists(self.config_file):
+                async with aiofiles.open(self.config_file, 'r') as f:
+                    data = await f.read()
+                    self.config = json.loads(data)
+                    if not isinstance(self.config, dict):
+                        self.config = {}
+            else:
+                self.config = {}
+        except Exception as e:
+            logger.exception("Exception occurred while loading config:")
             self.config = {}
 
-    def save_config(self):
-        """Save the configuration for level-up and XP settings."""
-        with open(self.config_file, 'w') as f:
-            json.dump(self.config, f, indent=4)
+    async def save_config(self):
+        """Asynchronously save the configuration to a JSON file."""
+        try:
+            async with aiofiles.open(self.config_file, 'w') as f:
+                data = json.dumps(self.config, indent=4)
+                await f.write(data)
+        except Exception as e:
+            logger.exception("Exception occurred while saving config:")
 
-    def load_blocked_guilds(self):
-        if os.path.exists(self.block_guild_file):
-            with open(self.block_guild_file, 'r') as file:
-                self.blocked_guilds = set(json.load(file))
-        else:
+    async def load_blocked_guilds(self):
+        """Asynchronously load the list of blocked guilds from a JSON file."""
+        try:
+            if os.path.exists(self.block_guild_file):
+                async with aiofiles.open(self.block_guild_file, 'r') as f:
+                    data = await f.read()
+                    self.blocked_guilds = set(json.loads(data))
+            else:
+                self.blocked_guilds = set()
+        except Exception as e:
+            logger.exception("Exception occurred while loading blocked guilds:")
             self.blocked_guilds = set()
 
-    def save_blocked_guilds(self):
-        with open(self.block_guild_file, 'w') as file:
-            json.dump(list(self.blocked_guilds), file)
+    async def save_blocked_guilds(self):
+        """Asynchronously save the list of blocked guilds to a JSON file."""
+        try:
+            async with aiofiles.open(self.block_guild_file, 'w') as f:
+                data = json.dumps(list(self.blocked_guilds), indent=4)
+                await f.write(data)
+        except Exception as e:
+            logger.exception("Exception occurred while saving blocked guilds:")
 
     def is_user_restricted(self, guild_id, user_id):
         """Check if a user is restricted from gaining XP."""
         return user_id in self.config.get(guild_id, {}).get('restricted_users', [])
 
-
-    def add_xp(self, guild_id, user_id, xp):
+    async def add_xp(self, guild_id, user_id, xp):
+        """Add XP to a user and handle level-ups."""
         guild_id = str(guild_id)
         user_id = str(user_id)
 
@@ -103,46 +178,55 @@ class LevelSystem(commands.Cog):
         # Add the granted XP to current XP
         current_xp += xp
 
-        # Level-up logic: Loop through levels and check if the user has enough XP to level up
+        # Level-up logic
         leveled_up = False
         while True:
-            # Calculate the XP required for the current level
-            xp_needed = int(100 * (current_level ** 1.5))
+            # Calculate the XP required for the next level
+            xp_needed = self.xp_for_next_level(current_level)
 
             # Check if the current XP is enough to level up
             if current_xp >= xp_needed:
-                # If enough XP, subtract the XP required to level up
                 current_xp -= xp_needed
                 current_level += 1
-                leveled_up = True  # Mark that a level-up occurred
+                leveled_up = True
             else:
-                break  # If not enough XP, stop the loop
+                break
 
-        # Update the user's level and remaining XP after leveling up
-        self.levels[guild_id][user_id]["xp"] = current_xp  # Save the leftover XP
-        self.levels[guild_id][user_id]["level"] = current_level  # Save the new level
-
-        # Save levels to the file after updating
-        self.save_levels()
+        # Update the user's level and remaining XP
+        self.levels[guild_id][user_id]["xp"] = current_xp
+        self.levels[guild_id][user_id]["level"] = current_level
 
         # Return True if a level-up occurred
         return leveled_up
 
-    def get_dominant_color_from_image(self, image_url):
-        """Extract the dominant color from a user's avatar."""
-        response = requests.get(image_url)
-        img = Image.open(BytesIO(response.content))
-        img = img.convert("RGB")
-        img = img.resize((1, 1))  # Resize to 1x1 pixel to get the dominant color
-        dominant_color = img.getpixel((0, 0))
-        return discord.Color.from_rgb(*dominant_color)
+    def xp_for_next_level(self, level):
+        """Calculate the XP required for the next level."""
+        return int(100 * (level ** 1.5))
+
+    async def get_dominant_color_from_image(self, image_url):
+        """Asynchronously extract the dominant color from an image URL."""
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(image_url) as response:
+                    if response.status == 200:
+                        image_data = await response.read()
+                        img = Image.open(BytesIO(image_data))
+                        img = img.convert("RGB")
+                        img = img.resize((1, 1))
+                        dominant_color = img.getpixel((0, 0))
+                        return discord.Color.from_rgb(*dominant_color)
+                    else:
+                        logger.error(f"Failed to fetch image: Status {response.status}")
+                        return discord.Color.blurple()
+        except Exception as e:
+            logger.exception("Exception occurred while fetching dominant color:")
+            return discord.Color.blurple()
 
     def create_progress_bar(self, current_xp, xp_needed, bar_length=20):
         """Generate a progress bar for the level embed."""
         progress = int((current_xp / xp_needed) * bar_length)
         bar = "█" * progress + "░" * (bar_length - progress)
         return bar
-
 
     def get_random_level_up_message(self, user):
         """Returns a random level-up message."""
@@ -163,18 +247,16 @@ class LevelSystem(commands.Cog):
             f"🔥 Keep the heat up, {user.mention}! You've unlocked level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
             f"✨ {user.mention} just reached level {self.levels[str(user.guild.id)][str(user.id)]['level']}! Onwards and upwards!",
         ]
-
         return random.choice(messages)
 
-    def can_receive_xp(self, user_id):
+    def can_receive_xp(self, guild_id, user_id):
         """Check if enough time has passed to receive more XP."""
-        now = datetime.now()
-        if user_id not in self.last_message_time:
-            self.last_message_time[user_id] = now
-            return True
-        last_time = self.last_message_time[user_id]
-        if now - last_time > timedelta(seconds=10): # 10 seconds cooldown.
-            self.last_message_time[user_id] = now
+        now = datetime.now(timezone.utc)
+        cooldown = self.config.get(guild_id, {}).get('xp_cooldown', 10)  # Default 10 seconds
+        last_time = self.last_message_time.get((guild_id, user_id))
+
+        if last_time is None or (now - last_time).total_seconds() >= cooldown:
+            self.last_message_time[(guild_id, user_id)] = now
             return True
         return False
 
@@ -190,14 +272,14 @@ class LevelSystem(commands.Cog):
             self.config[guild_id] = {}
 
         self.config[guild_id]['level_channel'] = channel.id
-        self.save_config()
+        await self.save_config()
 
         await ctx.send(f"Level-up messages will be sent to {channel.mention}")
 
     @commands.command(name="restrictxpchannel")
     @commands.has_permissions(administrator=True)
     async def restrict_xp_channel(self, ctx, channel: discord.TextChannel = None):
-        """Mark a channel as restricted from awarding XP."""
+        """Toggle restriction of a channel from awarding XP."""
         guild_id = str(ctx.guild.id)
         if channel is None:
             channel = ctx.channel  # Default to current channel if none is specified
@@ -216,36 +298,12 @@ class LevelSystem(commands.Cog):
             self.config[guild_id]['restricted_channels'].append(channel.id)
             await ctx.send(f"{channel.mention} is now restricted from awarding XP.")
 
-        self.save_config()
-
-    @commands.command(name="unrestrictxpchannel")
-    @commands.has_permissions(administrator=True)
-    async def unrestrict_xp_channel(self, ctx, channel: discord.TextChannel = None):
-        """Remove a channel from the restricted XP list."""
-        guild_id = str(ctx.guild.id)
-        
-        # If no channel is provided, default to the current channel
-        if channel is None:
-            channel = ctx.channel
-
-        # Check if the guild has any restricted channels
-        if guild_id in self.config and 'restricted_channels' in self.config[guild_id]:
-            restricted_channels = self.config[guild_id]['restricted_channels']
-
-            # Remove the channel if it's in the restricted list
-            if channel.id in restricted_channels:
-                restricted_channels.remove(channel.id)
-                self.save_config()
-                await ctx.send(f"{channel.mention} is no longer restricted from awarding XP.")
-            else:
-                await ctx.send(f"{channel.mention} is not in the restricted XP list.")
-        else:
-            await ctx.send(f"This server has no restricted XP channels.")
+        await self.save_config()
 
     @commands.command(name="restrictxpuser")
     @commands.has_permissions(administrator=True)
     async def restrict_xp_user(self, ctx, member: discord.Member):
-        """Restrict a user from gaining XP in the server."""
+        """Restrict or unrestrict a user from gaining XP in the server."""
         guild_id = str(ctx.guild.id)
         user_id = str(member.id)
 
@@ -255,17 +313,18 @@ class LevelSystem(commands.Cog):
         if 'restricted_users' not in self.config[guild_id]:
             self.config[guild_id]['restricted_users'] = []
 
-        if user_id not in self.config[guild_id]['restricted_users']:
-            self.config[guild_id]['restricted_users'].append(user_id)
-            self.save_config()
-            await ctx.send(f"{member.mention} is now restricted from gaining XP.")
+        if user_id in self.config[guild_id]['restricted_users']:
+            self.config[guild_id]['restricted_users'].remove(user_id)
+            await ctx.send(f"{member.mention} is no longer restricted from gaining XP.")
         else:
-            await ctx.send(f"{member.mention} is already restricted from gaining XP.")
+            self.config[guild_id]['restricted_users'].append(user_id)
+            await ctx.send(f"{member.mention} is now restricted from gaining XP.")
 
+        await self.save_config()
 
-    # Fixing the level-up messaging logic in on_message:
     @commands.Cog.listener()
     async def on_message(self, message):
+        """Handle incoming messages for XP awarding and command processing."""
         if message.author.bot or message.guild is None:
             return
 
@@ -275,12 +334,13 @@ class LevelSystem(commands.Cog):
 
         # Check for restrictions
         if self.is_user_restricted(guild_id, user_id) or \
-        (guild_id in self.config and 'restricted_channels' in self.config[guild_id] and channel_id in self.config[guild_id]['restricted_channels']):
+           (guild_id in self.config and 'restricted_channels' in self.config[guild_id] and channel_id in self.config[guild_id]['restricted_channels']):
             return
 
         # Award XP if the user can receive it
-        if self.can_receive_xp(user_id):
-            leveled_up = self.add_xp(guild_id, user_id, 10)  # Adjust XP amount as needed
+        if self.can_receive_xp(guild_id, user_id):
+            xp_amount = self.config.get(guild_id, {}).get('xp_amount', 10)  # Default 10 XP
+            leveled_up = await self.add_xp(guild_id, user_id, xp_amount)
 
             if leveled_up:
                 level_up_channel_id = self.config.get(guild_id, {}).get('level_channel', message.channel.id)
@@ -295,11 +355,13 @@ class LevelSystem(commands.Cog):
                     role_id = self.level_roles[guild_id][str(new_level)]
                     role = message.guild.get_role(role_id)
                     if role:
-                        await message.author.add_roles(role)
-                        await level_up_channel.send(f"{message.author.mention} has been awarded the role: {role.name}!")
-
-            self.save_levels()  # Save the updated levels
-
+                        try:
+                            await message.author.add_roles(role)
+                            await level_up_channel.send(f"{message.author.mention} has been awarded the role: {role.name}!")
+                        except discord.Forbidden:
+                            await level_up_channel.send(f"I don't have permission to assign the role {role.name}.")
+                        except discord.HTTPException:
+                            await level_up_channel.send(f"Failed to assign the role {role.name} due to a network error.")
 
     @commands.command(name="level")
     async def check_level(self, ctx, member: discord.Member = None):
@@ -314,19 +376,19 @@ class LevelSystem(commands.Cog):
             level = self.levels[guild_id][user_id]["level"]
 
             # Correct XP needed for the next level
-            xp_needed = int(100 * (level ** 1.5))
+            xp_needed = self.xp_for_next_level(level)
 
             # XP remaining to level up
             xp_remaining = xp_needed - xp
 
-            # Progress bar (using your existing method)
+            # Progress bar
             progress_bar = self.create_progress_bar(xp, xp_needed)
 
             # User's avatar URL
             avatar_url = member.avatar.url if member.avatar else member.default_avatar.url
 
             # Get the dominant color from the avatar image
-            embed_color = self.get_dominant_color_from_image(str(avatar_url))
+            embed_color = await self.get_dominant_color_from_image(str(avatar_url))
 
             # Create the embed message
             embed = discord.Embed(
@@ -346,11 +408,10 @@ class LevelSystem(commands.Cog):
         else:
             await ctx.send(f"{member.mention} has no XP yet in this server.")
 
-
     @commands.command()
     @commands.has_permissions(manage_roles=True)
     async def grantxp(self, ctx, user: discord.User, amount: int):
-        """Grants a specified amount of XP to a user."""
+        """Grant a specified amount of XP to a user."""
         guild_id = str(ctx.guild.id)
         user_id = str(user.id)
 
@@ -358,12 +419,11 @@ class LevelSystem(commands.Cog):
             self.levels[guild_id] = {}
 
         if user_id not in self.levels[guild_id]:
-            self.levels[guild_id][user_id] = {"xp": 0, "level": 1}  # Initialize if not present
+            self.levels[guild_id][user_id] = {"xp": 0, "level": 1}
 
         # Grant XP
-        leveled_up = self.add_xp(guild_id, user_id, amount)
+        leveled_up = await self.add_xp(guild_id, user_id, amount)
 
-        # The XP has already been updated by add_xp, no need to save again here
         if leveled_up:
             await ctx.send(f"{user.mention} has been granted {amount} XP and leveled up!")
         else:
@@ -372,7 +432,7 @@ class LevelSystem(commands.Cog):
     @commands.command(name="resetxp")
     @commands.has_permissions(manage_roles=True)
     async def reset_xp(self, ctx, member: discord.Member = None):
-        """Resets a user's XP and level in the current guild."""
+        """Reset a user's XP and level in the current guild."""
         if member is None:
             member = ctx.author
 
@@ -397,35 +457,34 @@ class LevelSystem(commands.Cog):
                         except discord.HTTPException:
                             await ctx.send(f"Failed to remove the role {role.name} due to a network error.")
 
-            # Save the reset data
-            self.save_levels()
-
+            await self.save_levels()
             await ctx.send(f"{member.mention}'s XP and level have been reset.")
         else:
             await ctx.send(f"{member.mention} has no XP or level data to reset.")
 
     @commands.command(name="toplevel")
     async def toplevel(self, ctx):
-        """Display the top users by XP in the current guild, with avatars, sorted by XP."""
+        """Display the top users by XP in the current guild, with avatars, sorted by level."""
         guild_id = str(ctx.guild.id)
 
         if guild_id in self.levels:
-            sorted_users = sorted(self.levels[guild_id].items(), key=lambda x: x[1]["level"], reverse=True)
+            sorted_users = sorted(
+                self.levels[guild_id].items(),
+                key=lambda x: x[1]["level"],
+                reverse=True
+            )
 
             if sorted_users:
-                # Limit to top 10 users for the leaderboard
                 top_users = sorted_users[:10]
-
-                # Create a blank image for the leaderboard
                 user_count = len(top_users)
-                width, height = 900, 100 + user_count * 80  # Adjust height dynamically based on user count
-                leaderboard_image = Image.new("RGB", (width, height), color=(30, 30, 30))  # Dark background
+                width, height = 900, 100 + user_count * 80
+                leaderboard_image = Image.new("RGB", (width, height), color=(30, 30, 30))
 
                 draw = ImageDraw.Draw(leaderboard_image)
-                font = ImageFont.truetype("assets/fonts/segoe-ui-semibold.ttf", 30)  # Change path if necessary
-                small_font = ImageFont.truetype("assets/fonts/segoe-ui-semibold.ttf", 30)
+                font_path = "assets/fonts/segoe-ui-semibold.ttf"  # Ensure this path is correct
+                font = ImageFont.truetype(font_path, 30)
 
-                y_offset = 40  # Starting Y position for drawing
+                y_offset = 40
 
                 for i, (user_id, data) in enumerate(top_users, 1):
                     user = self.bot.get_user(int(user_id))
@@ -433,19 +492,25 @@ class LevelSystem(commands.Cog):
                         level = data["level"]
                         xp = data["xp"]
 
-                        # Fetch user's avatar
-                        avatar_url = user.avatar.url if user.avatar else user.default_avatar.url
-                        response = requests.get(avatar_url)
-                        avatar_image = Image.open(BytesIO(response.content))
-                        avatar_image = avatar_image.resize((50, 50))  # Resize to fit leaderboard
+                        # Use Discord's Asset.read to fetch avatar bytes
+                        avatar_asset = user.avatar or user.default_avatar
+                        avatar_bytes = await avatar_asset.read()
+                        avatar_image = Image.open(BytesIO(avatar_bytes)).convert("RGBA")
+                        avatar_image = avatar_image.resize((50, 50))
 
-                        # Paste avatar onto the leaderboard image
-                        leaderboard_image.paste(avatar_image, (50, y_offset))
+                        # Paste avatar onto leaderboard
+                        mask = avatar_image.split()[3]  # Use alpha channel as mask
+                        leaderboard_image.paste(avatar_image, (50, y_offset), mask)
 
-                        # Add text for username and level
-                        draw.text((120, y_offset + 10), f"{i}. {user.name} - Level {level} ({xp} XP)", fill=(255, 255, 255), font=small_font)
+                        # Add text
+                        draw.text(
+                            (120, y_offset + 10),
+                            f"{i}. {user.name} - Level {level} ({xp} XP)",
+                            fill=(255, 255, 255),
+                            font=font
+                        )
 
-                        y_offset += 80  # Move down for the next user
+                        y_offset += 80
 
                 # Save the image to a BytesIO object and send it
                 with BytesIO() as image_binary:
@@ -455,7 +520,7 @@ class LevelSystem(commands.Cog):
                     file = discord.File(fp=image_binary, filename="leaderboard.png")
                     embed = discord.Embed(
                         title=f"{ctx.guild.name} Leaderboard",
-                        description="Top users based on XP",
+                        description="Here's the top 10 users of this server.",
                         color=discord.Color.blurple()
                     )
                     embed.set_image(url="attachment://leaderboard.png")  # Attach the image
@@ -472,8 +537,7 @@ class LevelSystem(commands.Cog):
     async def view_level_roles(self, ctx):
         """View all the level-up roles set in the current guild."""
         guild_id = str(ctx.guild.id)
-        
-        # Check if the guild has any roles set
+
         if guild_id in self.level_roles and self.level_roles[guild_id]:
             embed = discord.Embed(
                 title=f"Level-Up Roles for {ctx.guild.name}",
@@ -481,7 +545,6 @@ class LevelSystem(commands.Cog):
                 color=discord.Color.green()
             )
 
-            # Loop through the levels and roles
             for lvl, role_id in self.level_roles[guild_id].items():
                 role = ctx.guild.get_role(role_id)
                 if role:
@@ -489,7 +552,6 @@ class LevelSystem(commands.Cog):
 
             await ctx.send(embed=embed)
         else:
-            # If no roles are configured yet
             embed = discord.Embed(
                 title="No Level-Up Roles Configured",
                 description="There are no roles set for any levels in this server.",
@@ -507,9 +569,8 @@ class LevelSystem(commands.Cog):
             self.level_roles[guild_id] = {}
 
         self.level_roles[guild_id][str(level)] = role.id
-        self.save_roles()
+        await self.save_roles()
 
-        # Confirmation embed
         embed = discord.Embed(
             title="Level-Up Role Set",
             description=f"The role **{role.name}** will now be assigned when users reach level **{level}**.",
@@ -522,9 +583,34 @@ class LevelSystem(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command(name="setxpcooldown")
+    @commands.has_permissions(administrator=True)
+    async def set_xp_cooldown(self, ctx, seconds: int):
+        """Set the cooldown time (in seconds) between XP gains."""
+        guild_id = str(ctx.guild.id)
+        if guild_id not in self.config:
+            self.config[guild_id] = {}
+
+        self.config[guild_id]['xp_cooldown'] = seconds
+        await self.save_config()
+        await ctx.send(f"XP cooldown has been set to {seconds} seconds.")
+
+    @commands.command(name="setxpamount")
+    @commands.has_permissions(administrator=True)
+    async def set_xp_amount(self, ctx, amount: int):
+        """Set the amount of XP awarded per message."""
+        guild_id = str(ctx.guild.id)
+        if guild_id not in self.config:
+            self.config[guild_id] = {}
+
+        self.config[guild_id]['xp_amount'] = amount
+        await self.save_config()
+        await ctx.send(f"XP amount per message has been set to {amount} XP.")
+
     @commands.command(name="togglexpblock")
-    @commands.has_permissions(manage_roles=True)
+    @commands.has_permissions(administrator=True)
     async def toggle_xp_block(self, ctx):
+        """Toggle XP award blocking for the guild."""
         guild_id = str(ctx.guild.id)
 
         if guild_id in self.blocked_guilds:
@@ -534,9 +620,7 @@ class LevelSystem(commands.Cog):
             self.blocked_guilds.add(guild_id)
             await ctx.send(f"XP award has been **blocked** for this guild.")
 
-        # Save the updated blocked guilds list
-        self.save_blocked_guilds()
-
+        await self.save_blocked_guilds()
 
 async def setup(bot):
     await bot.add_cog(LevelSystem(bot))

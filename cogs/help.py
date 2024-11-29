@@ -7,6 +7,7 @@ class HelpDropdown(Select):
         options = [
             discord.SelectOption(label="Fun Commands", description="List of fun commands"),
             discord.SelectOption(label="Games", description="List of available games."),
+            discord.SelectOption(label="Image Manipulation", description="List of image manipulation commands."),
             discord.SelectOption(label="Level Commands", description="List of available level commands."),
             discord.SelectOption(label="Manager", description="List of available manager commands."),
             discord.SelectOption(label="Miscellaneous", description="List of miscellaneous commands"),
@@ -22,69 +23,78 @@ class HelpDropdown(Select):
         # Define embeds based on category
         if category == "Fun Commands":
             embed.add_field(name="**Fun Commands** (1/2)", value=(
-                "`pet @user [@optionaluser]` - Pet a user and send a cute gif.\n"
-                "`grab @user [@optionaluser]` - Grab a user and send a funny gif.\n"
-                "`slap @user [@optionaluser]` - Slap someone if you feel your hand is itchy. Harmless.\n"
-                "`hug @user [@optionaluser]` - Hug someone. Simple as that.\n"
-                "`compliment @user` - Send a compliment to a user. You can do this to yourself too, because why not?\n"
-                "`battle @user1 @user2` - Start a virtual battle between 2 \"hot tempered\" users.\n"
+                "`pet [@user1] [@user2]` - Pet one or two users and send a cute gif.\n"
+                "`tape @user` - Tape a user and send a funny gif.\n"
+                "`grab [@user1] [@user2]` - Grab one or two users and send a funny gif.\n"
+                "`slap [@user1] [@user2]` - Slap someone (or two people) if you feel your hand is itchy. Harmless.\n"
+                "`hug [@user1] [@user2]` - Hug someone (or two people). Simple as that.\n"
+                "`roll [sides]` - Roll a dice with the specified number of sides (default is 6).\n"
+                "`choose [option1] [option2] [...]` - Let the bot choose an option for you.\n"
+                "`8ball [question]` - Consult the magic 8-ball to answer your question.\n"
             ), inline=False)
             embed.add_field(name="**Fun Commands** (2/2)", value=(
-                "`roll` - Roll a dice, of course.\n"
-                "`choose [option1] [option2]` - Choose an option for you.\n"
-                "`8ball [question]` - Consult the magic 8-ball to answer your question.\n"
-                "`flip` - Flip a coin. Useful when making a bet against someone, hehe.\n"
-                "`urban [term]` - Be your 24/7 dictionary. Feel free to look for any terms you don\'t know.\n"
+                "`coinflip` - Flip a coin. Useful when making a bet against someone.\n"
+                "`urban [term]` - Search Urban Dictionary for a definition.\n"
                 "`cat` - Measures how much you look like a cat. 🐱\n"
                 "`kurin` - Measures how much \"hyperkuru\" you currently are.\n"
-                "`messup` - Mess the message above you or the message you are replying to. Ehehe.\n"
-                "`match @user1 @user2` - Show matchmaking result between 2 users. Love love.\n"
+                "`messup` - Mess up the message above you or the message you are replying to.\n"
+                "`match @user1 @user2` - Show matchmaking result between two users. Love love.\n"
             ), inline=False)
         elif category == "Moderation Commands":
             embed.add_field(name="**Moderation Commands** (1/2)", value=(
-                "`mute [userID] [reason]` - Mute a user.\n"
-                "`unmute [userID]` - Unmute a user.\n"
-                "`kick [userID] [reason]` - Kick a user out.\n"
-                "`ban [userID] [reason]` - Ban a user.\n"
-                "`createmuterole [optional muterole name]` - Create mute role if not existed.\n"
-                "`setmuterole @muterole` - Set the default muterole for moderating purposes.\n"
-                "`addfilterword [word]` - Add word to the filter.\n"
+                "`kick [@mention/userID] [reason]` - Kick a user from the server.\n"
+                "`ban [@mention/userID] [reason]` - Ban a user from the server.\n"
+                "`unban [userID]` - Unban a user.\n"
+                "`mute [@mention/userID] [duration] [reason]` - Mute a user for a specified duration.\n"
+                "`unmute [@mention/userID]` - Unmute a user.\n"
+                "`timeout [@mention/userID] [duration] [reason]` - Timeout a user for a specified duration.\n"
+                "`remove_timeout [@mention/userID]` - Remove timeout from a user.\n"
+                "`warn [@mention/userID] [reason]` - Issue a warning to a user.\n"
+                "`warnings [@mention/userID]` - Display warnings for a user.\n"
+                "`clear_warn [@mention/userID]` - Clear warnings for a user.\n"
             ), inline=False)
             embed.add_field(name="**Moderation Commands** (2/2)", value=(
-                "`removefilterword [word]` - Remove word from the filter.\n"
-                "`setwarnthreshold [number]` - Customize warning threshold.\n"
-                "`clear [all/number]` - Delete messages.\n"
-                "`warn [userID]` - Warn a user.\n"
-                "`warnings [userID]` - Display the number of warnings a user has.\n"
-                "`clear_warn [userID]` - Clear warnings for a user.\n"
-                "`setgreetchannel #channel_name` - Set mentioned channel as the welcoming channel.\n"
-                "`setgoodbyechannel #channel_name` - Set the goodbye channel."
+                "`clear [number/all]` - Delete a number of messages or all possible messages.\n"
+                "`createmuterole [role name]` - Create a mute role if it doesn't exist.\n"
+                "`setmuterole @muterole` - Set the default mute role for moderation purposes.\n"
+                "`addfilterword [word]` - Add a word to the word filter.\n"
+                "`removefilterword [word]` - Remove a word from the word filter.\n"
+                "`setwarnthreshold [number]` - Set the warning threshold.\n"
+                "`setgreetchannel #channel_name` - Set the welcoming channel.\n"
+                "`setgoodbyechannel #channel_name` - Set the goodbye channel.\n"
             ), inline=False)
         elif category == "Music Commands":
-            embed.add_field(name="Music Commands", value=(
-                "`play [Youtube Video URL or Search Query]` - Join user connected voice channel and play music from given URL or Query in Normal mode.\n"
-                "`nightcore [Youtube Video URL or Search Query]` - Same as play command, but in Nightcore mode.\n"
-                "`slowed [Youtube Video URL or Search Query]` - Same as play command, but in Slowed mode.\n"
-                "`pause` - This will pause the song.\n"
-                "`resume` - Continue playing the song.\n"
-                '`stop` - Clear the queue and disconnect from current voice channel.\n'
-                "`queue` - Display the current song queue.\n"
-                "`toggle_effects [slowed/nightcore/normal]` - Switch between modes (specifically, queue). This only applies on the next queued song.\n"
-                "`stream [genre]` - Enters 24/7 mode and start streaming/playing defined genres. Trigger command first to know all available genres.\n"
-                "`stopstream` - Similar to how `stop` command works.\n"
-            ), inline=False)
+            embed.add_field(
+                name="**Music Commands**",
+                value=(
+                    "`play <YouTube URL or Search Query>` - Play music in normal mode.\n"
+                    "`nightcore <YouTube URL or Search Query>` - Play music in Nightcore mode.\n"
+                    "`slowed <YouTube URL or Search Query>` - Play music in Slowed mode.\n"
+                    "`pause` - Pause the currently playing song.\n"
+                    "`resume` - Resume the paused song.\n"
+                    "`stop` - Stop the player and clear the queue.\n"
+                    "`skip` - Skip the currently playing song.\n"
+                    "`queue` or `q` - Display the current song queue.\n"
+                ),
+                inline=False
+            )
         elif category == "Miscellaneous":
-            embed.add_field(name="Miscellaneous", value=(
-                "`totaluser` - Let you know how many members are in the current server.\n"
-                "`help` - Show this help message\n"
-                "`stats` - Show bot statistics\n"
-                "`info` - Description about me.\n"
-                "`whois [@optional_user]` - Show information about an user in guild.\n"
-                "`avatar [@optional_user]` - Show user's avatar.\n"
-                "`guildinfo` - Show current guild info."
-            ), inline=False)
+            embed.add_field(
+                name="Miscellaneous",
+                value=(
+                    "`ping` - Displays the bot's latency.\n"
+                    "`stats` - Displays bot statistics.\n"
+                    "`membercount` - Shows the number of members in the current server.\n"
+                    "`whois [@user]` - Displays information about a user.\n"
+                    "`avatar [@user]` - Fetches and displays your avatar or the avatar of the mentioned user.\n"
+                    "`guildinfo` - Shows information about the guild.\n"
+                    "`info` - Displays information about the bot.\n\n"
+                ),
+                inline=False
+            )
         elif category == "Games":
             embed.add_field(name="Game", value=(
+                "`battle @user1 @user2` - Start a virtual battle between 2 \"hot tempered\" users.\n"
                 "`hangman` - Play Hangman game.\n"
                 "`rps [rock/paper/scissors]` - Play Rock Paper Scissors with bot.\n"
                 "`numberguess` - Play Number Guessing game.\n"
@@ -94,65 +104,95 @@ class HelpDropdown(Select):
             ), inline=False)
         elif category == "Manager":
             embed.add_field(name="**Manager Commands (1/2)**", value=(
-                "`createrole [rolename] [hex color (optional)]` - Create role.\n"
-                "`addrole @user @role` - Assigns a role to a specified user.\n"
-                "`removerole @user @role` - Removes a role from a specified user.\n"
-                "`deleterole @role` - Deletes a specified role.\n"
+                "`addrole <@user> <@role>` - Assigns a role to a specified user.\n"
+                "`removerole <@user> <@role>` - Removes a role from a specified user.\n"
+                "`createrole <rolename> [hex color]` - Creates a new role with an optional color (hex code).\n"
+                "`deleterole <@role>` - Deletes a specified role.\n"
                 "`listroles` - Lists all roles in the server with the number of members in each.\n"
-                "`createchannel [name] [type] [category (optional)]` - Creates a new channel of specified type (text/voice/stage) and optional category.\n"
-                "`createcategory [name]` - Creates a new category with the specified name.\n"
-                "`deletechannel #channel` - Delete a specified channel\n"), inline=False)
+                "`createchannel <name> [type] [category]` - Creates a new channel of specified type (text/voice/stage) and optional category.\n"
+                "`createcategory <name>` - Creates a new category with the specified name.\n"
+                "`deletechannel <#channel>` - Deletes a specified channel.\n"
+            ), inline=False)
             embed.add_field(name="**Manager Commands (2/2)**", value=(
-                "`deletecategory [Category name]` - Deletes a category with the specified name.\n"
-                "`setchannelname #channel [new name]` - Changes the name of a specified channel.\n"
-                "`setchannelcategory #chanel [Category name]` - Moves a channel to a different category.\n"
+                "`deletecategory <category name>` - Deletes a category with the specified name.\n"
+                "`setchannelname <#channel> <new name>` - Changes the name of a specified channel.\n"
+                "`setchannelcategory <#channel> <category name>` - Moves a channel to a different category.\n"
                 "`listchannels` - Lists all channels in the server.\n"
-                "`viewsettings` - View server settings (Administrator only).\n"
-                "`setservername [new name]` - Change the server's name.\n"
-                "`setverificationlevel [0-4]` - Set server verification level (0-4).\n"
-                "`listbans` - Lists all banned users in the server.\n"), inline=False)
+                "`viewsettings` - View the current server settings (Administrator only).\n"
+                "`setservername <new name>` - Changes the server's name.\n"
+                "`setverificationlevel <level>` - Sets server verification level (0-4).\n"
+                "`listbans` - Lists all banned users in the server.\n"
+            ), inline=False)
         elif category == "Level Commands":
             embed.add_field(name="**Level Commands**", value=
                 "`level @user_mention [optional]` - Check the level and XP of a user in the current guild.\n"
                 "`setlevelchannel #channel_mention` - Set the channel where level-up messages will be sent.\n"
-                "`restrictxpchannel #channel_mention` - Mark a channel as restricted from awarding XP.\n"
-                "`unrestrictxpchannel #channel_mention` - Remove a channel from the restricted XP list.\n"
-                "`restrictxpuser @user_mention` - Restrict a user from gaining XP in the server.\n"
+                "`restrictxpchannel #channel_mention` - Mark a channel as restricted/unrestricted from awarding XP.\n"
+                "`restrictxpuser @user_mention` - Restrict/unrestrict a user from gaining XP in the server.\n"
                 "`grantxp @user_mention [XP amount]` - Grants a specified amount of XP to a user.\n"
                 "`resetxp [optional @user_mention] ` - Resets a user's XP and level to default values and removes any level roles.\n"
                 "`toplevel` - Display the top users by XP in the current guild.\n"
                 "`viewlevelroles` - View all the level-up roles set in the current guild.\n"
                 "`setlevelrole [level] @role_mention` - Set a role to be given when a user reaches a specific level.\n"
-                "`togglexpblock` - Mark a guild as restricted from awarding XP.", inline=False)
-        
+                "`togglexpblock` - Mark a guild as restricted from awarding XP.\n"
+                "`setxpamount [amount]` "
+                , inline=False)
+        elif category == "Image Manipulation":
+            embed.add_field(name="**Image Manipulation Commands** (1/2)", value=(
+                "`pixelate` - Pixelate the image.\n"
+                "`distort` - Apply random distortions to the image.\n"
+                "`rain` - Add a rain effect to the image.\n"
+                "`spin` - Create a spinning animation of the image.\n"
+                "`invert` - Invert the colors of the image.\n"
+                "`grayscale` - Convert the image to grayscale.\n"
+                "`blur [radius]` - Blur the image with an optional radius (default is 2.0).\n"
+                "`warp` - Warp the image with a rotation effect.\n"
+            ), inline=False)
+            embed.add_field(name="**Image Manipulation Commands** (2/2)", value=(
+                "`deepfry` - Deep-fry the image.\n"
+                "`colorize <hex_color>` - Change the image color based on a hex code.\n"
+                "`sharpen` - Sharpen the image.\n"
+                "`emboss` - Apply an emboss effect to the image.\n"
+                "`edge` - Detect edges in the image.\n"
+                "`flip` - Flip the image vertically.\n"
+                "`magic` - Apply a cursed effect to the image.\n"
+            ), inline=False)
         await interaction.response.edit_message(embed=embed)
 
 class HelpView(View):
-    def __init__(self, help_message):
+    def __init__(self):
         super().__init__(timeout=30)
-        self.help_message = help_message
+        self.help_message = None
         self.add_item(HelpDropdown())
-    
+
     async def on_timeout(self):
         try:
-            await self.help_message.delete()
+            if self.help_message:
+                await self.help_message.delete()
         except discord.NotFound:
             pass
 
-class HelpCommand(commands.Cog):
+class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='help', help='Shows this help message')
+    @commands.command()
     async def help(self, ctx):
-        embed = discord.Embed(title="Help - Select a Category", color=discord.Color.dark_purple())
-        embed.description = "Use the dropdown menu to select a category for help. Command prefix: `&`"
-        help_message = await ctx.send(embed=embed, view=HelpView(None))
-        
-        # Pass the help_message to HelpView after sending it
-        view = HelpView(help_message)
-        await help_message.edit(view=view)
+        """Displays the help message."""
+        embed = discord.Embed(
+            title="Help",
+            description="Select a category from the dropdown. Command prefix: `&`",
+            color=discord.Color.dark_purple()
+        )
+
+        view = HelpView()
+
+        # Send the help message and get the message object
+        help_message = await ctx.send(embed=embed, view=view)
+
+        # Assign the message object to the view
+        view.help_message = help_message
 
 
 async def setup(bot):
-    await bot.add_cog(HelpCommand(bot))
+    await bot.add_cog(Help(bot))

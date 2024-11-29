@@ -454,8 +454,8 @@ class Fun(commands.Cog):
         result = random.randint(1, sides)
         await ctx.send(f'🎲 You rolled a {result} on a {sides}-sided dice!')
 
-    @commands.command(name='flip', help='Flips a coin')
-    async def flip(self, ctx):
+    @commands.command(name='coinflip', help='Flips a coin')
+    async def coinflip(self, ctx):
         result = random.choice(['Heads', 'Tails'])
         await ctx.send(result)
 
@@ -481,111 +481,6 @@ class Fun(commands.Cog):
         answer = random.choice(responses)
         await ctx.send(f'{answer}')
 
-    @commands.command()
-    async def battle(self, ctx, user1: discord.Member, user2: discord.Member):
-        if user1 == user2:
-            await ctx.send("You can't battle yourself!")
-            return
-
-        user1_hp = 100
-        user2_hp = 100
-
-        attack_responses = [
-            "⚔️ {attacker} screams in {defender}'s ear, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} bites {defender}'s nose, causing **__-{damage}__** damage!",
-            "⚔️ {attacker} gives {defender} a wet willy, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} tickles {defender} mercilessly, causing **__-{damage}__** damage!",
-            "⚔️ {attacker} sneezes on {defender}, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} throws a rubber chicken at {defender}, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} does an awkward dance in front of {defender}, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} unleashes a dad joke on {defender}, dealing **__-{damage}__** damage from cringe!",
-            "⚔️ {attacker} hurls a moldy sandwich at {defender}, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} threw a slice of pizza at {defender}, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} unleashed a flurry of finger snaps at {defender}, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} bonked {defender} with a rubber mallet, causing **__-{damage}__** damage!",
-            "⚔️ {attacker} swung a pillow at {defender}, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} challenged {defender} to a dance-off and won, causing **__-{damage}__** damage from embarrassment!",
-            "⚔️ {attacker} roasted {defender} with a savage insult, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} threw a bucket of ice water on {defender}, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} pulled {defender}'s leg... literally, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} squirted {defender} with a water gun, causing **__-{damage}__** damage!",
-            "⚔️ {attacker} gave {defender} a brutal tickle attack, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} taunts {defender} about their failed love affairs, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} exposes a shocking secret about {defender}'s past, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} tried drowning {defender} in the toilet, causing **__-{damage}__** damage!",
-            "⚔️ {attacker} threw themselves at {defender}, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} drags {defender} across the floor, dealing **__-{damage}__** damage!",
-            "⚔️ {attacker} threw a hairdryer at {defender}, causing **__-{damage}__** damage!",
-            "⚔️ {attacker} grabs a plate of food from a nearby table and smashes it over {defender}'s head, caused **__-{damage}__** damage!",
-            "⚔️ {attacker} ripped {defender}'s jeans, causing **__-{damage}__** damage from embarrassment!",
-            "⚔️ {attacker} accuses {defender} of stealing their other half, caused **__-{damage}__** damage"
-        ]
-
-        heal_responses = [
-            "🩹 {attacker} eats a mysterious herb and regains **__+{heal}__** HP!",
-            "🩹 {attacker} takes a quick nap and recovers **__+{heal}__** HP!",
-            "🩹 {attacker} drinks a strange potion and heals for **__+{heal}__** HP!",
-            "🩹 {attacker} meditates for a moment, recovering **__+{heal}__** HP!",
-            "🩹 {attacker} finds a magical cookie, healing for **__+{heal}__** HP!",
-            "🩹 {attacker} picked up their makeup, healing **__+{heal}__** HP!",
-            "🩹 {attacker} did a quick yoga pose, recovering **__+{heal}__** HP!",
-            "🩹 {attacker} had a cup of herbal tea and healed for **__+{heal}__** HP!",
-            "🩹 {attacker} found an energy drink on the ground and healed for **__+{heal}__** HP!",
-            "🩹 {attacker} struck a power pose, regaining **__+{heal}__** HP!",
-            "🩹 {attacker} brushed their hair, recovering **__+{heal}__** HP!",
-            "🩹 {attacker} put on some cool shades and healed for **__+{heal}__** HP!",
-            "🩹 {attacker} sat down for a nice cup of coffee, healing **__+{heal}__** HP!",
-            "🩹 {attacker} took a selfie to boost morale, regaining **__+{heal}__** HP!",
-            "🩹 {attacker} watched a funny cat video and felt rejuvenated, healing **__+{heal}__** HP!",
-            "🩹 {attacker} takes a moment to monologue about their tragic past, regaining **__+{heal}__** HP!",
-            "🩹 {attacker} fans themselves with a melodramatic sigh, regaining **__+{heal}__** HP!"
-        ]
-
-
-        def create_battle_embed():
-            embed = discord.Embed(title="An epic battle has started!", color=discord.Color.red())
-            embed.add_field(name=user1.display_name, value=f"HP: {user1_hp}", inline=True)
-            embed.add_field(name="VS", value="\u200B", inline=True)
-            embed.add_field(name=user2.display_name, value=f"HP: {user2_hp}", inline=True)
-            return embed
-
-        message = await ctx.send(embed=create_battle_embed())
-        current_attacker = user1
-
-        while user1_hp > 0 and user2_hp > 0:
-            if random.randint(1, 5) == 1:  # calculate to give a chance to heal instead of attack
-                heal = random.randint(5, 20)
-                if current_attacker == user1:
-                    user1_hp = min(100, user1_hp + heal)
-                else:
-                    user2_hp = min(100, user2_hp + heal)
-
-                response = random.choice(heal_responses).format(
-                    attacker=current_attacker.display_name,
-                    heal=heal
-                )
-            else:
-                damage = random.randint(5, 20)
-                if current_attacker == user1:
-                    user2_hp = max(0, user2_hp - damage)
-                else:
-                    user1_hp = max(0, user1_hp - damage)
-
-                response = random.choice(attack_responses).format(
-                    attacker=current_attacker.display_name,
-                    defender=user2.display_name if current_attacker == user1 else user1.display_name,
-                    damage=damage
-                )
-
-            embed = create_battle_embed()
-            await message.edit(content=response, embed=embed)
-            await asyncio.sleep(2.5)
-
-            current_attacker = user2 if current_attacker == user1 else user1
-
-        winner = user1 if user2_hp == 0 else user2
-        await ctx.send(f"{winner.display_name} wins the battle!")
-
     @commands.command(name='cat')
     async def cat_percent(self, ctx):
         percentage = random.randint(0, 100)
@@ -610,16 +505,6 @@ class Fun(commands.Cog):
 
         emoji = discord.PartialEmoji(name='cat_emoji', id=int(custom_emoji_id))
         await message.add_reaction(emoji)
-        
-    @commands.command(name='meme', help='Get a random meme from the internet')
-    async def meme(self, ctx):
-        response = requests.get('https://api.imgflip.com/get_memes')
-        if response.status_code == 200:
-            data = response.json()
-            meme = random.choice(data['data']['memes'])
-            await ctx.send(meme['url'])
-        else:
-            await ctx.send("Couldn't fetch a meme, sorry!")
             
     @commands.command(name='choose', help='Makes a decision for you.')
     
@@ -672,6 +557,30 @@ class Fun(commands.Cog):
         return " ".join(messed_up_words)
 
 
+    # Urban Dictionary
+# Urban Dictionary
+    @commands.command(name='urban', help='Searches Urban Dictionary for a definition.')
+    async def urban(self, ctx, *, term: str = None):
+        if term is None:
+            await ctx.send("What are you looking for? I cannot see thin air.")
+            return
+
+        response = requests.get(f'https://api.urbandictionary.com/v0/define?term={term}')
+        data = response.json()
+
+        if data['list']:
+            definition = data['list'][0]['definition']
+            example = data['list'][0]['example']
+            embed = discord.Embed(
+                title=f'Urban Dictionary: {term}',
+                description=definition,
+                color=discord.Color.blue()
+            )
+            embed.add_field(name='Example', value=example, inline=False)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send(f'No results found for {term}')
+
     @commands.command(name='match')
     async def match(self, ctx, user1: discord.User = None, user2: discord.User = None):
         if user1 is None or user2 is None:
@@ -707,6 +616,8 @@ class Fun(commands.Cog):
         )
 
         await ctx.send(embed=embed)
+
+
 
 async def setup(bot):
     await bot.add_cog(Fun(bot))
