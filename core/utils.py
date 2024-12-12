@@ -10,10 +10,8 @@ def get_all_videos(channel_id, youtube):
             maxResults=50
         )
         response = request.execute()
-        if 'items' in response and response['items']:
-            return response['items']  # Return all videos
-        return []
-    except Exception as e:
-        logging.error(f"Error fetching videos: {e}")
+        return response.get('items', [])
+    except Exception:
+        logging.error(f"Error fetching videos. Switching to some giant pieces of shi- nevermind.")
         return []
 

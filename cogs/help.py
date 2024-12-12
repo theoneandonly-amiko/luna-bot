@@ -13,6 +13,7 @@ class HelpDropdown(Select):
             discord.SelectOption(label="Miscellaneous", description="List of miscellaneous commands"),
             discord.SelectOption(label="Moderation Commands", description="List of moderation commands"),
             discord.SelectOption(label="Music Commands", description="List of music commands"),
+            discord.SelectOption(label="Welcomer Commands", description="List of welcomer commands"),
         ]
         super().__init__(placeholder="Select a category...", min_values=1, max_values=1, options=options)
 
@@ -32,6 +33,7 @@ class HelpDropdown(Select):
                 "`choose [option1] [option2] [...]` - Let the bot choose an option for you.\n"
                 "`8ball [question]` - Consult the magic 8-ball to answer your question.\n"
             ), inline=False)
+
             embed.add_field(name="**Fun Commands** (2/2)", value=(
                 "`coinflip` - Flip a coin. Useful when making a bet against someone.\n"
                 "`urban [term]` - Search Urban Dictionary for a definition.\n"
@@ -39,7 +41,11 @@ class HelpDropdown(Select):
                 "`kurin` - Measures how much \"hyperkuru\" you currently are.\n"
                 "`messup` - Mess up the message above you or the message you are replying to.\n"
                 "`match @user1 @user2` - Show matchmaking result between two users. Love love.\n"
+                "`emojify <text>` - Convert text to emoji letters.\n"
+                "`uwuify <text>` - Convert text to uwu speak with secret easter eggs.\n"
             ), inline=False)
+
+
         elif category == "Moderation Commands":
             embed.add_field(name="**Moderation Commands** (1/2)", value=(
                 "`kick [@mention/userID] [reason]` - Kick a user from the server.\n"
@@ -60,8 +66,6 @@ class HelpDropdown(Select):
                 "`addfilterword [word]` - Add a word to the word filter.\n"
                 "`removefilterword [word]` - Remove a word from the word filter.\n"
                 "`setwarnthreshold [number]` - Set the warning threshold.\n"
-                "`setgreetchannel #channel_name` - Set the welcoming channel.\n"
-                "`setgoodbyechannel #channel_name` - Set the goodbye channel.\n"
             ), inline=False)
         elif category == "Music Commands":
             embed.add_field(
@@ -86,12 +90,19 @@ class HelpDropdown(Select):
                     "`stats` - Displays bot statistics.\n"
                     "`membercount` - Shows the number of members in the current server.\n"
                     "`whois [@user]` - Displays information about a user.\n"
-                    "`avatar [@user]` - Fetches and displays your avatar or the avatar of the mentioned user.\n"
+                    "`avatar [@user]` - Fetches and displays your avatar or the mentioned user's avatar.\n"
                     "`guildinfo` - Shows information about the guild.\n"
-                    "`info` - Displays information about the bot.\n\n"
+                    "`info` - Displays information about the bot.\n"
+                    "`servericon` - Shows the server icon in full resolution.\n"
+                    '`poll "<question>" <option1> <option2>` - Creates a reaction poll with up to 10 options.\n'
+                    "`remind <time> <reminder>` - Sets a reminder (e.g. 1h30m Check oven).\n"
+                    "`roleinfo [@role]` - Displays detailed information about a role.\n"
+                    "`channelinfo [#channel]` - Displays information about a channel.\n"
+                    "`firstmessage` - Finds the first message in the current channel.\n\n"
                 ),
                 inline=False
             )
+
         elif category == "Games":
             embed.add_field(name="Game", value=(
                 "`battle @user1 @user2` - Start a virtual battle between 2 \"hot tempered\" users.\n"
@@ -157,7 +168,14 @@ class HelpDropdown(Select):
                 "`flip` - Flip the image vertically.\n"
                 "`magic` - Apply a cursed effect to the image.\n"
             ), inline=False)
+        elif category == "Welcomer":
+            embed.add_field(name="Welcomer Commands", value=(
+                "`configuremessages` - Guides the moderator through configuring welcome, goodbye, and new account messages.\n" 
+                "`setgreetchannel #channel_name` - Set the welcoming channel.\n"
+                "`setgoodbyechannel #channel_name` - Set the goodbye channel.\n"
+            ))
         await interaction.response.edit_message(embed=embed)
+        
 
 class HelpView(View):
     def __init__(self):

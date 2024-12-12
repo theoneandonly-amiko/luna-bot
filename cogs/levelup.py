@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands, tasks
 from PIL import Image, ImageDraw, ImageFont
 import aiofiles
+import shutil
 import aiohttp
 from io import BytesIO
 import random
@@ -27,9 +28,26 @@ class LevelSystem(commands.Cog):
         self.levels = {}
         self.level_roles = {}
         self.config = {}
-
+        self.progress_bar_styles = [
+            ("█", "░"),  # Style 1
+            ("▓", "░"),  # Style 2
+            ("#", "-"),  # Style 3
+            ("=", " "),  # Style 4
+            ("■", "□"),  # Style 5
+            ("▮", "▯"),  # Style 6
+            ("●", "○"),  # Style 7
+            ("★", "☆"),  # Style 8
+            ("⬜", "⬛"), # Style 9
+            ("🟦", "⬜"), # Style 10
+        ]
         # Start the background task for periodic saving
         self.save_task = self.bot.loop.create_task(self.periodic_save())
+
+        # Initialize locks
+        self.levels_lock = asyncio.Lock()
+        self.config_lock = asyncio.Lock()
+        self.roles_lock = asyncio.Lock()
+        self.blocked_guilds_lock = asyncio.Lock()
 
     async def cog_load(self):
         """Initialize the cog by loading data asynchronously."""
@@ -57,103 +75,236 @@ class LevelSystem(commands.Cog):
         await self.save_roles()
         await self.save_blocked_guilds()
 
-    async def load_roles(self):
-        """Asynchronously load roles for level-ups from a JSON file."""
-        try:
-            if os.path.exists(self.roles_file):
-                async with aiofiles.open(self.roles_file, 'r') as f:
-                    data = await f.read()
-                    self.level_roles = json.loads(data)
-                    if not isinstance(self.level_roles, dict):
-                        self.level_roles = {}
-            else:
-                self.level_roles = {}
-        except Exception as e:
-            logger.exception("Exception occurred while loading roles:")
-            self.level_roles = {}
-
-    async def save_roles(self):
-        """Asynchronously save roles to a JSON file."""
-        try:
-            async with aiofiles.open(self.roles_file, 'w') as f:
-                data = json.dumps(self.level_roles, indent=4)
-                await f.write(data)
-        except Exception as e:
-            logger.exception("Exception occurred while saving roles:")
-
     async def load_levels(self):
         """Asynchronously load levels from a JSON file."""
-        try:
-            if os.path.exists(self.levels_file):
-                async with aiofiles.open(self.levels_file, 'r') as f:
-                    data = await f.read()
-                    self.levels = json.loads(data)  # Corrected line
-                    if not isinstance(self.levels, dict):
-                        self.levels = {}
-            else:
+        async with self.levels_lock:
+            try:
+                if os.path.exists(self.levels_file):
+                    async with aiofiles.open(self.levels_file, 'r') as f:
+                        data = await f.read()
+                        if data.strip():
+                            self.levels = json.loads(data)
+                        else:
+                            logger.warning("Levels file is empty. Initializing empty levels data.")
+                            self.levels = {}
+                else:
+                    logger.info("Levels file does not exist. Initializing empty levels data.")
+                    self.levels = {}
+            except json.JSONDecodeError:
+                logger.exception("JSON Decode Error while loading levels:")
+                # Rename the corrupted file to prevent further issues
+                corrupted_file = self.levels_file + ".corrupted"
+                os.rename(self.levels_file, corrupted_file)
+                logger.warning(f"Renamed corrupted levels file to {corrupted_file}")
                 self.levels = {}
-        except Exception as e:
-            logger.exception("Exception occurred while loading levels:")
-            self.levels = {}
+            except Exception:
+                logger.exception("Exception occurred while loading levels:")
+                self.levels = {}
 
     async def save_levels(self):
         """Asynchronously save levels to a JSON file."""
-        try:
-            async with aiofiles.open(self.levels_file, 'w') as f:
-                data = json.dumps(self.levels, indent=4)
-                await f.write(data)
-        except Exception as e:
-            logger.exception("Exception occurred while saving levels:")
+        async with self.levels_lock:
+            backup_file = None
+            try:
+                if self.levels:
+                    # Backup the existing file
+                    if os.path.exists(self.levels_file):
+                        backup_file = self.levels_file + ".bak"
+                        shutil.copyfile(self.levels_file, backup_file)
+                        logger.info(f"Backup of levels file created at {backup_file}")
+
+                    # Write to a temporary file first
+                    temp_file = self.levels_file + ".tmp"
+                    async with aiofiles.open(temp_file, 'w') as f:
+                        data = json.dumps(self.levels, indent=4)
+                        await f.write(data)
+                    # Atomically replace the old file with the new one
+                    os.replace(temp_file, self.levels_file)
+                else:
+                    logger.warning("Levels data is empty. Not saving to avoid overwriting existing data.")
+            except Exception:
+                logger.exception("Exception occurred while saving levels:")
+                # Restore from backup if needed
+                if backup_file and os.path.exists(backup_file):
+                    shutil.copyfile(backup_file, self.levels_file)
+                    logger.info("Restored levels file from backup.")
+
+    async def load_roles(self):
+        """Asynchronously load roles for level-ups from a JSON file."""
+        async with self.roles_lock:
+            try:
+                if os.path.exists(self.roles_file):
+                    async with aiofiles.open(self.roles_file, 'r') as f:
+                        data = await f.read()
+                        if data.strip():
+                            self.level_roles = json.loads(data)
+                            if not isinstance(self.level_roles, dict):
+                                self.level_roles = {}
+                        else:
+                            logger.warning("Roles file is empty. Initializing empty roles data.")
+                            self.level_roles = {}
+                else:
+                    logger.info("Roles file does not exist. Initializing empty roles data.")
+                    self.level_roles = {}
+            except json.JSONDecodeError:
+                logger.exception("JSON Decode Error while loading roles:")
+                corrupted_file = self.roles_file + ".corrupted"
+                os.rename(self.roles_file, corrupted_file)
+                logger.warning(f"Renamed corrupted roles file to {corrupted_file}")
+                self.level_roles = {}
+            except Exception:
+                logger.exception("Exception occurred while loading roles:")
+                self.level_roles = {}
+
+    async def save_roles(self):
+        """Asynchronously save roles to a JSON file."""
+        async with self.roles_lock:
+            backup_file = None
+            try:
+                if self.level_roles:
+                    # Backup the existing file
+                    if os.path.exists(self.roles_file):
+                        backup_file = self.roles_file + ".bak"
+                        shutil.copyfile(self.roles_file, backup_file)
+                        logger.info(f"Backup of roles file created at {backup_file}")
+
+                    # Write to a temporary file first
+                    temp_file = self.roles_file + ".tmp"
+                    async with aiofiles.open(temp_file, 'w') as f:
+                        data = json.dumps(self.level_roles, indent=4)
+                        await f.write(data)
+                    os.replace(temp_file, self.roles_file)
+                else:
+                    logger.warning("Roles data is empty. Not saving to avoid overwriting existing data.")
+            except Exception:
+                logger.exception("Exception occurred while saving roles:")
+                # Restore from backup if needed
+                if backup_file and os.path.exists(backup_file):
+                    shutil.copyfile(backup_file, self.roles_file)
+                    logger.info("Restored roles file from backup.")
 
     async def load_config(self):
         """Asynchronously load the configuration for level-up and XP settings."""
-        try:
-            if os.path.exists(self.config_file):
-                async with aiofiles.open(self.config_file, 'r') as f:
-                    data = await f.read()
-                    self.config = json.loads(data)
-                    if not isinstance(self.config, dict):
-                        self.config = {}
-            else:
+        async with self.config_lock:
+            try:
+                if os.path.exists(self.config_file):
+                    async with aiofiles.open(self.config_file, 'r') as f:
+                        data = await f.read()
+                        if data.strip():
+                            self.config = json.loads(data)
+                            if not isinstance(self.config, dict):
+                                self.config = {}
+                        else:
+                            logger.warning("Config file is empty. Initializing empty config data.")
+                            self.config = {}
+                else:
+                    logger.info("Config file does not exist. Initializing empty config data.")
+                    self.config = {}
+            except json.JSONDecodeError:
+                logger.exception("JSON Decode Error while loading config:")
+                corrupted_file = self.config_file + ".corrupted"
+                os.rename(self.config_file, corrupted_file)
+                logger.warning(f"Renamed corrupted config file to {corrupted_file}")
                 self.config = {}
-        except Exception as e:
-            logger.exception("Exception occurred while loading config:")
-            self.config = {}
+            except Exception:
+                logger.exception("Exception occurred while loading config:")
+                self.config = {}
 
     async def save_config(self):
         """Asynchronously save the configuration to a JSON file."""
-        try:
-            async with aiofiles.open(self.config_file, 'w') as f:
-                data = json.dumps(self.config, indent=4)
-                await f.write(data)
-        except Exception as e:
-            logger.exception("Exception occurred while saving config:")
+        async with self.config_lock:
+            backup_file = None
+            try:
+                if self.config:
+                    # Backup the existing file
+                    if os.path.exists(self.config_file):
+                        backup_file = self.config_file + ".bak"
+                        shutil.copyfile(self.config_file, backup_file)
+                        logger.info(f"Backup of config file created at {backup_file}")
+
+                    # Write to a temporary file first
+                    temp_file = self.config_file + ".tmp"
+                    async with aiofiles.open(temp_file, 'w') as f:
+                        data = json.dumps(self.config, indent=4)
+                        await f.write(data)
+                    os.replace(temp_file, self.config_file)
+                else:
+                    logger.warning("Config data is empty. Not saving to avoid overwriting existing data.")
+            except Exception:
+                logger.exception("Exception occurred while saving config:")
+                # Restore from backup if needed
+                if backup_file and os.path.exists(backup_file):
+                    shutil.copyfile(backup_file, self.config_file)
+                    logger.info("Restored config file from backup.")
 
     async def load_blocked_guilds(self):
         """Asynchronously load the list of blocked guilds from a JSON file."""
-        try:
-            if os.path.exists(self.block_guild_file):
-                async with aiofiles.open(self.block_guild_file, 'r') as f:
-                    data = await f.read()
-                    self.blocked_guilds = set(json.loads(data))
-            else:
+        async with self.blocked_guilds_lock:
+            try:
+                if os.path.exists(self.block_guild_file):
+                    async with aiofiles.open(self.block_guild_file, 'r') as f:
+                        data = await f.read()
+                        if data.strip():
+                            self.blocked_guilds = set(json.loads(data))
+                        else:
+                            logger.warning("Blocked guilds file is empty. Initializing empty blocked guilds data.")
+                            self.blocked_guilds = set()
+                else:
+                    logger.info("Blocked guilds file does not exist. Initializing empty blocked guilds data.")
+                    self.blocked_guilds = set()
+            except json.JSONDecodeError:
+                logger.exception("JSON Decode Error while loading blocked guilds:")
+                corrupted_file = self.block_guild_file + ".corrupted"
+                os.rename(self.block_guild_file, corrupted_file)
+                logger.warning(f"Renamed corrupted blocked guilds file to {corrupted_file}")
                 self.blocked_guilds = set()
-        except Exception as e:
-            logger.exception("Exception occurred while loading blocked guilds:")
-            self.blocked_guilds = set()
+            except Exception:
+                logger.exception("Exception occurred while loading blocked guilds:")
+                self.blocked_guilds = set()
 
     async def save_blocked_guilds(self):
         """Asynchronously save the list of blocked guilds to a JSON file."""
-        try:
-            async with aiofiles.open(self.block_guild_file, 'w') as f:
-                data = json.dumps(list(self.blocked_guilds), indent=4)
-                await f.write(data)
-        except Exception as e:
-            logger.exception("Exception occurred while saving blocked guilds:")
+        async with self.blocked_guilds_lock:
+            backup_file = None
+            try:
+                # Convert set to list for JSON serialization
+                blocked_guilds_list = list(self.blocked_guilds)
+                if blocked_guilds_list:
+                    # Backup the existing file
+                    if os.path.exists(self.block_guild_file):
+                        backup_file = self.block_guild_file + ".bak"
+                        shutil.copyfile(self.block_guild_file, backup_file)
+                        logger.info(f"Backup of blocked guilds file created at {backup_file}")
+
+                    # Write to a temporary file first
+                    temp_file = self.block_guild_file + ".tmp"
+                    async with aiofiles.open(temp_file, 'w') as f:
+                        data = json.dumps(blocked_guilds_list, indent=4)
+                        await f.write(data)
+                    os.replace(temp_file, self.block_guild_file)
+                else:
+                    logger.warning("Blocked guilds data is empty. Not saving to avoid overwriting existing data.")
+            except Exception:
+                logger.exception("Exception occurred while saving blocked guilds:")
+                # Restore from backup if needed
+                if backup_file and os.path.exists(backup_file):
+                    shutil.copyfile(backup_file, self.block_guild_file)
+                    logger.info("Restored blocked guilds file from backup.")
 
     def is_user_restricted(self, guild_id, user_id):
         """Check if a user is restricted from gaining XP."""
         return user_id in self.config.get(guild_id, {}).get('restricted_users', [])
+
+    def can_receive_xp(self, guild_id, user_id):
+        """Check if enough time has passed to receive more XP."""
+        now = datetime.now(timezone.utc)
+        cooldown = self.config.get(guild_id, {}).get('xp_cooldown', 10)  # Default 10 seconds
+        last_time = self.last_message_time.get((guild_id, user_id))
+
+        if last_time is None or (now - last_time).total_seconds() >= cooldown:
+            self.last_message_time[(guild_id, user_id)] = now
+            return True
+        return False
 
     async def add_xp(self, guild_id, user_id, xp):
         """Add XP to a user and handle level-ups."""
@@ -164,37 +315,44 @@ class LevelSystem(commands.Cog):
         if guild_id in self.blocked_guilds:
             return False  # Return early if XP award is blocked
 
-        # Initialize levels if not already present
-        if guild_id not in self.levels:
-            self.levels[guild_id] = {}
+        if self.is_user_restricted(guild_id, user_id):
+            return False  # User is restricted
 
-        if user_id not in self.levels[guild_id]:
-            self.levels[guild_id][user_id] = {"xp": 0, "level": 1}
+        async with self.levels_lock:
+            # Initialize levels if not already present
+            if guild_id not in self.levels:
+                self.levels[guild_id] = {}
 
-        # Retrieve current level and XP
-        current_level = self.levels[guild_id][user_id]["level"]
-        current_xp = self.levels[guild_id][user_id]["xp"]
+            if user_id not in self.levels[guild_id]:
+                self.levels[guild_id][user_id] = {"xp": 0, "level": 1}
 
-        # Add the granted XP to current XP
-        current_xp += xp
+            # Retrieve current level and XP
+            current_level = self.levels[guild_id][user_id]["level"]
+            current_xp = self.levels[guild_id][user_id]["xp"]
 
-        # Level-up logic
-        leveled_up = False
-        while True:
-            # Calculate the XP required for the next level
-            xp_needed = self.xp_for_next_level(current_level)
+            # Add the granted XP to current XP
+            current_xp += xp
 
-            # Check if the current XP is enough to level up
-            if current_xp >= xp_needed:
-                current_xp -= xp_needed
-                current_level += 1
-                leveled_up = True
-            else:
-                break
+            # Level-up logic
+            leveled_up = False
+            while True:
+                # Calculate the XP required for the next level
+                xp_needed = self.xp_for_next_level(current_level)
 
-        # Update the user's level and remaining XP
-        self.levels[guild_id][user_id]["xp"] = current_xp
-        self.levels[guild_id][user_id]["level"] = current_level
+                # Check if the current XP is enough to level up
+                if current_xp >= xp_needed:
+                    current_xp -= xp_needed
+                    current_level += 1
+                    leveled_up = True
+                else:
+                    break
+
+            # Update the user's level and remaining XP
+            self.levels[guild_id][user_id]["xp"] = current_xp
+            self.levels[guild_id][user_id]["level"] = current_level
+
+        # Save levels after updating
+        await self.save_levels()
 
         # Return True if a level-up occurred
         return leveled_up
@@ -202,6 +360,13 @@ class LevelSystem(commands.Cog):
     def xp_for_next_level(self, level):
         """Calculate the XP required for the next level."""
         return int(100 * (level ** 1.5))
+
+    def create_progress_bar(self, current_xp, xp_needed, bar_length=20):
+        """Generate a random custom ASCII progress bar for the level embed."""
+        progress = int((current_xp / xp_needed) * bar_length)
+        full_char, empty_char = random.choice(self.progress_bar_styles)
+        bar = full_char * progress + empty_char * (bar_length - progress)
+        return bar
 
     async def get_dominant_color_from_image(self, image_url):
         """Asynchronously extract the dominant color from an image URL."""
@@ -218,15 +383,9 @@ class LevelSystem(commands.Cog):
                     else:
                         logger.error(f"Failed to fetch image: Status {response.status}")
                         return discord.Color.blurple()
-        except Exception as e:
+        except Exception:
             logger.exception("Exception occurred while fetching dominant color:")
             return discord.Color.blurple()
-
-    def create_progress_bar(self, current_xp, xp_needed, bar_length=20):
-        """Generate a progress bar for the level embed."""
-        progress = int((current_xp / xp_needed) * bar_length)
-        bar = "█" * progress + "░" * (bar_length - progress)
-        return bar
 
     def get_random_level_up_message(self, user):
         """Returns a random level-up message."""
@@ -333,8 +492,11 @@ class LevelSystem(commands.Cog):
         channel_id = message.channel.id
 
         # Check for restrictions
-        if self.is_user_restricted(guild_id, user_id) or \
-           (guild_id in self.config and 'restricted_channels' in self.config[guild_id] and channel_id in self.config[guild_id]['restricted_channels']):
+        if self.is_user_restricted(guild_id, user_id):
+            return
+
+        restricted_channels = self.config.get(guild_id, {}).get('restricted_channels', [])
+        if channel_id in restricted_channels:
             return
 
         # Award XP if the user can receive it
@@ -351,8 +513,8 @@ class LevelSystem(commands.Cog):
 
                 # Assign role if available for the new level
                 new_level = self.levels[guild_id][user_id]["level"]
-                if guild_id in self.level_roles and str(new_level) in self.level_roles[guild_id]:
-                    role_id = self.level_roles[guild_id][str(new_level)]
+                role_id = self.level_roles.get(guild_id, {}).get(str(new_level))
+                if role_id:
                     role = message.guild.get_role(role_id)
                     if role:
                         try:
@@ -362,6 +524,7 @@ class LevelSystem(commands.Cog):
                             await level_up_channel.send(f"I don't have permission to assign the role {role.name}.")
                         except discord.HTTPException:
                             await level_up_channel.send(f"Failed to assign the role {role.name} due to a network error.")
+                            
 
     @commands.command(name="level")
     async def check_level(self, ctx, member: discord.Member = None):
@@ -375,7 +538,7 @@ class LevelSystem(commands.Cog):
             xp = self.levels[guild_id][user_id]["xp"]
             level = self.levels[guild_id][user_id]["level"]
 
-            # Correct XP needed for the next level
+            # XP needed for the next level
             xp_needed = self.xp_for_next_level(level)
 
             # XP remaining to level up
@@ -407,6 +570,7 @@ class LevelSystem(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(f"{member.mention} has no XP yet in this server.")
+    
 
     @commands.command()
     @commands.has_permissions(manage_roles=True)

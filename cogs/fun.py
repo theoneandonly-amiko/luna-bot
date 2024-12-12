@@ -4,10 +4,12 @@ import os
 import requests
 import asyncio
 from discord.ext import commands
+from datetime import datetime
 
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        
         self.no_user_responses = [
         "You want to match with thin air? Good luck with that! 😆",
         "Looks like you’re trying to match with a ghost! 👻",
@@ -19,7 +21,9 @@ class Fun(commands.Cog):
         "Your soulmate must be really elusive if they're not here! 🕵️‍♂️",
         "Looks like you’re destined to be a solo act! 🎭",
         "Finding a match in the void, are we? Good luck! 🕳️",
-]
+            ]
+
+
     # Function to fetch a random pet GIF from the local assets folder
     def fetch_random_gif(self):
         asset_folder = 'assets/pet'
@@ -58,6 +62,24 @@ class Fun(commands.Cog):
         if not gif_files:
             return None
         return random.choice(gif_files)
+
+    def select_new_love(self, members):
+        """Helper method to select new love, excluding previous one"""
+        eligible_members = [member for member in members 
+                          if member != self.previous_love 
+                          and not member.bot 
+                          and member.id not in self.excluded_users]
+        
+        if not eligible_members:
+            # If no other options, include previous love
+            eligible_members = [member for member in members 
+                              if not member.bot 
+                              and member.id not in self.excluded_users]
+        
+        return random.choice(eligible_members) if eligible_members else None
+
+
+
 
     @commands.command(name='tape')
     async def tape_user(self, ctx, member: discord.Member):
@@ -593,19 +615,57 @@ class Fun(commands.Cog):
         compatibility = random.randint(0, 100)
 
         if compatibility >= 90:
-            judgment = "A perfect match! ❤️"
+            judgments = [
+                "A perfect match! You two were meant to be! ❤️",
+                "The stars have aligned for this perfect pair! ✨",
+                "This match is written in the heavens! 💫",
+                "A love story for the ages! 💝"
+            ]
         elif 80 <= compatibility < 90:
-            judgment = "Amazing match! 🥰"
+            judgments = [
+                "Amazing match! Love is in the air! 🥰",
+                "These two have something special going on! 💕",
+                "What a delightful pairing! 💖",
+                "The chemistry is undeniable! ✨"
+            ]
         elif 70 <= compatibility < 80:
-            judgment = "Pretty good! 😎"
+            judgments = [
+                "Pretty good! There's definitely potential here! 😎",
+                "Looking good! Keep it going! 🌟",
+                "This could be the start of something great! ⭐",
+                "The vibes are strong with this one! 🎵"
+            ]
         elif 50 <= compatibility < 70:
-            judgment = "Could be better. 😏"
+            judgments = [
+                "Could be better, but don't lose hope! 😏",
+                "There's room for improvement! 🌱",
+                "Work on it, and who knows? 🤔",
+                "The potential is there! 💫"
+            ]
         elif 30 <= compatibility < 50:
-            judgment = "Not looking great... 😬"
+            judgments = [
+                "Not looking great... but miracles happen! 😬",
+                "Maybe try friendship first? 🤝",
+                "The stars are a bit confused about this one! 🌠",
+                "Well... there's always hope! 🍀"
+            ]
         elif 10 <= compatibility < 30:
-            judgment = "It's a bit rocky. 🥴"
+            judgments = [
+                "It's a bit rocky... like a mountain of challenges! 🏔️",
+                "This ship might need some repairs! 🛠️",
+                "Warning: turbulence ahead! ⚠️",
+                "Maybe look elsewhere? 🔍"
+            ]
         else:
-            judgment = "Total mismatch... 😭"
+            judgments = [
+                "Total mismatch... but opposites attract? 😭",
+                "The stars say no... actually they're screaming no! ⛔",
+                "This ship might sink faster than the Titanic! 🚢",
+                "Time to explore other options! 🗺️"
+            ]
+
+        judgment = random.choice(judgments)
+
 
         embed = discord.Embed(
             title="💞 Matchmaking Result 💞",
@@ -616,6 +676,146 @@ class Fun(commands.Cog):
         )
 
         await ctx.send(embed=embed)
+
+    @commands.command(name='emojify')
+    async def emojify(self, ctx, *, text: str):
+        """Convert text to emoji letters"""
+        # Dictionary mapping letters to regional indicator emojis
+        emoji_map = {
+            'a': '🇦', 'b': '🇧', 'c': '🇨', 'd': '🇩', 'e': '🇪',
+            'f': '🇫', 'g': '🇬', 'h': '🇭', 'i': '🇮', 'j': '🇯',
+            'k': '🇰', 'l': '🇱', 'm': '🇲', 'n': '🇳', 'o': '🇴',
+            'p': '🇵', 'q': '🇶', 'r': '🇷', 's': '🇸', 't': '🇹',
+            'u': '🇺', 'v': '🇻', 'w': '🇼', 'x': '🇽', 'y': '🇾',
+            'z': '🇿', ' ': '  ',
+            '0': '0️⃣', '1': '1️⃣', '2': '2️⃣', '3': '3️⃣', '4': '4️⃣',
+            '5': '5️⃣', '6': '6️⃣', '7': '7️⃣', '8': '8️⃣', '9': '9️⃣'
+        }
+
+        if not text:
+            await ctx.send("Please provide some text to emojify!")
+            return
+
+        # Convert text to lowercase and replace characters with emojis
+        emojified = ' '.join(emoji_map.get(char.lower(), char) for char in text)
+        
+        if len(emojified) > 2000:  # Discord message length limit
+            await ctx.send("The emojified text is too long!")
+            return
+            
+        await ctx.send(emojified)
+
+    @commands.command(name='uwuify')
+    async def uwuify(self, ctx, *, text: str):
+        """Convert text to uwu speak with secret easter eggs"""
+        if not text:
+            await ctx.send("OwO what's this? No text to uwuify?")
+            return
+        
+        # Easter egg: Catgirl mode
+        catgirl_responses = [
+            "Nya~ UwU! Catgirl mode activated! ฅ^•ﻌ•^ฅ",
+            "Meow meow! Catgirl transformation complete! 🐱",
+            "Nyaaaaa~ Catgirl powers engage! 😺",
+            "Uwu, time to unleash the catgirl energy! 🐾",
+            "Neko mode: ON! Prepare for maximum cuteness! ฅ(=^･ω･^=)ฅ",
+            "Catgirl protocol initiated! Nya nya~ 🐈",
+            "Whiskers at the ready! Catgirl mode activated! (=^･ω･^=)",
+            "Meow-velous transformation complete! 😻"
+        ]
+        
+        if "catgirl" in text.lower():
+            await ctx.send(random.choice(catgirl_responses))
+            text += " nya~ "
+        
+        # Easter egg: Dragon mode
+        dragon_responses = [
+            "RAWR! Dragon mode engaged! 🐉",
+            "Draconic powers awakening! 🔥",
+            "Ancient dragon spirit activated! 🐲",
+            "Scales shimmer, dragon roars! 🦎",
+            "Behold the might of the dragon! 🐉",
+            "Dragon breath incoming! 🔥",
+            "Mythical dragon energy unleashed! 🐲",
+            "Prepare for epic dragon transformation! 🦖"
+        ]
+        dragon_faces = [
+            '(◕ᴗ◕🐉)', 
+            '(✿🐲◠‿◠)', 
+            'ʕ•dragon•ʔ',
+            '🐲',
+            '(🔥🐉)',
+            '(✨🐲)',
+            '(🌟🐉)',
+            '(🌈🐲)'
+        ]
+        
+        if "dragon" in text.lower():
+            await ctx.send(f"{random.choice(dragon_responses)} {random.choice(dragon_faces)}")
+        
+        # Easter egg: Pokemon mode
+        pokemon_responses = [
+            "Pika pika! ⚡",
+            "Charmander char! 🔥", 
+            "Squirtle squirt! 💧",
+            "Gotta uwuify 'em all! 🐾",
+            "Pokemon transformation activate! 🌟",
+            "Catching uwu vibes! 🌈",
+            "Trainer mode: ON! 🎮",
+            "Pokedex of cuteness unlocked! 📱"
+        ]
+        pokemon_sounds = [
+            "Pika pika! ⚡",
+            "Char char! 🔥",
+            "Squirtle! 💧",
+            "Bulbasaur! 🍃",
+            "Meowth! 😺",
+            "Eevee! 🌈",
+            "Jigglypuff! 🎤",
+            "Gengar! 👻"
+        ]
+        
+        if "pokemon" in text.lower():
+            await ctx.send(random.choice(pokemon_responses))
+            pokemon_sounds = random.choice(pokemon_sounds)
+        
+        # UwU replacements
+        uwu_map = {
+            'r': 'w',
+            'l': 'w',
+            'ove': 'uv',
+            'na': 'nya',
+            'ne': 'nye',
+            'ni': 'nyi',
+            'no': 'nyo',
+            'nu': 'nyu',
+        }
+        
+        # Apply replacements
+        uwuified = text.lower()
+        for old, new in uwu_map.items():
+            uwuified = uwuified.replace(old, new)
+            
+        # Randomly add uwu faces
+        faces = [
+            '(◕ᴗ◕✿)', 
+            '(◠‿◠✿)', 
+            '(●´ω｀●)', 
+            '(✿◠‿◠)', 
+            'ʕ•ᴥ•ʔ', 
+            '(ᵘﻌᵘ)', 
+            '(◡ ω ◡)', 
+            '( ͡° ᴥ ͡°)',
+            'uwu',
+            'owo',
+            '(＾▽＾)',
+            '(=^･ω･^=)'
+        ]
+        
+        if random.random() < 0.3:  # 30% chance to add face
+            uwuified += f" {random.choice(faces)}"
+            
+        await ctx.send(uwuified)
 
 
 

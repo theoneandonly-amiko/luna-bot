@@ -7,7 +7,7 @@ import os
 import re
 import time
 from datetime import datetime, timedelta, timezone
-from collections import defaultdict
+from collections import defaultdict, Counter
 import asyncio
 import logging
 
@@ -27,6 +27,10 @@ class Moderation(commands.Cog):
         self.spam_tracker = defaultdict(list)
         self.spam_threshold = 5  # Max messages within the interval
         self.spam_interval = 10  # Time window in seconds
+        self.mention_threshold = 5  # mentions
+        self.image_spam_tracker = defaultdict(list)
+        self.image_spam_interval = 10  # seconds
+        self.image_spam_threshold = 3  # images
 
         # Load data
         self.load_config()
@@ -760,7 +764,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(administrator=True)
-    async def clear_warn(self, ctx, user_input: str):
+    async def clearwarn(self, ctx, user_input: str):
         """Clear warnings for a user by mention or User ID."""
         user = await self.resolve_user(ctx, user_input)
         if not user:
@@ -817,6 +821,8 @@ class Moderation(commands.Cog):
             )
             await ctx.send(embed=embed)
 
+
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         """Reapply mute role if a muted member rejoins."""
@@ -835,7 +841,25 @@ class Moderation(commands.Cog):
         ctx = await self.bot.get_context(message)
         if ctx.valid:
             return  # Ignore messages that are commands
+        
+        current_time = time.time()
         user_id_str = str(message.author.id)
+        
+        # Mention spam protection
+        mention_count = len(message.mentions) + len(message.role_mentions)
+        if mention_count > self.mention_threshold:
+            await message.delete()
+            embed = discord.Embed(
+                title="Excessive Mentions",
+                description=f"{message.author.mention}, please avoid mentioning too many users or roles.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await message.channel.send(embed=embed)
+            if self.add_warning(message.author.id, "Excessive mentions"):
+                await self.punish_user(message.author, "Excessive mentions.")
+            return
+
         # Word filter
         word_filter = self.config.get("word_filter", [])
         for word in word_filter:
@@ -852,8 +876,8 @@ class Moderation(commands.Cog):
                 if self.add_warning(message.author.id, f"Used prohibited word: {word}"):
                     await self.punish_user(message.author, "Used prohibited words.")
                 return
+            
         # Spam detection
-        current_time = time.time()
         self.spam_tracker[message.author.id].append(current_time)
         self.spam_tracker[message.author.id] = [
             t for t in self.spam_tracker[message.author.id]
@@ -871,9 +895,10 @@ class Moderation(commands.Cog):
             if self.add_warning(message.author.id, "Spamming messages"):
                 await self.punish_user(message.author, "Spamming messages.")
             return
+
         # Caps filter
         caps_count = sum(1 for c in message.content if c.isupper())
-        if caps_count > 20:
+        if len(message.content) > 10 and (caps_count / len(message.content)) > 0.7:
             await message.delete()
             embed = discord.Embed(
                 title="Excessive Capital Letters",
@@ -885,6 +910,60 @@ class Moderation(commands.Cog):
             if self.add_warning(message.author.id, "Excessive capital letters"):
                 await self.punish_user(message.author, "Excessive capital letters.")
             return
+
+        # Invite link detection
+        invite_pattern = re.compile(r'discord(?:\.gg|app\.com/invite)/[\w-]+')
+        if invite_pattern.search(message.content):
+            await message.delete()
+            embed = discord.Embed(
+                title="Invite Link Detected",
+                description=f"{message.author.mention}, please do not post invite links.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await message.channel.send(embed=embed)
+            if self.add_warning(message.author.id, "Posted invite link"):
+                await self.punish_user(message.author, "Posted invite link.")
+            return
+
+        # Image spam detection
+        if len(message.attachments) > 0:
+            self.image_spam_tracker[message.author.id].append(current_time)
+            self.image_spam_tracker[message.author.id] = [
+                t for t in self.image_spam_tracker[message.author.id]
+                if current_time - t <= self.image_spam_interval
+            ]
+            if len(self.image_spam_tracker[message.author.id]) > self.image_spam_threshold:
+                await message.delete()
+                embed = discord.Embed(
+                    title="Image Spam Detected",
+                    description=f"{message.author.mention}, please stop spamming images.",
+                    color=discord.Color.red(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                await message.channel.send(embed=embed)
+                if self.add_warning(message.author.id, "Image spamming"):
+                    await self.punish_user(message.author, "Image spamming.")
+                return
+
+        # Repeated text detection
+        words = message.content.split()
+        if len(words) > 5:
+            word_counts = Counter(words)
+            most_common_word, count = word_counts.most_common(1)[0]
+            if count > 5 and (count / len(words)) > 0.5:
+                await message.delete()
+                embed = discord.Embed(
+                    title="Repeated Text Detected",
+                    description=f"{message.author.mention}, please avoid repeating the same word or phrase excessively.",
+                    color=discord.Color.orange(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                await message.channel.send(embed=embed)
+                if self.add_warning(message.author.id, "Repeated text"):
+                    await self.punish_user(message.author, "Repeated text.")
+                return
+
         # Unverified Discord Nitro links
         if "https://" in message.content:
             if "discord.gift/" in message.content:
@@ -906,6 +985,8 @@ class Moderation(commands.Cog):
     @ban.error
     @unban.error
     @mute.error
+    @warn.error
+    @clearwarn.error
     @unmute.error
     @timeout.error
     @remove_timeout.error

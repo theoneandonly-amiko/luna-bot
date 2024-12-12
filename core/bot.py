@@ -6,32 +6,31 @@ import logging
 
 from discord.ext import commands, tasks
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 from .constants import keyword_responses
 from .utils import get_all_videos
 
 class LunaBot(commands.Bot):
 
-    def __init__(self, youtube_api_key, youtube_channel_id, dev_user_id):
+    def __init__(self, youtube_api_key, youtube_channel_id, dev_user_id, tracking_yt_apikey):
         self.YOUTUBE_API_KEY = youtube_api_key
         self.YOUTUBE_CHANNEL_ID = youtube_channel_id
         self.DEV_USER_ID = dev_user_id
-    
+        self.TRACKING_YT_APIKEY = tracking_yt_apikey
+
         discord.utils.setup_logging(root=True)
-
         self.logger = logging.getLogger()
-
 
         # Initialize the YouTube API client
         self.youtube = build('youtube', 'v3', developerKey=self.YOUTUBE_API_KEY)
         super().__init__(
-            command_prefix = "&",
+            command_prefix = "am/",
             intents=discord.Intents.all(),
             case_insensitive=True,
             help_command=None,
             owner_ids=[self.DEV_USER_ID, 521226389559443461] # owner ids
         )
-
         self.add_check(self.globally_block_dms)
 
 
@@ -56,17 +55,61 @@ class LunaBot(commands.Bot):
     # =================== Youtube Presence ====================
     @tasks.loop(minutes=5)
     async def update_presence(self):
-        videos = get_all_videos(self.YOUTUBE_CHANNEL_ID, self.youtube)
-        if videos:  # Check if the list is not empty
-            random_video = random.choice(videos)  # Choose a random video from the list
-            title = random_video['snippet']['title']
-            channel = random_video['snippet']['channelTitle']
-            await self.change_presence(activity=discord.Activity(
-                type=discord.ActivityType.watching,
-                name=f'{title} by {channel}'
-        ))
-        else:
-            self.logger.warning("No videos found or failed to fetch videos.")
+        try:
+            videos = get_all_videos(self.YOUTUBE_CHANNEL_ID, self.youtube)
+            if videos:
+                random_video = random.choice(videos)
+                # Safely get the title and channel
+                title = random_video.get('snippet', {}).get('title', 'Unknown Title')
+                channel = random_video.get('snippet', {}).get('channelTitle', 'Unknown Channel')
+                
+                # Check if video_id exists in different possible locations
+                video_id = (
+                    random_video.get('id', {}).get('videoId') or 
+                    random_video.get('videoId') or 
+                    'unknown_id'
+                )
+                
+                video_url = f'https://www.youtube.com/watch?v={video_id}'
+                await self.change_presence(activity=discord.Streaming(
+                    name=f'{title} by {channel}',
+                    url=video_url
+                ))
+            else:
+                funny_statuses = [
+                    "Searching for videos in the void 🕵️",
+                    "Cache went on vacation 🏖️",
+                    "YouTube.exe has stopped working 💻",
+                    "Buffering... forever 🔄",
+                    "Lost in the YouTube wilderness 🌲",
+                    "Debugging my video radar 🛰️",
+                    "Where are my videos? 🤔",
+                    "YouTube quota go brrr 🚫",
+                    "API limits said no 🛑",
+                    "Quota exceeded, vibing mode ON 😎",
+                    "YouTube playing hard to get 🙈",
+                    "Waiting for API credits to reload 🔄",
+                    "Quota drama in progress 🎭",
+                    "403: Forbidden Dance Party 💃",
+                    "Permissions? Never heard of them 🙈",
+                    "Sneaking past error firewalls 🕵️",
+                    "Error: Coolness Overload 😎",
+                    "Waiting for YouTube to calm down 🧘",
+                    "Debugging the universe 🌌",
+                    "Permissions are just suggestions 🤷",
+                    "Caught in the 403 zone 🚧",
+                    "YouTube is on vacation now. Brb",
+                    ]
+                await self.change_presence(
+                    status=discord.Status.online,
+                    activity=discord.CustomActivity(name=random.choice(funny_statuses))
+                )
+    
+        except (discord.HTTPException, HttpError) as e:
+            if isinstance(e, HttpError):
+                self.logger.warning(f"YouTube API Quota Exceeded: {e}")
+            else:
+                self.logger.warning(f"HTTP Error while updating presence: {e}")
 
     @update_presence.before_loop
     async def before_update_presence(self):

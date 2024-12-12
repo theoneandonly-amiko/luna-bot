@@ -46,39 +46,47 @@ class Staff(commands.Cog):
     
     @commands.command(hidden=True)
     async def load(self, ctx: commands.Context, extension):
-        embed = discord.Embed()
-        await self.bot.load_extension(f"cogs.{extension}")
-        embed.add_field(
-            name="Load Extension", value=f"Loaded cog: ``{extension}`` successfully"
-        )
-        await ctx.send(embed=embed)
-
+        try:
+            await self.bot.load_extension(f"cogs.{extension}")
+            embed = discord.Embed(title="Loaded cog", description=f"Loaded cog: ``{extension}`` successfully.", color=discord.Color.green())
+            await ctx.send(embed=embed)
+        except Exception as e:
+            embed = discord.Embed(
+                title="Error",
+                description=f"Error occured while loading cog: ``{extension}``: {e}",
+                color=discord.Color.red(),
+            )
+            await ctx.send(embed=embed)
     @commands.command(hidden=True)
     async def unload(self, ctx: commands.Context, extension):
-        await self.bot.unload_extension(f"cogs.{extension}")
-        embed = discord.Embed()
-        embed.add_field(
-            name="Unload Extension", value=f"Unloaded cog: ``{extension}`` successfully"
-        )
-        await ctx.send(embed=embed)
+        try:
+            await self.bot.unload_extension(f"cogs.{extension}")
+            embed = discord.Embed(title="Unload Extension", description=f"Unloaded cog: ``{extension}`` successfully.", color=discord.Color.green())
+            await ctx.send(embed=embed)
+        except Exception as e:
+            embed = discord.Embed(title="Error", description=f"Error occured while unloading cog: ``{extension}``: {e}", color=discord.Color.red())
+            await ctx.send(embed=embed)
 
     @commands.command(aliases=["r"], hidden=True)
     async def reload(self, ctx: commands.Context, extension=""):
         if not extension:
-            for cog in tuple(self.bot.extensions):
-                await self.bot.reload_extension(cog)
-            embed = discord.Embed()
-            embed.add_field(name="Reload Extension", value="Reloaded cogs successfully")
-            await ctx.send(embed=embed)
+            try:
+                for cog in tuple(self.bot.extensions):
+                    await self.bot.reload_extension(cog)
+                embed = discord.Embed(title="Reload Extension", description=f"Reloaded cogs successfully.", color=discord.Color.green())
+                await ctx.send(embed=embed)
+            except Exception as e:
+                embed = discord.Embed(title="Failed to reload extension", description=f"Error occured while trying to reload cogs: {e}", color=discord.Color.red())
+                await ctx.send(embed=embed)
         else:
-            await self.bot.reload_extension(f"cogs.{extension}")
-            embed = discord.Embed()
-            embed.add_field(
-                name="Reload Extension",
-                value=f"Reloaded cog: ``{extension}`` successfully",
-            )
-            await ctx.send(embed=embed)
-
+            try:
+                await self.bot.reload_extension(f"cogs.{extension}")
+                embed = discord.Embed(title="Reload Extension", description=f"Reloaded cog: ``{extension}`` successfully.", color=discord.Color.green())
+                await ctx.send(embed=embed)
+            except Exception as e:
+                embed = discord.Embed(title="Failed to reload extension", description=f"Error occured while trying to reload the cog: ``{extension}``: {e}", color=discord.Color.red())
+                await ctx.send(embed=embed)
+                
     @commands.command(aliases=["e"], hidden=True)
     async def eval(self, ctx: commands.Context, *, code: str | None = None) -> None:
         if not code:

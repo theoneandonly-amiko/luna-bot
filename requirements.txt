@@ -6,3 +6,4 @@ pynacl
 google-api-python-client
 ffmpeg
 jishaku
+aiofiles

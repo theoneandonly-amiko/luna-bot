@@ -1,8 +1,10 @@
 import discord
 from discord.ext import commands
+from discord import ui, Interaction
 import random
 from yt_dlp import YoutubeDL
 import asyncio
+import time
 
 class YTDLSource(discord.AudioSource):
     YTDL_OPTIONS = {
@@ -22,7 +24,7 @@ class YTDLSource(discord.AudioSource):
 
     FILTERS = {
         'normal': '',
-        'nightcore': 'asetrate=44100*1.25,aresample=44100',
+        'nightcore': 'asetrate=44100*1.24,aresample=44100',
         'slowed': 'asetrate=44100*0.85,aresample=44100',
     }
 
@@ -32,6 +34,7 @@ class YTDLSource(discord.AudioSource):
         self.mode = mode
         self.title = data.get('title')
         self.url = data.get('webpage_url')
+        self.duration = data.get('duration')
         self.thumbnail = data.get('thumbnail')
         self.requester = data.get('requester')
 
@@ -81,23 +84,26 @@ class MusicPlayer:
         self.queue = asyncio.Queue()
         self.next = asyncio.Event()
         self.current = None
-        self.volume = 1
+        self.volume = 0.8
         self.voice_client = ctx.voice_client
-        self.is_streaming = None  # Indicates if a stream is active
+        self.start_time = None
+        self.paused_time = None
+        self.total_paused_duration = 0
 
         ctx.bot.loop.create_task(self.player_loop())
 
     async def player_loop(self):
         while True:
             self.next.clear()
+            self.start_time = time.time()
             try:
-                # Regular mode: play songs from the queue
+                # Wait for the next song in the queue
                 try:
                     self.current = await self.queue.get()
                 except asyncio.TimeoutError:
-                    # No songs added for a while; disconnect
+                    # Handle timeout and disconnect
                     embed = discord.Embed(
-                        title=random.choice(["Party's Over!", "Silence...", "Empty Stage!"]),
+                        title="Party's Over!",
                         description="No songs have been added for a while. Leaving the voice channel.",
                         color=discord.Color.red()
                     )
@@ -110,10 +116,10 @@ class MusicPlayer:
                     self.current,
                     after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set)
                 )
-
+                custom_emoji = "<a:playing:1313630183726776442>"
                 # Now Playing Embed
                 embed = discord.Embed(
-                    title=f"Now Playing ({self.current.mode.capitalize()} Mode)",
+                    title=f"{custom_emoji} Now Playing ({self.current.mode.capitalize()} Mode)",
                     description=f"[{self.current.title}]({self.current.url})",
                     color=discord.Color.blue(),
                 )
@@ -122,20 +128,35 @@ class MusicPlayer:
                     name=f"Requested by {self.current.requester}",
                     icon_url=getattr(self.current.requester.avatar, 'url', None)
                 )
-                await self.channel.send(embed=embed)
 
+                # Create the View with player controls
+                controls = PlayerControls(self)
+
+                # Send the message with the embed and controls
+                message = await self.channel.send(embed=embed, view=controls)
+
+                # Wait until the song is finished
                 await self.next.wait()
+
+                # Disable the buttons after the song is over
+                controls.disable_all_items()
+                try:
+                    await message.edit(view=controls)
+                except discord.NotFound:
+                    # Message might have been deleted
+                    pass
 
                 # Check if the queue is empty after the song finishes
                 if self.queue.empty():
                     embed = discord.Embed(
-                        title=random.choice(["All Done!", "That's All Folks!", "No More Songs!"]),
-                        description="Playback finished. Leaving the voice channel.",
+                        title="All Done!",
+                        description="Playback finished. Leaving the voice channel. You can start playing song again by using the `play`, `slowed` or `nightcore` command.",
                         color=discord.Color.green()
                     )
                     await self.channel.send(embed=embed)
                     await self.cleanup()
                     return
+
             except Exception as e:
                 # Log the exception
                 print(f"Error in player_loop: {e}")
@@ -158,6 +179,116 @@ class MusicPlayer:
 
     def skip(self):
         self.guild.voice_client.stop()
+class PlayerControls(ui.View):
+    def __init__(self, player, *, timeout=None):
+        super().__init__(timeout=timeout)
+        self.player = player
+
+    def disable_all_items(self):
+        for item in self.children:
+            item.disabled = True
+
+    async def interaction_check(self, interaction: Interaction) -> bool:
+        # Only allow users in the same voice channel to interact
+        if interaction.user.voice and interaction.user.voice.channel == self.player.guild.voice_client.channel:
+            return True
+        else:
+            await interaction.response.send_message(
+                "You must be in the voice channel to use these controls.",
+                ephemeral=True,
+            )
+            return False
+
+    @ui.button(label='Pause', style=discord.ButtonStyle.primary, emoji='⏸️')
+    async def pause(self, interaction: Interaction, button: ui.Button):
+        if self.player.guild.voice_client.is_playing():
+            self.player.guild.voice_client.pause()
+            self.player.paused_time = time.time()  # Record when paused
+            await interaction.response.send_message("Playback paused.", ephemeral=True)
+        else:
+            await interaction.response.send_message("Nothing is playing to pause.", ephemeral=True)
+
+    @ui.button(label='Resume', style=discord.ButtonStyle.primary, emoji='▶️')
+    async def resume(self, interaction: Interaction, button: ui.Button):
+        if self.player.guild.voice_client.is_paused():
+            self.player.guild.voice_client.resume()
+            # Calculate paused duration
+            paused_duration = time.time() - self.player.paused_time
+            self.player.total_paused_duration += paused_duration
+            self.player.paused_time = None
+            await interaction.response.send_message("Playback resumed.", ephemeral=True)
+        else:
+            await interaction.response.send_message("Playback is not paused.", ephemeral=True)
+            
+    @ui.button(label='Skip', style=discord.ButtonStyle.primary, emoji='⏭️')
+    async def skip(self, interaction: Interaction, button: ui.Button):
+        if self.player.guild.voice_client.is_playing():
+            self.player.skip()
+            await interaction.response.send_message("Skipped the current song.", ephemeral=True)
+        else:
+            await interaction.response.send_message("Nothing is playing to skip.", ephemeral=True)
+            
+    @ui.button(label='Add Normal', style=discord.ButtonStyle.secondary, emoji='🎵', row=1)
+    async def add_normal(self, interaction: Interaction, button: ui.Button):
+        modal = AddSongModal(self.player, mode='normal')
+        await interaction.response.send_modal(modal)
+
+    @ui.button(label='Add Nightcore', style=discord.ButtonStyle.secondary, emoji='🎧', row=1)
+    async def add_nightcore(self, interaction: Interaction, button: ui.Button):
+        modal = AddSongModal(self.player, mode='nightcore')
+        await interaction.response.send_modal(modal)
+
+    @ui.button(label='Add Slowed', style=discord.ButtonStyle.secondary, emoji='🎼', row=1)
+    async def add_slowed(self, interaction: Interaction, button: ui.Button):
+        modal = AddSongModal(self.player, mode='slowed')
+        await interaction.response.send_modal(modal)
+
+    @ui.button(label='Stop', style=discord.ButtonStyle.danger, emoji='⏹️')
+    async def stop(self, interaction: Interaction, button: ui.Button):
+        await self.player.cleanup()
+        await interaction.response.send_message("Player stopped and disconnected.", ephemeral=True)
+        # Disable the buttons after stopping
+        self.disable_all_items()
+        await interaction.message.edit(view=self)
+
+class AddSongModal(ui.Modal, title='Add Song'):
+    def __init__(self, player, mode):
+        super().__init__()
+        self.player = player
+        self.mode = mode
+
+    song_input = ui.TextInput(
+        label='Song Name or URL',
+        placeholder='Enter song name or URL...',
+        required=True
+    )
+
+    async def on_submit(self, interaction: Interaction):
+        await interaction.response.defer()
+        ctx = await interaction.client.get_context(interaction.message)
+        
+        try:
+            source = await YTDLSource.create_source(
+                ctx, 
+                str(self.song_input), 
+                loop=interaction.client.loop, 
+                mode=self.mode
+            )
+            source.requester = interaction.user
+            await self.player.queue.put(source)
+
+            embed = discord.Embed(
+                title="Added to Queue",
+                description=f"[{source.title}]({source.url})",
+                color=discord.Color.green()
+            )
+            embed.set_thumbnail(url=source.thumbnail)
+            embed.set_footer(text=f"Mode: {self.mode.capitalize()} | Position in queue: {self.player.queue.qsize()}")
+            
+            await interaction.followup.send(embed=embed)
+        except Exception as e:
+            await interaction.followup.send(f"Error adding song: {str(e)}", ephemeral=True)
+
 
 class Music(commands.Cog):
     def __init__(self, bot):
@@ -170,6 +301,77 @@ class Music(commands.Cog):
             player = MusicPlayer(ctx)
             self.players[ctx.guild.id] = player
         return player
+
+    def _format_duration(self, seconds):
+        seconds = int(seconds)
+        hours, remainder = divmod(seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        if hours:
+            return f"{hours}:{minutes:02}:{seconds:02}"
+        else:
+            return f"{minutes}:{seconds:02}"
+
+    def _create_progress_bar(self, elapsed, total, bar_length=20):
+        if total == 0:
+            return "🔘" + "─" * (bar_length - 1)
+        progress = min(max(elapsed / total, 0), 1)
+        pos = int(progress * bar_length)
+        bar = "─" * bar_length
+        bar = bar[:pos] + "🔘" + bar[pos + 1:]
+        return f"`{bar}`"
+
+    async def _create_now_playing_embed(self, player):
+        current = player.current
+
+        # Calculate elapsed time
+        elapsed_time = time.time() - player.start_time - player.total_paused_duration
+        elapsed_time = max(0, elapsed_time)  # Ensure non-negative
+
+        # Format elapsed and total duration
+        elapsed_str = self._format_duration(elapsed_time)
+        total_duration = current.data.get('duration', 0)
+        total_str = self._format_duration(total_duration)
+
+        # Progress bar
+        progress_bar = self._create_progress_bar(elapsed_time, total_duration)
+
+        # Queue length
+        queue_length = player.queue.qsize()
+
+        embed = discord.Embed(
+            title="Now Playing",
+            description=f"[{current.title}]({current.url})",
+            color=discord.Color.blue()
+        )
+        embed.set_thumbnail(url=current.thumbnail)
+        embed.add_field(name="Author", value=current.data.get('uploader', 'Unknown'), inline=True)
+        embed.add_field(name="Duration", value=f"{elapsed_str} / {total_str}", inline=True)
+        embed.add_field(name="Queue Length", value=queue_length, inline=True)
+        embed.add_field(name="Progress", value=progress_bar, inline=False)
+
+        controls = PlayerControls(player)
+
+        # Combine the views
+        combined_view = ui.View()
+        for item in controls.children:
+            combined_view.add_item(item)
+
+        return embed, combined_view
+
+    async def _update_progress_bar(self, player, message):
+        while player.current:
+            if player.guild.voice_client.is_paused():
+                # If paused, wait until resumed
+                await asyncio.sleep(1)
+                continue
+            # Update the embed
+            embed = await self._create_now_playing_embed(player)
+            try:
+                await message.edit(embed=embed)
+            except discord.NotFound:
+                # Message was deleted
+                break
+            await asyncio.sleep(5)  # Update every 5 seconds
 
     @commands.command()
     async def play(self, ctx, *, search: str):
@@ -280,15 +482,6 @@ class Music(commands.Cog):
         """Display the current queue."""
         player = self.get_player(ctx)
 
-        if player.is_streaming:
-            embed = discord.Embed(
-                title="Currently Streaming",
-                description="A stream is currently active. No song queue is available.",
-                color=discord.Color.blue()
-            )
-            await ctx.send(embed=embed)
-            return
-
         upcoming = list(player.queue._queue)
 
         if player.current is None and not upcoming:
@@ -343,6 +536,7 @@ class Music(commands.Cog):
             return
 
         if ctx.voice_client is None or not ctx.voice_client.is_playing():
+
             embed = discord.Embed(
                 title=random.choice(["Silence...", "Already Quiet!", "Nothing to Pause!"]),
                 description="No song is currently playing.",
@@ -352,7 +546,7 @@ class Music(commands.Cog):
             return
 
         ctx.voice_client.pause()
-
+        self.player.paused_time = time.time()
         embed = discord.Embed(
             title=random.choice(["Hold the Music!", "Paused!", "Intermission Time!"]),
             description="Playback paused.",
@@ -382,7 +576,10 @@ class Music(commands.Cog):
             )
             await ctx.send(embed=embed)
             return
-
+                    # Calculate paused duration
+        paused_duration = time.time() - self.player.paused_time
+        self.player.total_paused_duration += paused_duration
+        self.player.paused_time = None
         ctx.voice_client.resume()
 
         embed = discord.Embed(
@@ -391,6 +588,23 @@ class Music(commands.Cog):
             color=discord.Color.green()
         )
         await ctx.send(embed=embed)
+
+    @commands.command(name='nowplaying', aliases=['np'])
+    async def now_playing(self, ctx):
+        player = self.get_player(ctx)
+
+        if not player.current or not ctx.voice_client or not ctx.voice_client.is_playing():
+            embed = discord.Embed(
+                title="Nothing is playing",
+                description="There is no song currently playing.",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
+            return
+
+        embed, view = await self._create_now_playing_embed(player)
+        message = await ctx.send(embed=embed, view=view)
+        await self._update_progress_bar(player, message)
 
 async def setup(bot):
     await bot.add_cog(Music(bot))
