@@ -786,5 +786,52 @@ class LevelSystem(commands.Cog):
 
         await self.save_blocked_guilds()
 
+    @commands.command(name="restorebackup")
+    @commands.is_owner()
+    async def restore_backup(self, ctx):
+        """Restore all data from backup files (.bak)."""
+        restored_files = []
+        
+        # Restore levels
+        if os.path.exists(self.levels_file + ".bak"):
+            shutil.copy(self.levels_file + ".bak", self.levels_file)
+            await self.load_levels()
+            restored_files.append("Levels")
+            
+        # Restore roles
+        if os.path.exists(self.roles_file + ".bak"):
+            shutil.copy(self.roles_file + ".bak", self.roles_file)
+            await self.load_roles()
+            restored_files.append("Roles")
+            
+        # Restore config
+        if os.path.exists(self.config_file + ".bak"):
+            shutil.copy(self.config_file + ".bak", self.config_file)
+            await self.load_config()
+            restored_files.append("Config")
+            
+        # Restore blocked guilds
+        if os.path.exists(self.block_guild_file + ".bak"):
+            shutil.copy(self.block_guild_file + ".bak", self.block_guild_file)
+            await self.load_blocked_guilds()
+            restored_files.append("Blocked Guilds")
+
+        if restored_files:
+            embed = discord.Embed(
+                title="Backup Restoration Complete",
+                description="The following data has been restored from backups:",
+                color=discord.Color.green()
+            )
+            embed.add_field(name="Restored Files", value="\n".join(f"✅ {file}" for file in restored_files))
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(
+                title="No Backups Found",
+                description="No backup files (.bak) were found to restore.",
+                color=discord.Color.gold()
+            )
+            await ctx.send(embed=embed)
+
+
 async def setup(bot):
     await bot.add_cog(LevelSystem(bot))
