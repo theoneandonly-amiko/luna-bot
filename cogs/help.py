@@ -174,6 +174,14 @@ class HelpDropdown(Select):
                 "`setgreetchannel #channel_name` - Set the welcoming channel.\n"
                 "`setgoodbyechannel #channel_name` - Set the goodbye channel.\n"
             ))
+        elif category == "Youtube Notification":
+            embed.add_field(name="Youtube Notification Commands", value=(
+                "`notifychannel #channel_name` - Set the channel for receiving YouTube notifications.\n"
+                "`trackchannel <url/channelID> <video count>` - Track a YouTube channel and receive notifications.\n"
+                "`settrackcount <url/channelID> <video count>` - Update the number of videos to track.\n"
+                "`confignotimessage <url/channelID>` - Configure the notification message for each tracking Youtube channel.\n"
+            ))
+            
         await interaction.response.edit_message(embed=embed)
         
 
