@@ -116,7 +116,7 @@ class MusicPlayer:
                     self.current,
                     after=lambda _: self.bot.loop.call_soon_threadsafe(self.next.set)
                 )
-                custom_emoji = "<a:playing:1313630183726776442>"
+                custom_emoji = "<a:playing:1313630246049943563>"
                 # Now Playing Embed
                 embed = discord.Embed(
                     title=f"{custom_emoji} Now Playing ({self.current.mode.capitalize()} Mode)",

@@ -13,7 +13,7 @@ class HelpDropdown(Select):
             discord.SelectOption(label="Miscellaneous", description="List of miscellaneous commands"),
             discord.SelectOption(label="Moderation Commands", description="List of moderation commands"),
             discord.SelectOption(label="Music Commands", description="List of music commands"),
-            discord.SelectOption(label="Welcomer Commands", description="List of welcomer commands"),
+            discord.SelectOption(label="Welcomer", description="List of welcomer commands"),
             discord.SelectOption(label="Youtube Notification", description="List of youtube notification commands"),
         ]
         super().__init__(placeholder="Select a category...", min_values=1, max_values=1, options=options)
@@ -174,14 +174,14 @@ class HelpDropdown(Select):
                 "`configuremessages` - Guides the moderator through configuring welcome, goodbye, and new account messages.\n" 
                 "`setgreetchannel #channel_name` - Set the welcoming channel.\n"
                 "`setgoodbyechannel #channel_name` - Set the goodbye channel.\n"
-            ))
+            ), inline=False)
         elif category == "Youtube Notification":
             embed.add_field(name="Youtube Notification Commands", value=(
                 "`notifychannel #channel_name` - Set the channel for receiving YouTube notifications.\n"
                 "`trackchannel <url/channelID> <video count>` - Track a YouTube channel and receive notifications.\n"
                 "`settrackcount <url/channelID> <video count>` - Update the number of videos to track.\n"
                 "`confignotimessage <url/channelID>` - Configure the notification message for each tracking Youtube channel.\n"
-            ))
+            ), inline=False)
             
         await interaction.response.edit_message(embed=embed)
         
