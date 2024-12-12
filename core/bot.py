@@ -25,7 +25,7 @@ class LunaBot(commands.Bot):
         # Initialize the YouTube API client
         self.youtube = build('youtube', 'v3', developerKey=self.YOUTUBE_API_KEY)
         super().__init__(
-            command_prefix = "am/",
+            command_prefix = "&",
             intents=discord.Intents.all(),
             case_insensitive=True,
             help_command=None,
