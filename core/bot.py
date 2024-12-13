@@ -3,6 +3,7 @@ import random
 import logging
 import discord
 import logging
+from datetime import datetime, timezone
 
 from discord.ext import commands, tasks
 from googleapiclient.discovery import build
@@ -32,11 +33,20 @@ class LunaBot(commands.Bot):
             owner_ids=[self.DEV_USER_ID, 521226389559443461] # owner ids
         )
         self.add_check(self.globally_block_dms)
-
+        
+        # Enhanced caching system
+        self.video_cache = []
+        self.last_cache_update = None
+        self.cache_duration = 3600  # 1 hour cache
+        
+        # Separate update intervals
+        self.youtube_update_interval = 30  # minutes
+        self.status_update_interval = 10   # minutes
 
     async def on_ready(self):
         self.logger.info(f"{self.user} is connected and ready to use.")
-        self.update_presence.start()
+        self.update_youtube_presence.start()
+        self.update_custom_status.start()
 
         # load jiskau
         await self.load_extension("jishaku")
@@ -53,17 +63,16 @@ class LunaBot(commands.Bot):
         return True  # Allow the command if it's in a guild
 
     # =================== Youtube Presence ====================
-    @tasks.loop(minutes=5)
-    async def update_presence(self):
+    @tasks.loop(minutes=30)  # YouTube presence updates every 30 mins
+    async def update_youtube_presence(self):
         try:
-            videos = get_all_videos(self.YOUTUBE_CHANNEL_ID, self.youtube)
-            if videos:
-                random_video = random.choice(videos)
-                # Safely get the title and channel
+            if await self.needs_cache_refresh():
+                await self.refresh_video_cache()
+                
+            if self.video_cache:
+                random_video = random.choice(self.video_cache)
                 title = random_video.get('snippet', {}).get('title', 'Unknown Title')
                 channel = random_video.get('snippet', {}).get('channelTitle', 'Unknown Channel')
-                
-                # Check if video_id exists in different possible locations
                 video_id = (
                     random_video.get('id', {}).get('videoId') or 
                     random_video.get('videoId') or 
@@ -75,43 +84,56 @@ class LunaBot(commands.Bot):
                     name=f'{title} by {channel}',
                     url=video_url
                 ))
-            else:
-                funny_statuses = [
-                    "Searching for videos in the void 🕵️",
-                    "Cache went on vacation 🏖️",
-                    "YouTube.exe has stopped working 💻",
-                    "Buffering... forever 🔄",
-                    "Lost in the YouTube wilderness 🌲",
-                    "Debugging my video radar 🛰️",
-                    "Where are my videos? 🤔",
-                    "YouTube quota go brrr 🚫",
-                    "API limits said no 🛑",
-                    "Quota exceeded, vibing mode ON 😎",
-                    "YouTube playing hard to get 🙈",
-                    "Waiting for API credits to reload 🔄",
-                    "Quota drama in progress 🎭",
-                    "403: Forbidden Dance Party 💃",
-                    "Permissions? Never heard of them 🙈",
-                    "Sneaking past error firewalls 🕵️",
-                    "Error: Coolness Overload 😎",
-                    "Waiting for YouTube to calm down 🧘",
-                    "Debugging the universe 🌌",
-                    "Permissions are just suggestions 🤷",
-                    "Caught in the 403 zone 🚧",
-                    "YouTube is on vacation now. Brb",
-                    ]
-                await self.change_presence(
-                    status=discord.Status.online,
-                    activity=discord.CustomActivity(name=random.choice(funny_statuses))
-                )
-    
-        except (discord.HTTPException, HttpError) as e:
-            if isinstance(e, HttpError):
-                self.logger.warning(f"YouTube API Quota Exceeded: {e}")
-            else:
-                self.logger.warning(f"HTTP Error while updating presence: {e}")
+        except Exception as e:
+            self.logger.error(f"Error updating YouTube presence: {e}")
 
-    @update_presence.before_loop
+    @tasks.loop(minutes=5)  # Custom status updates every 5 mins
+    async def update_custom_status(self):
+        if not self.video_cache:
+            funny_statuses = [
+                "Searching for videos in the void 🕵️",
+                "Cache went on vacation 🏖️",
+                "YouTube.exe has stopped working 💻",
+                "Buffering... forever 🔄",
+                "Lost in the YouTube wilderness 🌲",
+                "Debugging my video radar 🛰️",
+                "Where are my videos? 🤔",
+                "YouTube quota go brrr 🚫",
+                "API limits said no 🛑",
+                "Quota exceeded, vibing mode ON 😎",
+                "YouTube playing hard to get 🙈",
+                "Waiting for API credits to reload 🔄",
+                "Quota drama in progress 🎭",
+                "403: Forbidden Dance Party 💃",
+                "Permissions? Never heard of them 🙈",
+                "Sneaking past error firewalls 🕵️",
+                "Error: Coolness Overload 😎",
+                "Waiting for YouTube to calm down 🧘",
+                "Debugging the universe 🌌",
+                "Permissions are just suggestions 🤷",
+                "Caught in the 403 zone 🚧",
+                "YouTube is on vacation now. Brb",
+            ]
+            await self.change_presence(
+                status=discord.Status.online,
+                activity=discord.CustomActivity(name=random.choice(funny_statuses))
+            )
+
+    async def needs_cache_refresh(self):
+        if not self.video_cache or not self.last_cache_update:
+            return True
+        now = datetime.now(timezone.utc)
+        return (now - self.last_cache_update).total_seconds() > self.cache_duration
+
+    async def refresh_video_cache(self):
+        videos = get_all_videos(self.YOUTUBE_CHANNEL_ID, self.youtube)
+        if videos:
+            self.video_cache = videos
+            self.last_cache_update = datetime.now(timezone.utc)
+            self.logger.info("Video cache refreshed successfully")
+
+    @update_youtube_presence.before_loop
+    @update_custom_status.before_loop
     async def before_update_presence(self):
         await self.wait_until_ready()
 

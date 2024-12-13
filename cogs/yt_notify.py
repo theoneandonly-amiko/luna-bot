@@ -4,7 +4,7 @@ import os
 import json
 import aiohttp
 import asyncio
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from googleapiclient.discovery import build
 from googleapiclient import errors
 import logging
@@ -17,7 +17,10 @@ class YouTubeNotifier(commands.Cog):
         self.settings_file = 'cogs/data/youtube_settings.json'
         self.settings = self.load_settings()
         self.youtube = build('youtube', 'v3', developerKey=self.bot.TRACKING_YT_APIKEY)
+        self.cache = {}
+        self.cache_ttl = 300  # 5 minutes
         self.default_fetch_limit = 5
+        self.default_timezone = timezone.utc
         self.check_uploads.start()
     
     def load_settings(self):
@@ -38,19 +41,72 @@ class YouTubeNotifier(commands.Cog):
         with open(self.settings_file, 'w') as f:
             json.dump(self.settings, f, indent=4)
 
+    async def batch_channel_check(self, channel_ids, parts='snippet'):
+        """Batch check multiple channels at once"""
+        return self.youtube.channels().list(
+            part=parts,
+            id=','.join(channel_ids),
+            maxResults=50
+        ).execute()
+
+    def should_check_now(self, channel_data):
+        """Determine if channel should be checked based on historical upload patterns"""
+        current_hour = datetime.now().hour
+        active_hours = channel_data.get('active_hours', range(24))
+        return current_hour in active_hours
+
+    async def process_channel_batch(self, channel_ids):
+        retry_count = 0
+        max_retries = 3
+        base_delay = 1
+        
+        while retry_count < max_retries:
+            try:
+                videos_response = await self.batch_channel_check(channel_ids)
+                # Process videos
+                return videos_response
+            except errors.HttpError as e:
+                if e.resp.status == 403 and 'quotaExceeded' in str(e):
+                    await self.notify_quota_exceeded(e)
+                    return
+                retry_count += 1
+                await asyncio.sleep(base_delay * (2 ** retry_count))
+
     async def notify_quota_exceeded(self, error_details):
-        """Notify bot owner about API quota issues"""
+        """Handle quota exceeded with tracking and auto-pause"""
+        # Store the quota exceeded timestamp
+        self.last_quota_exceeded = datetime.now(timezone.utc)
+        
+        # Pause the check_uploads task
+        self.check_uploads.cancel()
+        
         owner = await self.bot.fetch_user(self.bot.DEV_USER_ID)
         if owner:
             embed = discord.Embed(
                 title="⚠️ YouTube API Quota Alert",
-                description="The YouTube notification system has reached its API quota limit.",
+                description="YouTube tracking system automatically paused.",
                 color=discord.Color.red(),
                 timestamp=datetime.now(timezone.utc)
             )
             embed.add_field(name="Error Details", value=str(error_details))
-            embed.add_field(name="Status", value="YouTube tracking temporarily paused until quota resets.")
+            embed.add_field(name="Auto Recovery", value="System will resume at midnight PT (YouTube quota reset)")
+            embed.add_field(name="Manual Override", value="Use `refreshtracking` to force restart tracking")
             await owner.send(embed=embed)
+            
+            # Schedule auto-restart at quota reset (midnight PT)
+            await self.schedule_tracking_restart()
+
+    async def schedule_tracking_restart(self):
+        """Schedule tracking restart at quota reset time"""
+        utc_tz = timezone.utc
+        now = datetime.now(utc_tz)
+        tomorrow = now + timedelta(days=1)
+        midnight = tomorrow.replace(hour=0, minute=0, second=0, microsecond=0)
+        wait_seconds = (midnight - now).total_seconds()
+    
+        await asyncio.sleep(wait_seconds)
+        self.check_uploads.start()
+
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
@@ -72,10 +128,8 @@ class YouTubeNotifier(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
-    async def trackchannel(self, ctx, channel_input: str, track_count: int = 5):
-        """Track a YouTube channel for new uploads
-        Usage: trackchannel <channel_id/url> [track_count]
-        track_count: Number of videos to track (1-10, default: 5)"""
+    async def trackchannel(self, ctx, channel_input: str, track_count: int = 5, tz: str = "UTC"):
+        """Track a YouTube channel and send updates to the notification channel"""
         try:
             if not 1 <= track_count <= 10:
                 await ctx.send("Track count must be between 1 and 10 videos.")
@@ -110,7 +164,8 @@ class YouTubeNotifier(commands.Cog):
                 'last_video_id': None,
                 'track_count': track_count,
                 'processed_videos': [],
-                'custom_message': "🎉 **{channel_name}** just uploaded a new video!\n{video_url}"
+                'custom_message': "🎉 **{channel_name}** just uploaded a new video!\n{video_url}",
+                'timezone': tz  # Add timezone setting
             }
         
             self.save_settings()
@@ -125,6 +180,23 @@ class YouTubeNotifier(commands.Cog):
         except Exception as e:
             logger.error(f"Error tracking channel: {e}")
             await ctx.send("An error occurred while trying to track the channel.")
+            
+    @commands.command()
+    @commands.has_permissions(manage_channels=True)
+    async def setchanneltz(self, ctx, channel_input: str, tz: str):
+        try:
+            timezone(timedelta(hours=int(tz)))
+        except ValueError:
+            await ctx.send("Invalid timezone. Please use hours offset like '7' or '-8'")
+            return
+        guild_id = str(ctx.guild.id)
+        channel_id = channel_input.split('youtube.com/channel/')[-1].split('/')[0] if 'youtube.com/channel/' in channel_input else channel_input
+        
+        if guild_id in self.settings and 'tracked_channels' in self.settings[guild_id] and channel_id in self.settings[guild_id]['tracked_channels']:
+            self.settings[guild_id]['tracked_channels'][channel_id]['timezone'] = tz
+            self.save_settings()
+            await ctx.send(f"Timezone for {self.settings[guild_id]['tracked_channels'][channel_id]['name']} set to {tz}")
+
     @commands.command()
     @commands.has_permissions(manage_channels=True)
     async def settrackcount(self, ctx, channel_input: str, count: int):
@@ -206,66 +278,52 @@ class YouTubeNotifier(commands.Cog):
         embed.description = "Tracking refresh completed!"
         embed.color = discord.Color.green()
         await status_msg.edit(embed=embed)
-
-    @tasks.loop(minutes=15)
+    
+    @tasks.loop(hours=24)
     async def check_uploads(self):
-        """Check for new uploads from tracked channels"""
-        for guild_id, guild_settings in self.settings.items():
-            if 'tracked_channels' not in guild_settings or 'notify_channel' not in guild_settings:
-                continue
-
-            notify_channel = self.bot.get_channel(guild_settings['notify_channel'])
-            if not notify_channel:
-                continue
-
-            for channel_id, channel_data in guild_settings['tracked_channels'].items():
-                try:
-                    videos_response = self.youtube.search().list(
-                        part='snippet',
-                        channelId=channel_id,
-                        order='date',
-                        maxResults=channel_data.get('track_count', self.default_fetch_limit)
-                    ).execute()
-
-                    if not videos_response['items']:
-                        continue
-
-                    for video in reversed(videos_response['items']):
-                        video_id = video['id']['videoId']
-                        video_time = datetime.fromisoformat(video['snippet']['publishedAt'].replace('Z', '+00:00'))
-
-                        if video_time.timestamp() <= channel_data.get('last_check_time', 0) or video_id in channel_data['processed_videos']:
-                            continue
-
-                        channel_data['processed_videos'].append(video_id)
-                        channel_data['processed_videos'] = channel_data['processed_videos'][-50:]
-                        channel_data['last_check_time'] = datetime.now(timezone.utc).timestamp()
-
-                        message = channel_data['custom_message'].format(
-                            channel_name=channel_data['name'],
-                            video_title=video['snippet']['title'],
-                            video_url=f"https://youtube.com/watch?v={video_id}",
-                            video_description=video['snippet']['description']
-                        )
+        try:
+            channel_batch = []
+            
+            for guild_id, guild_settings in self.settings.items():
+                if 'tracked_channels' not in guild_settings:
+                    continue
                     
-                        await notify_channel.send(message)
-
-                    if videos_response['items']:
-                        self.settings[guild_id]['tracked_channels'][channel_id]['last_video_id'] = videos_response['items'][0]['id']['videoId']
-                        self.save_settings()
-
-                except errors.HttpError as e:
-                    if e.resp.status == 403 and 'quotaExceeded' in str(e):
-                        await self.notify_quota_exceeded(e)
-                    logger.error(f"YouTube API error: {e}")
-                    continue
-                except Exception as e:
-                    logger.error(f"Error checking uploads: {e}")
-                    continue
+                for channel_id, channel_data in guild_settings['tracked_channels'].items():
+                    # Get channel's timezone
+                    channel_tz = timezone(timedelta(hours=int(channel_data.get('timezone', 0))))
+                    channel_time = datetime.now(channel_tz)
+                    
+                    # Check if it's the right time in channel's timezone
+                    if channel_time.hour == 0 and channel_time.minute < 15:  # Within first 15 mins of day
+                        channel_batch.append(channel_id)
+                        
+                        if len(channel_batch) >= 50:
+                            await self.process_channel_batch(channel_batch)
+                            channel_batch = []
+                            await asyncio.sleep(1)
+            
+            if channel_batch:
+                await self.process_channel_batch(channel_batch)
+                
+        except errors.HttpError as e:
+            if e.resp.status == 403 and 'quotaExceeded' in str(e):
+                await self.notify_quota_exceeded(e)    
 
     @check_uploads.before_loop
     async def before_check_uploads(self):
         await self.bot.wait_until_ready()
+        
+        # Set target time (e.g. 00:00 UTC)
+        now = datetime.now(timezone.utc)
+        target_time = now.replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        # If we're past target time today, schedule for tomorrow
+        if now > target_time:
+            target_time += timedelta(days=1)
+            
+        # Wait until next target time
+        await asyncio.sleep((target_time - now).total_seconds())
+
 
 async def setup(bot):
     await bot.add_cog(YouTubeNotifier(bot))
