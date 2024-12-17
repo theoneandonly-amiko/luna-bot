@@ -276,19 +276,14 @@ class Misc(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        # Ignore messages sent by the bot itself
         if message.author.bot:
             return
 
-        # Check if the message is a DM
         if isinstance(message.channel, discord.DMChannel):
-            # Store the DM in the list
             self.received_dms.append((message.author, message.content))
-
-            # Get the bot owner
+            
             owner = (await self.bot.application_info()).owner
             if owner:
-                # Forward the message to the bot owner
                 embed = discord.Embed(
                     title="New DM Received",
                     description=message.content,
@@ -296,7 +291,14 @@ class Misc(commands.Cog):
                     timestamp=message.created_at
                 )
                 embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
-                await owner.send(embed=embed)
+                embed.add_field(name="User ID", value=message.author.id)
+                embed.add_field(name="Username", value=str(message.author))
+                
+                try:
+                    await owner.send(embed=embed)
+                except discord.Forbidden:
+                    print(f"Failed to forward DM to owner: {owner.id}")
+
 
     @commands.command(name='scandm', help='Lists all DMs received by the bot during the current session.')
     @commands.is_owner()

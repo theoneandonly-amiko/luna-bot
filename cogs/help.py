@@ -5,6 +5,7 @@ from discord.ui import Select, View
 class HelpDropdown(Select):
     def __init__(self):
         options = [
+            discord.SelectOption(label="Automod", description="List of automod configuration commands."),
             discord.SelectOption(label="Fun Commands", description="List of fun commands"),
             discord.SelectOption(label="Games", description="List of available games."),
             discord.SelectOption(label="Image Manipulation", description="List of image manipulation commands."),
@@ -56,17 +57,14 @@ class HelpDropdown(Select):
                 "`unmute [@mention/userID]` - Unmute a user.\n"
                 "`timeout [@mention/userID] [duration] [reason]` - Timeout a user for a specified duration.\n"
                 "`remove_timeout [@mention/userID]` - Remove timeout from a user.\n"
+            ), inline=False)
+            embed.add_field(name="**Moderation Commands** (2/2)", value=(
                 "`warn [@mention/userID] [reason]` - Issue a warning to a user.\n"
                 "`warnings [@mention/userID]` - Display warnings for a user.\n"
                 "`clear_warn [@mention/userID]` - Clear warnings for a user.\n"
-            ), inline=False)
-            embed.add_field(name="**Moderation Commands** (2/2)", value=(
                 "`clear [number/all]` - Delete a number of messages or all possible messages.\n"
                 "`createmuterole [role name]` - Create a mute role if it doesn't exist.\n"
                 "`setmuterole @muterole` - Set the default mute role for moderation purposes.\n"
-                "`addfilterword [word]` - Add a word to the word filter.\n"
-                "`removefilterword [word]` - Remove a word from the word filter.\n"
-                "`setwarnthreshold [number]` - Set the warning threshold.\n"
             ), inline=False)
         elif category == "Music Commands":
             embed.add_field(
@@ -179,16 +177,34 @@ class HelpDropdown(Select):
             embed.add_field(name="Youtube Notification Commands", value=(
                 "`notifychannel #channel_name` - Set the channel for receiving YouTube notifications.\n"
                 
-                "`trackchannel <url/channelID> [video count] [timezone]` - Track a YouTube channel and receive notifications. "
-                "Optional: specify video count (1-10, default 5) and timezone (default UTC).\n"
+                "`trackchannel <url/channelID> [video count]` - Track a YouTube channel and receive notifications. "
+                "Optional: specify video count (1-10, default 5).\n"
                 
                 "`settrackcount <url/channelID> <video count>` - Update the number of videos to track (1-10).\n"
                 
-                "`setchanneltz <url/channelID> <timezone>` - Set a custom timezone for a tracked channel (e.g., 7 for GMT+7, -5 for GMT-5).\n"
-                
                 "`confignotimessage <url/channelID>` - Configure the custom notification message for a tracked YouTube channel.\n"
             ), inline=False)
-
+        elif category == "Automod":
+                embed.add_field(name="**Automod Configuration commands**", value=(
+                    "`automod` - Show all available automod features.\n"
+                    "`automod toggle <feature> on/off` - Toggle certain automod feature.\n"
+                    "`automod all on/off` - Toggle all automod features.\n"
+                ),
+                inline=False
+            )
+                embed.add_field(name="**Threshold Configuration commands**", value=(
+                    "`threshold` - Show and configure thresholds.\n"
+                    "`threshold set <type> <value>` - Modify threshold.\n"
+                ),
+                inline=False
+            )
+                embed.add_field(name="**Other commands**", value=(
+                    "`automodlog #channel_name` - Set the channel for AutoMod log.\n"
+                    "`addfilterword` - Add a word to the word filter.\n"
+                    "`removefilterword` - Remove a word from the word filter.\n"
+                ),
+                inline=False
+            )
             
         await interaction.response.edit_message(embed=embed)
         

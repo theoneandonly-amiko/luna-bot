@@ -20,7 +20,6 @@ class YouTubeNotifier(commands.Cog):
         self.cache = {}
         self.cache_ttl = 300  # 5 minutes
         self.default_fetch_limit = 5
-        self.default_timezone = timezone.utc
         self.check_uploads.start()
     
     def load_settings(self):
@@ -62,15 +61,66 @@ class YouTubeNotifier(commands.Cog):
         
         while retry_count < max_retries:
             try:
+                # Get channel info
                 videos_response = await self.batch_channel_check(channel_ids)
-                # Process videos
+                
+                # For each channel, get their latest videos
+                for channel in videos_response['items']:
+                    channel_id = channel['id']
+                    
+                    # Get latest videos for the channel
+                    playlist_response = self.youtube.search().list(
+                        part='snippet',
+                        channelId=channel_id,
+                        order='date',
+                        type='video',
+                        maxResults=10
+                    ).execute()
+                    
+                    # Process new videos for each guild tracking this channel
+                    for guild_id, guild_settings in self.settings.items():
+                        if 'tracked_channels' not in guild_settings:
+                            continue
+                            
+                        channel_data = guild_settings['tracked_channels'].get(channel_id)
+                        if not channel_data:
+                            continue
+                            
+                        track_count = channel_data.get('track_count', self.default_fetch_limit)
+                        processed_videos = channel_data.get('processed_videos', [])
+                        
+                        for video in playlist_response['items'][:track_count]:
+                            video_id = video['id']['videoId']
+                            
+                            if video_id not in processed_videos:
+                                # New video found - send notification
+                                notify_channel = self.bot.get_channel(guild_settings.get('notify_channel'))
+                                if notify_channel:
+                                    custom_message = channel_data.get('custom_message', "🎉 **{channel_name}** just uploaded a new video!\n{video_url}")
+                                    message = custom_message.format(
+                                        channel_name=channel['snippet']['title'],
+                                        video_title=video['snippet']['title'],
+                                        video_url=f"https://youtube.com/watch?v={video_id}",
+                                        video_description=video['snippet']['description']
+                                    )
+                                    await notify_channel.send(message)
+                                    
+                                # Add to processed videos
+                                processed_videos.append(video_id)
+                                
+                        # Update processed videos in settings
+                        channel_data['processed_videos'] = processed_videos[-track_count:]
+                        self.save_settings()
+                        
                 return videos_response
+                
             except errors.HttpError as e:
                 if e.resp.status == 403 and 'quotaExceeded' in str(e):
                     await self.notify_quota_exceeded(e)
                     return
                 retry_count += 1
                 await asyncio.sleep(base_delay * (2 ** retry_count))
+
 
     async def notify_quota_exceeded(self, error_details):
         """Handle quota exceeded with tracking and auto-pause"""
@@ -128,7 +178,7 @@ class YouTubeNotifier(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(manage_channels=True)
-    async def trackchannel(self, ctx, channel_input: str, track_count: int = 5, tz: str = "UTC"):
+    async def trackchannel(self, ctx, channel_input: str, track_count: int = 5):
         """Track a YouTube channel and send updates to the notification channel"""
         try:
             if not 1 <= track_count <= 10:
@@ -165,7 +215,6 @@ class YouTubeNotifier(commands.Cog):
                 'track_count': track_count,
                 'processed_videos': [],
                 'custom_message': "🎉 **{channel_name}** just uploaded a new video!\n{video_url}",
-                'timezone': tz  # Add timezone setting
             }
         
             self.save_settings()
@@ -181,22 +230,6 @@ class YouTubeNotifier(commands.Cog):
             logger.error(f"Error tracking channel: {e}")
             await ctx.send("An error occurred while trying to track the channel.")
             
-    @commands.command()
-    @commands.has_permissions(manage_channels=True)
-    async def setchanneltz(self, ctx, channel_input: str, tz: str):
-        try:
-            timezone(timedelta(hours=int(tz)))
-        except ValueError:
-            await ctx.send("Invalid timezone. Please use hours offset like '7' or '-8'")
-            return
-        guild_id = str(ctx.guild.id)
-        channel_id = channel_input.split('youtube.com/channel/')[-1].split('/')[0] if 'youtube.com/channel/' in channel_input else channel_input
-        
-        if guild_id in self.settings and 'tracked_channels' in self.settings[guild_id] and channel_id in self.settings[guild_id]['tracked_channels']:
-            self.settings[guild_id]['tracked_channels'][channel_id]['timezone'] = tz
-            self.save_settings()
-            await ctx.send(f"Timezone for {self.settings[guild_id]['tracked_channels'][channel_id]['name']} set to {tz}")
-
     @commands.command()
     @commands.has_permissions(manage_channels=True)
     async def settrackcount(self, ctx, channel_input: str, count: int):
@@ -279,7 +312,7 @@ class YouTubeNotifier(commands.Cog):
         embed.color = discord.Color.green()
         await status_msg.edit(embed=embed)
     
-    @tasks.loop(hours=24)
+    @tasks.loop(minutes=30)  # Change to check every 30 minutes instead of 24 hours
     async def check_uploads(self):
         try:
             channel_batch = []
@@ -289,25 +322,20 @@ class YouTubeNotifier(commands.Cog):
                     continue
                     
                 for channel_id, channel_data in guild_settings['tracked_channels'].items():
-                    # Get channel's timezone
-                    channel_tz = timezone(timedelta(hours=int(channel_data.get('timezone', 0))))
-                    channel_time = datetime.now(channel_tz)
+                    channel_batch.append(channel_id)
                     
-                    # Check if it's the right time in channel's timezone
-                    if channel_time.hour == 0 and channel_time.minute < 15:  # Within first 15 mins of day
-                        channel_batch.append(channel_id)
-                        
-                        if len(channel_batch) >= 50:
-                            await self.process_channel_batch(channel_batch)
-                            channel_batch = []
-                            await asyncio.sleep(1)
+                    if len(channel_batch) >= 50:
+                        await self.process_channel_batch(channel_batch)
+                        channel_batch = []
+                        await asyncio.sleep(1)
             
             if channel_batch:
                 await self.process_channel_batch(channel_batch)
                 
         except errors.HttpError as e:
             if e.resp.status == 403 and 'quotaExceeded' in str(e):
-                await self.notify_quota_exceeded(e)    
+                await self.notify_quota_exceeded(e)
+    
 
     @check_uploads.before_loop
     async def before_check_uploads(self):
