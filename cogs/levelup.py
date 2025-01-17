@@ -57,34 +57,39 @@ class LevelSystem(commands.Cog):
         # Migrate levels
         if os.path.exists(self.levels_file):
             async with aiofiles.open(self.levels_file, 'r') as f:
-                levels_data = json.loads(await f.read())
-                for guild_id, users in levels_data.items():
-                    for user_id, data in users.items():
-                        await self.db.update_user_level(guild_id, user_id, data['xp'], data['level'])
+                try:
+                    levels_data = json.loads(await f.read())
+                    if isinstance(levels_data, dict):
+                        for guild_id, guild_data in levels_data.items():
+                            if isinstance(guild_data, dict):
+                                for user_id, user_data in guild_data.items():
+                                    if isinstance(user_data, dict):
+                                        await self.db.update_user_level(
+                                            guild_id, 
+                                            user_id, 
+                                            user_data.get('xp', 0), 
+                                            user_data.get('level', 1)
+                                        )
+                except json.JSONDecodeError:
+                    logger.warning("Invalid JSON in levels file, skipping migration")
 
-        # Migrate roles
-        if os.path.exists(self.roles_file):
-            async with aiofiles.open(self.roles_file, 'r') as f:
-                roles_data = json.loads(await f.read())
-                for guild_id, guild_roles in roles_data.items():
-                    await self.db.migrate_roles(guild_id, guild_roles)
-
-        # Migrate config
-        if os.path.exists(self.config_file):
-            async with aiofiles.open(self.config_file, 'r') as f:
-                config_data = json.loads(await f.read())
-                for guild_id, guild_config in config_data.items():
-                    await self.db.migrate_config(guild_id, guild_config)
-
-        # Migrate blocked guild
-        if os.path.exists(self.block_guild_file):
-            async with aiofiles.open(self.block_guild_file, 'r') as f:
-                config_data = json.loads(await f.read())
-                for guild_id, guild_config in config_data.items():
-                    await self.db.migrate_config(guild_id, guild_config)
+        # Similar structure for other files
+        for file_path, migrate_func in [
+            (self.roles_file, self.db.migrate_roles),
+            (self.config_file, self.db.migrate_config),
+            (self.block_guild_file, self.db.migrate_config)
+        ]:
+            if os.path.exists(file_path):
+                async with aiofiles.open(file_path, 'r') as f:
+                    try:
+                        data = json.loads(await f.read())
+                        if isinstance(data, dict):
+                            for guild_id, guild_data in data.items():
+                                await migrate_func(guild_id, guild_data)
+                    except json.JSONDecodeError:
+                        logger.warning(f"Invalid JSON in {file_path}, skipping migration")
 
         logger.info("Data migration completed successfully")
-
 
     async def is_user_restricted(self, guild_id: str, user_id: str) -> bool:
         """Check if a user is restricted from gaining XP."""
