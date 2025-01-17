@@ -10,6 +10,7 @@ class HelpDropdown(Select):
             discord.SelectOption(label="Games", description="List of available games."),
             discord.SelectOption(label="Image Manipulation", description="List of image manipulation commands."),
             discord.SelectOption(label="Level Commands", description="List of available level commands."),
+            discord.SelectOption(label="Lunacy Commands", description="List of available Lunacy commands."),
             discord.SelectOption(label="Manager", description="List of available manager commands."),
             discord.SelectOption(label="Miscellaneous", description="List of miscellaneous commands"),
             discord.SelectOption(label="Moderation Commands", description="List of moderation commands"),
@@ -205,7 +206,25 @@ class HelpDropdown(Select):
                 ),
                 inline=False
             )
+        elif category == "Lunacy Commands":
+            embed.add_field(name="**Currency Commands**", value=(
+                "`balance` - Check your Luna balance.\n"
+                "`daily` - Collect your daily Luna with streak bonuses!\n"
+                "`work` - Work to earn Luna.\n"
+                "`gamble [amount]` - Bet your Luna on a coinflip!\n"
+                "`trade @user [amount]` - Trade Luna with another user.\n"
+                "`leaderboard` - Show the richest users.\n"
+            ), inline=False)
             
+            embed.add_field(name="**Shop & Inventory**", value=(
+                "`shop` - View the Luna shop with regular and limited items.\n"
+                "`buy [item_id] [quantity]` - Buy an item from the shop.\n"
+                "`inventory` - View your inventory.\n"
+            ), inline=False)
+            
+            embed.add_field(name="**Achievements**", value=(
+                "`achievements` - View your achievements and progress.\n"
+            ), inline=False)
         await interaction.response.edit_message(embed=embed)
         
 

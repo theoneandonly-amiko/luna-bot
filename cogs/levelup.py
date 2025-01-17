@@ -155,24 +155,27 @@ class LevelSystem(commands.Cog):
             logger.exception("Exception occurred while fetching dominant color:")
             return discord.Color.blurple()
 
-    def get_random_level_up_message(self, user):
+    async def get_random_level_up_message(self, user):
         """Returns a random level-up message."""
+        level_data = await self.db.get_user_level(str(user.guild.id), str(user.id))
+        current_level = level_data["level"]
+        
         messages = [
             f"🎉 {user.mention} leveled up! You're on fire!",
             f"🔥 {user.mention} just hit a new level! Keep it up!",
             f"🚀 {user.mention} has leveled up! You're unstoppable!",
             f"🎇 {user.mention}, you leveled up! Keep climbing!",
-            f"✨ {user.mention} is now stronger at level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
-            f"⚡ {user.mention}, you've reached new heights at level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
-            f"🌠 Incredible! {user.mention} is now at level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
-            f"🌟 Whoa! {user.mention} just advanced to level {self.levels[str(user.guild.id)][str(user.id)]['level']}! Amazing job!",
-            f"🥳 Look at that! {user.mention} leveled up to {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
-            f"💫 Keep shining, {user.mention}! You've reached level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
-            f"🎖️ Impressive, {user.mention}! Level {self.levels[str(user.guild.id)][str(user.id)]['level']} is yours!",
-            f"📈 {user.mention} just leveled up to {self.levels[str(user.guild.id)][str(user.id)]['level']}! Keep the momentum going!",
-            f"🏆 Bravo {user.mention}! You've climbed to level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
-            f"🔥 Keep the heat up, {user.mention}! You've unlocked level {self.levels[str(user.guild.id)][str(user.id)]['level']}!",
-            f"✨ {user.mention} just reached level {self.levels[str(user.guild.id)][str(user.id)]['level']}! Onwards and upwards!",
+            f"✨ {user.mention} is now stronger at level {current_level}!",
+            f"⚡ {user.mention}, you've reached new heights at level {current_level}!",
+            f"🌠 Incredible! {user.mention} is now at level {current_level}!",
+            f"🌟 Whoa! {user.mention} just advanced to level {current_level}! Amazing job!",
+            f"🥳 Look at that! {user.mention} leveled up to {current_level}!",
+            f"💫 Keep shining, {user.mention}! You've reached level {current_level}!",
+            f"🎖️ Impressive, {user.mention}! Level {current_level} is yours!",
+            f"📈 {user.mention} just leveled up to {current_level}! Keep the momentum going!",
+            f"🏆 Bravo {user.mention}! You've climbed to level {current_level}!",
+            f"🔥 Keep the heat up, {user.mention}! You've unlocked level {current_level}!",
+            f"✨ {user.mention} just reached level {current_level}! Onwards and upwards!",
         ]
         return random.choice(messages)
 
@@ -254,7 +257,7 @@ class LevelSystem(commands.Cog):
                 level_channel_id = guild_config.get('level_channel_id', message.channel.id)
                 level_up_channel = message.guild.get_channel(level_channel_id) or message.channel
 
-                level_up_message = self.get_random_level_up_message(message.author)
+                level_up_message = await self.get_random_level_up_message(message.author)
                 await level_up_channel.send(level_up_message)
 
                 # Handle role assignment
