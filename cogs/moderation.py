@@ -1074,15 +1074,6 @@ class Moderation(commands.Cog):
                 timestamp=datetime.now(timezone.utc)
             )
             await ctx.send(embed=embed)
-        else:
-            logger.exception("Command error:")
-            embed = discord.Embed(
-                title="Error",
-                description="An error occurred while processing the command.",
-                color=discord.Color.red(),
-                timestamp=datetime.now(timezone.utc)
-            )
-            await ctx.send(embed=embed)
 
 async def setup(bot):
     await bot.add_cog(Moderation(bot))

@@ -518,6 +518,70 @@ class Misc(commands.Cog):
             embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
             embed.add_field(name="Jump to Message", value=f"[Click Here]({message.jump_url})")
             await ctx.send(embed=embed)
+            
+    @commands.command()
+    @commands.is_owner()
+    async def broadcast(self, ctx, title: str, *, message: str):
+        """[Owner] Broadcast a message to all guilds
+        Usage: !broadcast "Title Here" Your message here"""
+        successful = 0
+        failed = 0
+        
+        embed = discord.Embed(
+            title=title,
+            description=message,
+            color=discord.Color.blue(),
+            timestamp=datetime.now(timezone.utc)
+        )
+        embed.set_footer(text=f"Sent by {ctx.author}")
+        
+        status_msg = await ctx.send("Broadcasting message...")
+        
+        for guild in self.bot.guilds:
+            try:
+                sent = False
+                
+                # First priority: Check for announcement/news channels
+                for channel in guild.text_channels:
+                    if channel.is_news():
+                        try:
+                            await channel.send(embed=embed)
+                            successful += 1
+                            sent = True
+                            break
+                        except discord.Forbidden:
+                            continue
+                
+                if not sent:
+                    # Second priority: System channel
+                    if guild.system_channel:
+                        await guild.system_channel.send(embed=embed)
+                        successful += 1
+                        sent = True
+                
+                if not sent:
+                    # Last resort: First available text channel
+                    for channel in guild.text_channels:
+                        try:
+                            await channel.send(embed=embed)
+                            successful += 1
+                            sent = True
+                            break
+                        except discord.Forbidden:
+                            continue
+                            
+                if not sent:
+                    failed += 1
+                    
+            except Exception:
+                failed += 1
+        
+        result_embed = discord.Embed(
+            title="Broadcast Complete",
+            description=f"Message sent to {successful} guilds\nFailed in {failed} guilds",
+            color=discord.Color.green()
+        )
+        await status_msg.edit(embed=result_embed)
 
 
 async def setup(bot):

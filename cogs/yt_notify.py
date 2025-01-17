@@ -107,7 +107,8 @@ class YouTubeNotifier(commands.Cog):
                                     
                                 # Add to processed videos
                                 processed_videos.append(video_id)
-                                
+                                # Save settings right after processing each video
+                                self.save_settings()
                         # Update processed videos in settings
                         channel_data['processed_videos'] = processed_videos[-track_count:]
                         self.save_settings()
