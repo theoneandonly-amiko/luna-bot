@@ -27,13 +27,6 @@ class LevelSystem(commands.Cog):
         self.db = LevelDatabase()
         self.last_message_time = {}
 
-        # Keep these for migration purposes
-        self.levels_file = 'cogs/data/levels.json'
-        self.roles_file = 'cogs/data/roles.json'
-        self.config_file = 'cogs/data/level_config.json'
-        self.block_guild_file = 'cogs/data/blocked_guilds.json'
-        
-
         self.progress_bar_styles = [
             ("█", "░"),  # Style 1
             ("▓", "░"),  # Style 2
@@ -46,50 +39,10 @@ class LevelSystem(commands.Cog):
     async def cog_load(self):
         """Initialize the cog by loading data asynchronously."""
         await init_db()
-        await self.migrate_json_to_db()  # Only run this once
         
     def cog_unload(self):
         """Cleanup when the cog is unloaded."""
         pass
-
-    async def migrate_json_to_db(self):
-        """Migrate all existing JSON data to SQLite database"""
-        # Migrate levels
-        if os.path.exists(self.levels_file):
-            async with aiofiles.open(self.levels_file, 'r') as f:
-                try:
-                    levels_data = json.loads(await f.read())
-                    if isinstance(levels_data, dict):
-                        for guild_id, guild_data in levels_data.items():
-                            if isinstance(guild_data, dict):
-                                for user_id, user_data in guild_data.items():
-                                    if isinstance(user_data, dict):
-                                        await self.db.update_user_level(
-                                            guild_id, 
-                                            user_id, 
-                                            user_data.get('xp', 0), 
-                                            user_data.get('level', 1)
-                                        )
-                except json.JSONDecodeError:
-                    logger.warning("Invalid JSON in levels file, skipping migration")
-
-        # Similar structure for other files
-        for file_path, migrate_func in [
-            (self.roles_file, self.db.migrate_roles),
-            (self.config_file, self.db.migrate_config),
-            (self.block_guild_file, self.db.migrate_config)
-        ]:
-            if os.path.exists(file_path):
-                async with aiofiles.open(file_path, 'r') as f:
-                    try:
-                        data = json.loads(await f.read())
-                        if isinstance(data, dict):
-                            for guild_id, guild_data in data.items():
-                                await migrate_func(guild_id, guild_data)
-                    except json.JSONDecodeError:
-                        logger.warning(f"Invalid JSON in {file_path}, skipping migration")
-
-        logger.info("Data migration completed successfully")
 
     async def is_user_restricted(self, guild_id: str, user_id: str) -> bool:
         """Check if a user is restricted from gaining XP."""

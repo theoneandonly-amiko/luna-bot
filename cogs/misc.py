@@ -533,7 +533,6 @@ class Misc(commands.Cog):
             color=discord.Color.blue(),
             timestamp=datetime.now(timezone.utc)
         )
-        embed.set_footer(text=f"Sent by {ctx.author}")
         
         status_msg = await ctx.send("Broadcasting message...")
         
