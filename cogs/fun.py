@@ -2,13 +2,17 @@ import discord
 import random
 import os
 import requests
+import aiohttp
 import asyncio
 from discord.ext import commands
-from datetime import datetime
+from datetime import datetime, timezone
+from utils.dutils import paginate
 
 class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.imgflip_username = os.getenv("IMGFLIP_USERNAME")
+        self.imgflip_password = os.getenv("IMGFLIP_PASSWORD")
         
         self.no_user_responses = [
         "You want to match with thin air? Good luck with that! 😆",
@@ -817,6 +821,100 @@ class Fun(commands.Cog):
             
         await ctx.send(uwuified)
 
+    @commands.command()
+    async def memetemplates(self, ctx):
+        """Get popular meme templates"""
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.imgflip.com/get_memes") as resp:
+                data = await resp.json()
+                memes = data['data']['memes']
+                
+                embeds = []
+                for i in range(0, len(memes), 5):
+                    embed = discord.Embed(
+                        title="🎨 Meme Templates",
+                        color=discord.Color.blue(),
+                        timestamp=datetime.now(timezone.utc)
+                    )
+                    for meme in memes[i:i+5]:
+                        box_count = f"(Requires {meme['box_count']} text inputs)"
+                        embed.add_field(
+                            name=f"{meme['name']} {box_count}", 
+                            value=f"ID: {meme['id']}\n[Preview]({meme['url']})",
+                            inline=False
+                        )
+                    embed.set_footer(text=f"Page {i//5 + 1}")
+                    embeds.append(embed)
+                
+                current = 0
+                msg = await ctx.send(embed=embeds[0])
+                await msg.add_reaction("⬅️")
+                await msg.add_reaction("➡️")
+                await msg.add_reaction("⏹️")
+
+                def check(reaction, user):
+                    return user == ctx.author and str(reaction.emoji) in ["⬅️", "➡️", "⏹️"]
+
+                while True:
+                    try:
+                        reaction, user = await self.bot.wait_for("reaction_add", timeout=60.0, check=check)
+
+                        if str(reaction.emoji) == "⏹️":
+                            break
+                        elif str(reaction.emoji) == "➡️":
+                            current = (current + 1) % len(embeds)
+                        elif str(reaction.emoji) == "⬅️":
+                            current = (current - 1) % len(embeds)
+
+                        await msg.edit(embed=embeds[current])
+                        await msg.remove_reaction(reaction, user)
+
+                    except TimeoutError:
+                        break
+
+                await msg.clear_reactions()
+
+    @commands.command()
+    async def meme(self, ctx, template_id: str, *, text: str):
+        """Create a meme! Usage: &meme <template_id> text1 | text2 | text3"""
+        text_boxes = text.split("|")
+        
+        async with aiohttp.ClientSession() as session:
+            # First get template info to check required text boxes
+            async with session.get(f"https://api.imgflip.com/get_memes") as resp:
+                data = await resp.json()
+                template = next((m for m in data['data']['memes'] if m['id'] == template_id), None)
+                
+                if not template:
+                    await ctx.send("❌ Template ID not found! Use `&memetemplates` to see available templates.")
+                    return
+                
+                if len(text_boxes) != template['box_count']:
+                    await ctx.send(f"❌ This template needs exactly {template['box_count']} text inputs! Separate them with |")
+                    return
+
+            # Generate meme with all text boxes
+            params = {
+                "template_id": template_id,
+                "username": self.imgflip_username,
+                "password": self.imgflip_password,
+            }
+            
+            # Add text boxes dynamically
+            for i, text in enumerate(text_boxes):
+                params[f"boxes[{i}][text]"] = text.strip()
+
+            async with session.post("https://api.imgflip.com/caption_image", data=params) as resp:
+                data = await resp.json()
+                if data['success']:
+                    embed = discord.Embed(
+                        title="✨ Your Meme is Ready!",
+                        color=discord.Color.green(),
+                        timestamp=datetime.now(timezone.utc)
+                    )
+                    embed.set_image(url=data['data']['url'])
+                    embed.set_footer(text=f"Created by {ctx.author}")
+                    await ctx.send(embed=embed)
 
 
 async def setup(bot):

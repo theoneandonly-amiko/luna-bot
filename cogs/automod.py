@@ -43,17 +43,17 @@ class AutoMod(commands.Cog):
 
         # Default settings for automod features
         self.default_settings = {
-            "spam_detection": True,
-            "mention_spam": True,
-            "word_filter": True,
-            "caps_filter": True,
-            "invite_filter": True,
-            "image_spam": True,
-            "repeated_text": True,
-            "scam_detection": True,
-            "emoji_spam": True,
-            "newline_spam": True,
-            "char_spam": True
+            "spam_detection": False,
+            "mention_spam": False,
+            "word_filter": False,
+            "caps_filter": False,
+            "invite_filter": False,
+            "image_spam": False,
+            "repeated_text": False,
+            "scam_detection": False,
+            "emoji_spam": False,
+            "newline_spam": False,
+            "char_spam": False
         }
         # scam link patterns. Let's see...
         self.scam_patterns = [
@@ -249,6 +249,26 @@ class AutoMod(commands.Cog):
             embed.set_footer(text=f"Requested by {ctx.author}")
             
             await ctx.send(embed=embed)
+
+    @automod.command(name="types")
+    @commands.has_permissions(administrator=True)
+    async def automod_types(self, ctx):
+        """Display available AutoMod feature types."""
+        guild_id = str(ctx.guild.id)
+        settings = self.config.get(guild_id, self.default_settings.copy())
+        embed = discord.Embed(
+            title="🛡️ Available AutoMod Feature Types",
+            description="Listing all available AutoMod features and their current statuses:",
+            color=discord.Color.blue(),
+            timestamp=datetime.now(timezone.utc)
+        )
+        for feature in self.default_settings:
+            # Get status from config if set, otherwise fallback to default
+            status = "✅ Enabled" if settings.get(feature, self.default_settings[feature]) else "❌ Disabled"
+            embed.add_field(name=feature.replace('_', ' ').title(), value=status, inline=True)
+        embed.set_footer(text=f"Requested by {ctx.author}")
+        await ctx.send(embed=embed)
+
 
     @automod.command(name="all")
     @commands.has_permissions(administrator=True)
