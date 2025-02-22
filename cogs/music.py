@@ -9,7 +9,7 @@ from collections import deque
 youtube_dl.utils.bug_reports_message = lambda: ''
 
 YTDL_OPTIONS = {
-    'format': 'bestaudio[acodec=opus]/bestaudio/best',
+    'format': 'bestaudio/best',
     'outtmpl': '-',
     'restrictfilenames': True,
     'noplaylist': True,
@@ -19,13 +19,26 @@ YTDL_OPTIONS = {
     'no_warnings': True,
     'default_search': 'auto',
     'source_address': '0.0.0.0',
-    'cookiefile': None,
-    'noprogress': True,
+    'cookiefile': 'cookies.txt',  # If using cookies
+    'http_headers': {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+    },
     'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'opus',
-        'preferredquality': '128',
-    }]
+        'preferredquality': '192',
+    }],
+    'extractor_args': {
+        'youtube': {
+            'skip': ['dash', 'hls']
+        }
+    },
+    'postprocessor_args': [
+        '-http_chunk_size', '10M'
+    ],
+    'age_limit': 0,
+    'geo_bypass': True,
 }
 
 FFMPEG_OPTIONS = {
