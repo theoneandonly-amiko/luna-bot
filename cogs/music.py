@@ -8,7 +8,7 @@ from enum import Enum
 from datetime import datetime, timezone, timedelta
 
 YTDLP_OPTIONS = {
-    'format': 'bestaudio/best',
+    'format': 'bestaudio[ext=m4a]/best[ext=mp4]/best',  # More flexible format selection
     'extractaudio': True,
     'audioformat': 'mp3',
     'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
@@ -17,7 +17,6 @@ YTDLP_OPTIONS = {
     'ignoreerrors': False,
     'logtostderr': False,
     'max_downloads': 1,
-    #'quiet': True,
     'noplaylist': True,
     'no_warnings': True,
     'source_address': '0.0.0.0',
