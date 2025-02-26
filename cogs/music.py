@@ -20,6 +20,7 @@ YTDLP_OPTIONS = {
     'noplaylist': True,
     'no_warnings': True,
     'source_address': '0.0.0.0',
+    'cookiefile': 'cogs/cookies.txt',
     'extractor_args': {
         'soundcloud': {
             'client_id': 'akcDl6lB9RfwyhLSb2Xw2MwPR3Ow85Kr'
