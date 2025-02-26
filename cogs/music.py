@@ -8,7 +8,7 @@ from enum import Enum
 from datetime import datetime, timezone, timedelta
 
 YTDLP_OPTIONS = {
-    'format': 'bestaudio',
+    'format': 'bestaudio[acodec=opus]/bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio',
     'noplaylist': True,
     'nocheckcertificate': True,
     'ignoreerrors': False,
