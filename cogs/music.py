@@ -1,4 +1,5 @@
 import discord
+import os
 from discord.ext import commands
 import yt_dlp
 import asyncio
@@ -38,7 +39,12 @@ class Music(commands.Cog):
         self.bot = bot
         self.queue = {}
         self.now_playing = {}
-        self.ytdlp = yt_dlp.YoutubeDL(YTDLP_OPTIONS)
+
+        cookies_path = os.path.join(os.path.dirname(__file__), 'cookies.txt')
+        self.ytdlp_opts = YTDLP_OPTIONS.copy()
+        self.ytdlp_opts['cookiefile'] = cookies_path
+        
+        self.ytdlp = yt_dlp.YoutubeDL(self.ytdlp_opts)
         self.loop_mode = {}  # None, 'song', 'queue'
 
     async def play_next(self, ctx):
