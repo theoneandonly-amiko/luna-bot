@@ -46,6 +46,8 @@ class HelpDropdown(Select):
                 "`match @user1 @user2` - Show matchmaking result between two users. Love love.\n"
                 "`emojify <text>` - Convert text to emoji letters.\n"
                 "`uwuify <text>` - Convert text to uwu speak with secret easter eggs.\n"
+                "`memetemplates` - Show available meme templates.\n"
+                "`meme [template ID] [text1] | [text2]` - Generate a meme with the specified template and text.\n"
             ), inline=False)
 
 
@@ -71,14 +73,15 @@ class HelpDropdown(Select):
             embed.add_field(
                 name="**Music Commands**",
                 value=(
-                    "`play <YouTube URL or Search Query>` - Play music in normal mode.\n"
-                    "`nightcore <YouTube URL or Search Query>` - Play music in Nightcore mode.\n"
-                    "`slowed <YouTube URL or Search Query>` - Play music in Slowed mode.\n"
+                    "`play (youtube/soundcloud) (query)` - Play music from specified platform.  \n"
                     "`pause` - Pause the currently playing song.\n"
                     "`resume` - Resume the paused song.\n"
                     "`stop` - Stop the player and clear the queue.\n"
                     "`skip` - Skip the currently playing song.\n"
                     "`queue` or `q` - Display the current song queue.\n"
+                    "`volume [0-100]` - Adjust the volume of the player.\n"
+                    "`shuffle` - Shuffle the current song queue.\n"
+                    "`loop [song/queue/none]` - Toggle loop mode for the current song. Song mode will repeat current playing song, queue mode will repeat the whole queue, and none is nothing.\n"
                 ),
                 inline=False
             )
