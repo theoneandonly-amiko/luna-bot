@@ -8,13 +8,9 @@ from enum import Enum
 from datetime import datetime, timezone, timedelta
 
 YTDLP_OPTIONS = {
-    'format': 'bestaudio[acodec=opus]/bestaudio',
-    'postprocessors': [{
-        'key': 'FFmpegExtractAudio',
-        'preferredcodec': 'opus',
-        'preferredquality': '192',
-    }],
+    'format': 'bestaudio/best',
     'extractaudio': True,
+    'audioformat': 'mp3',
     'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
     'restrictfilenames': True,
     'nocheckcertificate': True,
