@@ -17,10 +17,16 @@ class Moderation(commands.Cog):
         self.bot = bot
         self.mute_roles_file = "cogs/data/muteroles.json"
         self.warnings_file = "cogs/data/warnings.json"
+        self.log_channels_file = "cogs/data/logchannels.json"
+        self.muted_users_file = "cogs/data/muted_users.json"
+        self.muted_users = {}
         self.mute_roles = {}
         self.warnings = {}
+        self.log_channels = {}
         self.load_mute_roles()
+        self.load_muted_users()
         self.load_warnings()
+        self.load_log_channels()
 
     def load_warnings(self):
         """Load user warnings from the JSON file."""
@@ -41,6 +47,63 @@ class Moderation(commands.Cog):
                 json.dump(self.warnings, f, indent=4)
         except Exception:
             logger.exception("Failed to save warnings:")
+
+    def load_muted_users(self):
+        """Load muted users from the JSON file."""
+        try:
+            if os.path.exists(self.muted_users_file):
+                with open(self.muted_users_file, 'r') as f:
+                    self.muted_users = json.load(f)
+            else:
+                self.muted_users = {}
+        except Exception:
+            logger.exception("Failed to load muted users:")
+            self.muted_users = {}
+
+    def save_muted_users(self):
+        """Save muted users to the JSON file."""
+        try:
+            with open(self.muted_users_file, 'w') as f:
+                json.dump(self.muted_users, f, indent=4)
+        except Exception:
+            logger.exception("Failed to save muted users:")
+
+# Add these new methods for log channel management
+    def load_log_channels(self):
+        """Load log channels from the JSON file."""
+        try:
+            if os.path.exists(self.log_channels_file):
+                with open(self.log_channels_file, 'r') as f:
+                    self.log_channels = json.load(f)
+            else:
+                self.log_channels = {}
+        except Exception:
+            logger.exception("Failed to load log channels:")
+            self.log_channels = {}
+
+    def save_log_channels(self):
+        """Save log channels to the JSON file."""
+        try:
+            with open(self.log_channels_file, 'w') as f:
+                json.dump(self.log_channels, f, indent=4)
+        except Exception:
+            logger.exception("Failed to save log channels:")
+
+    async def log_action(self, guild, embed):
+        """Send log message to the designated log channel."""
+        if not guild:
+            return
+            
+        guild_id = str(guild.id)
+        if guild_id not in self.log_channels:
+            return
+            
+        try:
+            channel = self.bot.get_channel(int(self.log_channels[guild_id]))
+            if channel:
+                await channel.send(embed=embed)
+        except Exception:
+            logger.exception("Failed to send log message:")
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
@@ -258,6 +321,17 @@ class Moderation(commands.Cog):
                 embed.set_footer(text=f"Kicked by {ctx.author}")
                 await ctx.send(embed=embed)
 
+                log_embed = discord.Embed(
+                    title="👢 Member Kicked",
+                    description=f"{user.mention} has been kicked from the server.",
+                    color=discord.Color.red(),
+                    timestamp=datetime.now(timezone.utc)
+                )
+                log_embed.add_field(name="User", value=f"{user}", inline=True)
+                log_embed.add_field(name="Moderator", value=f"{ctx.author}", inline=True)
+                log_embed.add_field(name="Reason", value=reason or "No reason provided", inline=False)
+                await self.log_action(ctx.guild, log_embed)
+
                 try:
                     dm_embed = discord.Embed(
                         title="You Have Been Kicked",
@@ -290,6 +364,7 @@ class Moderation(commands.Cog):
             )
             embed.set_footer(text=f"Requested by {ctx.author}")
             await ctx.send(embed=embed)
+
     @commands.command()
     @commands.has_permissions(ban_members=True)
     async def ban(self, ctx, user_input: str = None, *, reason=None):
@@ -347,6 +422,18 @@ class Moderation(commands.Cog):
             embed.add_field(name="Reason", value=reason or "No reason provided", inline=False)
             embed.set_footer(text=f"Banned by {ctx.author}")
             await ctx.send(embed=embed)
+
+            # Inside ban command, after successful ban
+            log_embed = discord.Embed(
+                title="🔨 Member Banned",
+                description=f"{user.mention} has been banned from the server.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            log_embed.add_field(name="User", value=f"{user}", inline=True)
+            log_embed.add_field(name="Moderator", value=f"{ctx.author}", inline=True)
+            log_embed.add_field(name="Reason", value=reason or "No reason provided", inline=False)
+            await self.log_action(ctx.guild, log_embed)
 
             try:
                 dm_embed = discord.Embed(
@@ -414,10 +501,20 @@ class Moderation(commands.Cog):
                 color=discord.Color.brand_green(),
                 timestamp=datetime.now(timezone.utc)
             )
-            embed.add_field(name="Unbanned User", value=f"{user} ({user.id})", inline=False)
+            embed.add_field(name="Unbanned User", value=f"{user}", inline=False)
             embed.set_footer(text=f"Unbanned by {ctx.author}")
             await ctx.send(embed=embed)
-
+            
+            log_embed = discord.Embed(
+                title="🔓 Member Unbanned",
+                description=f"{user.mention} has been unbanned from the server.",
+                color=discord.Color.green(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            log_embed.add_field(name="User", value=f"{user}", inline=True)
+            log_embed.add_field(name="Moderator", value=f"{ctx.author}", inline=True)
+            await self.log_action(ctx.guild, log_embed)
+            
         except ValueError:
             embed = discord.Embed(
                 title="❌ Invalid Input",
@@ -451,12 +548,12 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(moderate_members=True)
-    async def timeout(self, ctx, user_input: str = None, duration: str = None, *, reason=None):
+    async def timeout(self, ctx, user_input: str = None, *, reason_or_duration: str = None):
         """Timeout a member for a specified duration."""
-        if not user_input or not duration:
+        if not user_input:
             embed = discord.Embed(
                 title="⚠️ Timeout Command",
-                description="Please mention a user and specify a duration.\nExample: `!timeout @user 1h30m Reason`",
+                description="Please mention a user or provide a valid User ID.\nExample: `!timeout @user [duration] [reason]`",
                 color=discord.Color.orange(),
                 timestamp=datetime.now(timezone.utc)
             )
@@ -464,6 +561,24 @@ class Moderation(commands.Cog):
             embed.set_footer(text=f"Requested by {ctx.author}")
             await ctx.send(embed=embed)
             return
+
+        # Parse duration and reason
+        duration = None
+        reason = None
+        if reason_or_duration:
+            # Split the first word to check if it's a duration
+            parts = reason_or_duration.split(maxsplit=1)
+            first_word = parts[0]
+            
+            # Check if the first word matches duration pattern
+            if re.match(r'^\d+[smhd](?:\d+[smhd])*$', first_word):
+                duration = first_word
+                reason = parts[1] if len(parts) > 1 else None
+            else:
+                # If first word isn't a duration, treat entire string as reason
+                reason = reason_or_duration
+
+
 
         user = await self.resolve_user(ctx, user_input)
         if not user:
@@ -489,6 +604,18 @@ class Moderation(commands.Cog):
             await ctx.send(embed=embed)
             return
 
+        if not duration:
+            embed = discord.Embed(
+                title="❌ Duration Required",
+                description="Please provide a valid duration for the timeout.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            embed.add_field(name="Format", value="Use: s (seconds), m (minutes), h (hours), d (days)\nExample: 1h30m", inline=False)
+            embed.set_footer(text=f"Requested by {ctx.author}")
+            await ctx.send(embed=embed)
+            return
+
         total_seconds = self.parse_duration(duration)
         if not total_seconds:
             embed = discord.Embed(
@@ -505,8 +632,7 @@ class Moderation(commands.Cog):
         try:
             until_time = discord.utils.utcnow() + timedelta(seconds=total_seconds)
             await member.timeout(until_time, reason=reason)
-
-        
+            
             embed = discord.Embed(
                 title="⏰ Member Timed Out",
                 description=f"{member.mention} has been timed out.",
@@ -515,10 +641,24 @@ class Moderation(commands.Cog):
             )
             embed.add_field(name="Duration", value=duration, inline=True)
             embed.add_field(name="Expires", value=f"<t:{int(until_time.timestamp())}:R>", inline=True)
-            embed.add_field(name="Reason", value=reason or "No reason provided", inline=False)
+            if reason:
+                embed.add_field(name="Reason", value=reason, inline=False)
             embed.set_footer(text=f"Timed out by {ctx.author}")
             await ctx.send(embed=embed)
-
+            
+            log_embed = discord.Embed(
+                title="⏰ Member Timed out",
+                description=f"{user.mention} has been timed out.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            log_embed.add_field(name="User", value=f"{user}", inline=True)
+            log_embed.add_field(name="Duration", value=duration, inline=True)
+            log_embed.add_field(name="Expires", value=f"<t:{int(until_time.timestamp())}:R>", inline=True)
+            log_embed.add_field(name="Moderator", value=f"{ctx.author}", inline=True)
+            log_embed.add_field(name="Reason", value=reason or "No reason provided", inline=False)
+            await self.log_action(ctx.guild, log_embed)
+            
             try:
                 dm_embed = discord.Embed(
                     title="You Have Been Timed Out",
@@ -605,7 +745,17 @@ class Moderation(commands.Cog):
             embed.add_field(name="User", value=f"{member} ({member.id})", inline=False)
             embed.set_footer(text=f"Timeout removed by {ctx.author}")
             await ctx.send(embed=embed)
-
+            
+            log_embed = discord.Embed(
+                title="⏰ Timeout Removed",
+                description=f"Timeout has been removed from {user.mention}",
+                color=discord.Color.yellow(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            log_embed.add_field(name="User", value=f"{user}", inline=True)
+            log_embed.add_field(name="Moderator", value=f"{ctx.author}", inline=True)
+            await self.log_action(ctx.guild, log_embed)
+            
             try:
                 dm_embed = discord.Embed(
                     title="Timeout Removed",
@@ -737,12 +887,12 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(manage_roles=True)
-    async def mute(self, ctx, user_input: str = None, duration: str = None, *, reason=None):
+    async def mute(self, ctx, user_input: str = None, *, reason_or_duration: str = None):
         """Mute a member by mention or User ID."""
         if not user_input:
             embed = discord.Embed(
                 title="⚠️ Mute Command",
-                description="Please mention a user or provide a valid User ID.\nExample: `!mute @user 1h30m Reason`",
+                description="Please mention a user or provide a valid User ID.\nExample: `!mute @user [duration] [reason]`",
                 color=discord.Color.orange(),
                 timestamp=datetime.now(timezone.utc)
             )
@@ -750,7 +900,21 @@ class Moderation(commands.Cog):
             embed.set_footer(text=f"Requested by {ctx.author}")
             await ctx.send(embed=embed)
             return
-
+        duration = None
+        reason = None
+        if reason_or_duration:
+            # Split the first word to check if it's a duration
+            parts = reason_or_duration.split(maxsplit=1)
+            first_word = parts[0]
+            
+            # Check if the first word matches duration pattern
+            if re.match(r'^\d+[smhd](?:\d+[smhd])*$', first_word):
+                duration = first_word
+                reason = parts[1] if len(parts) > 1 else None
+            else:
+                # If first word isn't a duration, treat entire string as reason
+                reason = reason_or_duration
+    
         guild_id = str(ctx.guild.id)
         mute_role_id = self.mute_roles.get(guild_id)
         if not mute_role_id:
@@ -823,10 +987,37 @@ class Moderation(commands.Cog):
             embed.add_field(name="User", value=f"{member} ({member.id})", inline=True)
             if duration:
                 embed.add_field(name="Duration", value=duration, inline=True)
-            embed.add_field(name="Reason", value=reason or "No reason provided", inline=False)
+            if reason:
+                embed.add_field(name="Reason", value=reason, inline=False)
             embed.set_footer(text=f"Muted by {ctx.author}")
             await ctx.send(embed=embed)
+            
+            # Track muted users
+            if duration:
+                total_seconds = self.parse_duration(duration)
+                expiry = int((datetime.now(timezone.utc) + timedelta(seconds=total_seconds)).timestamp())
+            else:
+                expiry = 0  # 0 means indefinite
 
+            guild_id = str(ctx.guild.id)
+            if guild_id not in self.muted_users:
+                self.muted_users[guild_id] = {}
+            self.muted_users[guild_id][str(member.id)] = expiry
+            self.save_muted_users()
+            
+            log_embed = discord.Embed(
+                title="🔇 Member Muted",
+                description=f"{user.mention} has been muted.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            log_embed.add_field(name="User", value=f"{user}", inline=True)
+            log_embed.add_field(name="Moderator", value=f"{ctx.author}", inline=True)
+            if duration:
+                log_embed.add_field(name="Duration", value=duration, inline=True)
+            if reason:
+                log_embed.add_field(name="Reason", value=reason, inline=False)
+            await self.log_action(ctx.guild, log_embed)
             try:
                 dm_embed = discord.Embed(
                     title="You Have Been Muted",
@@ -836,7 +1027,8 @@ class Moderation(commands.Cog):
                 )
                 if duration:
                     dm_embed.add_field(name="Duration", value=duration, inline=True)
-                dm_embed.add_field(name="Reason", value=reason or "No reason provided", inline=False)
+                if reason:
+                    dm_embed.add_field(name="Reason", value=reason, inline=False)
                 await user.send(embed=dm_embed)
             except discord.Forbidden:
                 pass
@@ -953,6 +1145,24 @@ class Moderation(commands.Cog):
             embed.add_field(name="User", value=f"{member} ({member.id})", inline=False)
             embed.set_footer(text=f"Unmuted by {ctx.author}")
             await ctx.send(embed=embed)
+            
+            # Remove the user from the muted_users dictionary
+            guild_id = str(ctx.guild.id)
+            if guild_id in self.muted_users:
+                if str(member.id) in self.muted_users[guild_id]:
+                    del self.muted_users[guild_id][str(member.id)]
+                    self.save_muted_users()
+                    
+        
+            log_embed = discord.Embed(
+                title="🔊 Member Unmuted",
+                description=f"{user.mention} has been unmuted",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            log_embed.add_field(name="User", value=f"{user}", inline=True)
+            log_embed.add_field(name="Moderator", value=f"{ctx.author}", inline=True)
+            await self.log_action(ctx.guild, log_embed)
 
             try:
                 dm_embed = discord.Embed(
@@ -975,6 +1185,93 @@ class Moderation(commands.Cog):
             error_embed.add_field(name="Error Details", value=str(e), inline=False)
             error_embed.set_footer(text=f"Requested by {ctx.author}")
             await ctx.send(embed=error_embed)
+
+
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def setlogchannel(self, ctx, channel: discord.TextChannel = None):
+        """Set the channel for moderation logs."""
+        if not channel:
+            channel = ctx.channel
+
+        try:
+            # Test permissions
+            await channel.send(embed=discord.Embed(
+                title="🔍 Permission Test",
+                description="Testing bot permissions in this channel...",
+                color=discord.Color.blue()
+            ), delete_after=5)
+
+            # Save the channel
+            self.log_channels[str(ctx.guild.id)] = str(channel.id)
+            self.save_log_channels()
+
+            embed = discord.Embed(
+                title="✅ Log Channel Set",
+                description=f"Moderation logs will now be sent to {channel.mention}",
+                color=discord.Color.brand_green(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            embed.add_field(name="Channel", value=channel.name, inline=True)
+            embed.add_field(name="Channel ID", value=channel.id, inline=True)
+            embed.set_footer(text=f"Set by {ctx.author}")
+            
+            await ctx.send(embed=embed)
+
+            # Send test log
+            log_embed = discord.Embed(
+                title="📝 Log Channel Test",
+                description="This channel has been set as the moderation log channel.",
+                color=discord.Color.blue(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            log_embed.set_footer(text=f"Set up by {ctx.author}")
+            await channel.send(embed=log_embed)
+
+        except discord.Forbidden:
+            error_embed = discord.Embed(
+                title="❌ Permission Error",
+                description="I don't have permission to send messages in that channel.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            await ctx.send(embed=error_embed)
+        except Exception as e:
+            error_embed = discord.Embed(
+                title="❌ Setup Failed",
+                description="An error occurred while setting up the log channel.",
+                color=discord.Color.red(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            error_embed.add_field(name="Error Details", value=str(e), inline=False)
+            await ctx.send(embed=error_embed)
+
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def removelogchannel(self, ctx):
+        """Remove the moderation log channel configuration."""
+        guild_id = str(ctx.guild.id)
+        if guild_id in self.log_channels:
+            del self.log_channels[guild_id]
+            self.save_log_channels()
+            
+            embed = discord.Embed(
+                title="✅ Log Channel Removed",
+                description="Moderation logs have been disabled for this server.",
+                color=discord.Color.brand_green(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            embed.set_footer(text=f"Removed by {ctx.author}")
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(
+                title="⚠️ No Log Channel",
+                description="No log channel was configured for this server.",
+                color=discord.Color.orange(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            embed.set_footer(text=f"Requested by {ctx.author}")
+            await ctx.send(embed=embed)
 
     @commands.command()
     @commands.has_permissions(manage_messages=True)
@@ -1074,6 +1371,69 @@ class Moderation(commands.Cog):
                 timestamp=datetime.now(timezone.utc)
             )
             await ctx.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        """Check if joining member should be muted."""
+        guild_id = str(member.guild.id)
+        user_id = str(member.id)
+        
+        if guild_id in self.muted_users and user_id in self.muted_users[guild_id]:
+            expiry = self.muted_users[guild_id][user_id]
+            current_time = int(datetime.now(timezone.utc).timestamp())
+            
+            # Check if mute has expired
+            if expiry != 0 and current_time > expiry:
+                # Mute has expired, remove from tracking
+                del self.muted_users[guild_id][user_id]
+                self.save_muted_users()
+                return
+                
+            # Reapply mute role
+            mute_role_id = self.mute_roles.get(guild_id)
+            if mute_role_id:
+                mute_role = member.guild.get_role(int(mute_role_id))
+                if mute_role:
+                    try:
+                        await member.add_roles(mute_role, reason="Mute evasion prevention")
+                        
+                        # Log the action
+                        log_embed = discord.Embed(
+                            title="🔇 Mute Reapplied",
+                            description=f"Mute role reapplied to {member.mention} upon rejoining",
+                            color=discord.Color.red(),
+                            timestamp=datetime.now(timezone.utc)
+                        )
+                        log_embed.add_field(name="User", value=f"{member} ({member.id})", inline=True)
+                        log_embed.add_field(name="Reason", value="Mute evasion prevention", inline=True)
+                        if expiry:
+                            log_embed.add_field(
+                                name="Expires", 
+                                value=f"<t:{expiry}:R>", 
+                                inline=True
+                            )
+                        await self.log_action(member.guild, log_embed)
+                        
+                    except Exception:
+                        logger.exception(f"Failed to reapply mute role to {member}")
+
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        """Log when a muted member leaves the server."""
+        guild_id = str(member.guild.id)
+        user_id = str(member.id)
+        
+        if guild_id in self.muted_users and user_id in self.muted_users[guild_id]:
+            log_embed = discord.Embed(
+                title="⚠️ Muted Member Left",
+                description=f"A muted member ({member.mention}) has left the server",
+                color=discord.Color.orange(),
+                timestamp=datetime.now(timezone.utc)
+            )
+            log_embed.add_field(name="User", value=f"{member} ({member.id})", inline=True)
+            log_embed.set_footer(text="Member will be re-muted if they rejoin")
+            await self.log_action(member.guild, log_embed)
 
 async def setup(bot):
     await bot.add_cog(Moderation(bot))
