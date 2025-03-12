@@ -21,7 +21,6 @@ YTDLP_OPTIONS = {
     'no_warnings': True,
     'default_search': 'auto',
     'source_address': '0.0.0.0',
-    'cookiefile': 'cogs/cookies.txt',
     'extractor_args': {
         'soundcloud': {
             'client_id': 'akcDl6lB9RfwyhLSb2Xw2MwPR3Ow85Kr'
@@ -40,7 +39,11 @@ class Music(commands.Cog):
         self.queue = {}
         self.now_playing = {}
 
-        cookies_path = os.path.join(os.path.dirname(__file__), 'cookies.txt')
+        # Use absolute path for cookie file to ensure yt_dlp can locate it
+        cookies_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'cookies.txt'))
+        if not os.path.exists(cookies_path):
+            print(f"Warning: Cookie file not found at {cookies_path}")
+        # Update ytdlp options with the correct absolute cookie file path
         self.ytdlp_opts = YTDLP_OPTIONS.copy()
         self.ytdlp_opts['cookiefile'] = cookies_path
         

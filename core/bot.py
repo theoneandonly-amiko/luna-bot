@@ -3,7 +3,7 @@ import random
 import logging
 import discord
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from discord.ext import commands, tasks
 from googleapiclient.discovery import build
@@ -11,6 +11,21 @@ from googleapiclient.errors import HttpError
 
 from .constants import keyword_responses
 from .utils import get_all_videos
+
+# Define a custom formatter to apply GMT+7 timezone for log timestamps
+class GMT7Formatter(logging.Formatter):
+    def __init__(self, fmt=None, datefmt=None):
+        super().__init__(fmt, datefmt)
+        # Set the target timezone as GMT+7
+        self.tz = timezone(timedelta(hours=7))
+    
+    def formatTime(self, record, datefmt=None):
+        dt = datetime.fromtimestamp(record.created, self.tz)
+        if datefmt:
+            s = dt.strftime(datefmt)
+        else:
+            s = dt.isoformat()
+        return s
 
 class LunaBot(commands.Bot):
 
@@ -22,6 +37,18 @@ class LunaBot(commands.Bot):
 
         discord.utils.setup_logging(root=True)
         self.logger = logging.getLogger()
+
+        # Setup file logging: ensure that logs directory exists and add a FileHandler
+        logs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logs'))
+        if not os.path.exists(logs_dir):
+            os.makedirs(logs_dir)
+        log_file = os.path.join(logs_dir, 'bot.log')
+        file_handler = logging.FileHandler(log_file, encoding='utf-8')
+        file_handler.setLevel(logging.DEBUG)
+        # Use the custom GMT7Formatter for logging timestamps
+        formatter = GMT7Formatter('%(asctime)s:  %(levelname)s   :   %(name)s   : %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+        file_handler.setFormatter(formatter)
+        self.logger.addHandler(file_handler)
 
         # Initialize the YouTube API client
         self.youtube = build('youtube', 'v3', developerKey=self.YOUTUBE_API_KEY)
