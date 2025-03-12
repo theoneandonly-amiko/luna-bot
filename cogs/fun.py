@@ -519,8 +519,8 @@ class Fun(commands.Cog):
 
     @commands.command(name='kurin')
     async def kurin_percent(self, ctx):
-        custom_emoji = "<a:kurin:1277596648817557566>"
-        custom_emoji_id = "1277596648817557566"
+        custom_emoji = "<a:kurin:1270461365122760877>"
+        custom_emoji_id = "1270461365122760877"
         percentage = random.randint(0, 100)
         embed = discord.Embed(
             title = "Kuru kuru~! Kururin!",

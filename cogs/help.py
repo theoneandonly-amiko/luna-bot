@@ -68,6 +68,7 @@ class HelpDropdown(Select):
                 "`clear [number/all]` - Delete a number of messages or all possible messages.\n"
                 "`createmuterole [role name]` - Create a mute role if it doesn't exist.\n"
                 "`setmuterole @muterole` - Set the default mute role for moderation purposes.\n"
+                "`setlogchannel #channel` - Set the log channel for moderation actions.\n"
             ), inline=False)
         elif category == "Music Commands":
             embed.add_field(

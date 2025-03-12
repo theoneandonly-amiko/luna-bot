@@ -153,12 +153,12 @@ class Games(commands.Cog):
         }
         game = self.hangman_game
         await ctx.send(f"Game started! The word is in the theme '{game['theme']}' and has {len(word)} letters.")
-        await ctx.send(f"You have {game['clues']} clues remaining. Use `am/hangclue` to reveal a letter, `am/hangguess [letter]` to guess a letter.")
+        await ctx.send(f"You have {game['clues']} clues remaining. Use `&hangclue` to reveal a letter, `&hangguess [letter]` to guess a letter.")
 
     @commands.command()
     async def hangguess(self, ctx, letter: str):
         if not hasattr(self, 'hangman_game'):
-            await ctx.send("Start a game with am/hangman first.")
+            await ctx.send("Start a game with &hangman first.")
             return
 
         game = self.hangman_game
@@ -188,7 +188,7 @@ class Games(commands.Cog):
     @commands.command()
     async def hangclue(self, ctx):
         if not hasattr(self, 'hangman_game'):
-            await ctx.send("Start a game with am/hangman first.")
+            await ctx.send("Start a game with &hangman first.")
             return
 
         game = self.hangman_game
@@ -244,12 +244,12 @@ class Games(commands.Cog):
             "number": random.randint(1, 100),
             "tries": 0
         }
-        await ctx.send(f"I'm thinking about a number now. Guess the number between 1 and 100. Use `am/numguess [number]` to guess the number that you think it's right!")
+        await ctx.send(f"I'm thinking about a number now. Guess the number between 1 and 100. Use `&numguess [number]` to guess the number that you think it's right!")
 
     @commands.command()
     async def numguess(self, ctx, number: int):
         if not self.number_game:
-            await ctx.send("Start a game with am/numberguess first.")
+            await ctx.send("Start a game with &numberguess first.")
             return
 
         game = self.number_game
@@ -279,12 +279,12 @@ class Games(commands.Cog):
             "scrambled": scrambled,
             "theme": theme
         }
-        await ctx.send(f"Scramble game started! The theme is '{theme}'. Unscramble this word: `{scrambled}`. Use `am/guess [answer] to unscramble the word!`")
+        await ctx.send(f"Scramble game started! The theme is '{theme}'. Unscramble this word: `{scrambled}`. Use `&guess [answer] to unscramble the word!`")
 
     @commands.command()
     async def guess(self, ctx, *, guess: str):
         if not self.scramble_game:
-            await ctx.send("Start a game with am/scramble first.")
+            await ctx.send("Start a game with &scramble first.")
             return
 
         game = self.scramble_game
@@ -333,12 +333,12 @@ class Games(commands.Cog):
             "total_pairs": 8
         }
         game = self.memory_game
-        await ctx.send("Memory game started! Use `am/memflip <row> <col>` to flip a card. The board is 4x4, coordinates is the number within range of 0 and 3.")
+        await ctx.send("Memory game started! Use `&memflip <row> <col>` to flip a card. The board is 4x4, coordinates is the number within range of 0 and 3.")
 
     @commands.command()
     async def memflip(self, ctx, row: int, col: int):
         if not hasattr(self, 'memory_game'):
-            await ctx.send("Start a game with am/memory first.")
+            await ctx.send("Start a game with &memory first.")
             return
 
         game = self.memory_game
