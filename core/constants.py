@@ -96,27 +96,4 @@ keyword_responses = {
                         "I wanted to learn how to drive a stick shift, but I couldn't find a manual.",
                         "I once got into so much debt that I couldn't even pay attention.",
                         "When the past, present, and future walked into a bar, it was tense."],
-
-            'christmas': [
-                        'Merry Christmas! 🎄🎁',
-                        'Happy holidays! 🎄❄️',
-                        "Season's greetings! 🎄🎉",
-                        'Wishing you a joyous holiday season! 🎄🎁',
-                        'May your holidays be filled with joy and cheer! 🎄🎊',
-                        'May your holidays be filled with love and laughter! 🎄🎉',
-                        'May your holidays be filled with peace and happiness! 🎄🎁',
-                        'May your holidays be filled with good health and prosperity! 🎄🎁',
-                        'May your holidays be filled with good fortune and good luck! 🎄🎁',
-                        'Ho ho ho! Time to spread some holiday cheer! 🎅✨',
-                        'Deck the halls with bots of coding! 🎄💻',
-                        'All I want for Christmas is... more RAM! 🎁💾',
-                        'Time to debug those Christmas lights! 🎄⚡',
-                        'Santa checked his list twice, just like good code reviews! 📝✨',
-                        'May your code be bug-free this holiday season! 🎁💻',
-                        'Compiling Christmas joy... Loading... 100% Complete! 🎄✨',
-                        "Error 404: Coal not found! You've been good this year! 🎁😇",
-                        'Time to git commit some holiday spirit! 🎄💝',
-                        'Spreading holiday cheer at 1 GB/s! 🎅💨',
-                        'System.out.println("Merry Christmas!") 🎄💻'
-                        ]
             }
